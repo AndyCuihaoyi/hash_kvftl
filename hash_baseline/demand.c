@@ -166,7 +166,7 @@ lpa_t get_lpa(demand_cache *pd_cache, KEYT key, void *_h_params) {
     return lpa;
 }
 
-uint32_t __demand_set(algorithm *palgo, request *const req) {-
+uint32_t __demand_set(algorithm *palgo, request *const req) {           
     uint32_t rc = 0;
     ftl_assert(pw_buffer);
     w_buffer_t *wb = D_ENV(palgo)->pw_buffer;

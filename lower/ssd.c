@@ -27,7 +27,8 @@ lower_info ssd_li = {
     .stats = &ssd_stats,
 };
 
-struct ppa pgidx2ppa(struct ssd *ssd, uint32_t pgidx) {
+struct ppa pgidx2ppa(struct ssd *ssd, uint32_t pgidx)
+{
     struct ssdparams *spp = &ssd->sp;
 
     struct ppa ppa = {
@@ -41,7 +42,8 @@ struct ppa pgidx2ppa(struct ssd *ssd, uint32_t pgidx) {
     return ppa;
 }
 
-uint64_t ppa2pgidx(struct ssd *ssd, struct ppa *ppa) {
+uint64_t ppa2pgidx(struct ssd *ssd, struct ppa *ppa)
+{
     struct ssdparams *spp = &ssd->sp;
     uint64_t pgidx;
 
@@ -56,7 +58,8 @@ uint64_t ppa2pgidx(struct ssd *ssd, struct ppa *ppa) {
 
 static inline void check_addr(int a, int max) { ftl_assert(a >= 0 && a < max); }
 
-void ssd_stats_init(lower_info *li) {
+void ssd_stats_init(lower_info *li)
+{
     ftl_assert(li->stats);
     li->stats->nr_nand_erase = 0;
     li->stats->nr_nand_read = 0;
@@ -66,14 +69,15 @@ void ssd_stats_init(lower_info *li) {
     li->stats->nr_nand_er_lun = g_malloc0(sizeof(uint64_t) * ssd_lower.sp.tt_luns);
 }
 
-static void ssd_init_params(struct ssdparams *spp) {
-    spp->secsz = 512;        // 512
-    spp->secs_per_pg = 8;    // 8
+static void ssd_init_params(struct ssdparams *spp)
+{
+    spp->secsz = 512;       // 512
+    spp->secs_per_pg = 8;   // 8
     spp->pgs_per_blk = 512; // 512 128MB SBLK
-    spp->blks_per_pl = 56;  /* 564 70.5GB */
-    spp->pls_per_lun = 1;    // 1
-    spp->luns_per_ch = 8;    // 8
-    spp->nchs = 8;           // 8
+    spp->blks_per_pl = 564; /* 564 70.5GB */
+    spp->pls_per_lun = 1;   // 1
+    spp->luns_per_ch = 8;   // 8
+    spp->nchs = 8;          // 8
 
     ftl_log("ssd created! size: %lu MB\n", (uint64_t)spp->secsz * spp->secs_per_pg * spp->pgs_per_blk * spp->blks_per_pl * spp->pls_per_lun * spp->luns_per_ch * spp->nchs / 1024 / 1024);
 
@@ -117,14 +121,16 @@ static void ssd_init_params(struct ssdparams *spp) {
     spp->enable_gc_delay = true;
 }
 
-static void ssd_init_ch(struct ssd_channel *ch, struct ssdparams *spp) {
+static void ssd_init_ch(struct ssd_channel *ch, struct ssdparams *spp)
+{
     ch->nluns = spp->luns_per_ch;
     ch->lun = g_malloc0(sizeof(struct nand_lun) * ch->nluns);
     ch->next_ch_avail_time = 0;
     ch->busy = 0;
 }
 
-void ssd_init(lower_info *li) {
+void ssd_init(lower_info *li)
+{
     struct ssd *ssd = &ssd_lower;
     struct ssdparams *spp = &ssd->sp;
 
@@ -134,27 +140,30 @@ void ssd_init(lower_info *li) {
     ssd->ppa_state = g_malloc0(sizeof(bool) * spp->tt_pgs);
     ssd->line_wp = g_malloc0(sizeof(uint32_t) * spp->tt_lines);
 
-
     /* initialize ssd internal layout architecture */
     ssd->ch = g_malloc0(sizeof(struct ssd_channel) * spp->nchs);
-    for (int i = 0; i < spp->nchs; i++) {
+    for (int i = 0; i < spp->nchs; i++)
+    {
         ssd_init_ch(&ssd->ch[i], spp);
     }
 
     ssd_stats_init(&ssd_li);
 }
 
-void ssd_destroy(lower_info *li) {
+void ssd_destroy(lower_info *li)
+{
     struct ssd *ssd = &ssd_lower;
     struct ssdparams *spp = &ssd->sp;
     g_free(ssd->ppa_state);
-    for (int i = 0; i < spp->nchs; i++) {
+    for (int i = 0; i < spp->nchs; i++)
+    {
         g_free(&ssd->ch[i].lun);
     }
     g_free(ssd->ch);
 }
 
-static inline bool valid_ppa(struct ssd *ssd, struct ppa *ppa) {
+static inline bool valid_ppa(struct ssd *ssd, struct ppa *ppa)
+{
     struct ssdparams *spp = &ssd->sp;
     int ch = ppa->g.ch;
     int lun = ppa->g.lun;
@@ -172,17 +181,20 @@ static inline bool valid_ppa(struct ssd *ssd, struct ppa *ppa) {
     return false;
 }
 
-static inline struct ssd_channel *get_ch(struct ssd *ssd, struct ppa *ppa) {
+static inline struct ssd_channel *get_ch(struct ssd *ssd, struct ppa *ppa)
+{
     return &(ssd->ch[ppa->g.ch]);
 }
 
-static inline struct nand_lun *get_lun(struct ssd *ssd, struct ppa *ppa) {
+static inline struct nand_lun *get_lun(struct ssd *ssd, struct ppa *ppa)
+{
     struct ssd_channel *ch = get_ch(ssd, ppa);
     return &(ch->lun[ppa->g.lun]);
 }
 
 static uint64_t ssd_advance_status(struct ssd *ssd, struct ppa *ppa,
-                                   int ncmd, uint64_t stime) {
+                                   int ncmd, uint64_t stime)
+{
     int c = ncmd;
     uint64_t cmd_stime = (stime == 0) ? clock_get_ns() : stime;
     uint64_t nand_stime;
@@ -190,7 +202,8 @@ static uint64_t ssd_advance_status(struct ssd *ssd, struct ppa *ppa,
     struct nand_lun *lun = get_lun(ssd, ppa);
     uint64_t lat = 0;
 
-    switch (c) {
+    switch (c)
+    {
     case NAND_READ:
         /* read: perform NAND cmd first */
         nand_stime = (lun->next_lun_avail_time < cmd_stime)
@@ -250,19 +263,23 @@ static uint64_t ssd_advance_status(struct ssd *ssd, struct ppa *ppa,
     return lat;
 }
 
-uint64_t ssd_write_ppa(uint32_t pgidx, uint64_t size, uint64_t stime) {
+uint64_t ssd_write_ppa(uint32_t pgidx, uint64_t size, uint64_t stime)
+{
     uint32_t tmp_pgidx = pgidx;
     uint64_t now = clock_get_ns();
     stime = stime > now ? stime : now;
     uint64_t max_etime = 0;
     ftl_assert(size >= PAGESIZE);
-    for (; tmp_pgidx < pgidx + size / PAGESIZE; ++tmp_pgidx) {
+    for (; tmp_pgidx < pgidx + size / PAGESIZE; ++tmp_pgidx)
+    {
         check_addr(tmp_pgidx, ssd_lower.sp.tt_pgs);
-        if (unlikely(ssd_lower.ppa_state[tmp_pgidx])) {
+        if (unlikely(ssd_lower.ppa_state[tmp_pgidx]))
+        {
             ftl_err("Overwrite PPA: %d\n", tmp_pgidx);
             abort();
         }
-        if (unlikely(ssd_lower.line_wp[LINE_IDX(tmp_pgidx)] != tmp_pgidx - LINE_IDX(tmp_pgidx) * ssd_lower.sp.pgs_per_line)) {  // tmp_pgidx % ssd_lower.sp.pgs_per_line != 0 && !ssd_lower.ppa_state[tmp_pgidx-1]
+        if (unlikely(ssd_lower.line_wp[LINE_IDX(tmp_pgidx)] != tmp_pgidx - LINE_IDX(tmp_pgidx) * ssd_lower.sp.pgs_per_line))
+        { // tmp_pgidx % ssd_lower.sp.pgs_per_line != 0 && !ssd_lower.ppa_state[tmp_pgidx-1]
             ftl_err("Write PPA out of line wp: %d\n", tmp_pgidx);
             abort();
         }
@@ -278,15 +295,18 @@ uint64_t ssd_write_ppa(uint32_t pgidx, uint64_t size, uint64_t stime) {
     return max_etime - stime;
 }
 
-uint64_t ssd_read_ppa(uint32_t pgidx, uint64_t size, uint64_t stime) {
+uint64_t ssd_read_ppa(uint32_t pgidx, uint64_t size, uint64_t stime)
+{
     uint32_t tmp_pgidx = pgidx;
     uint64_t now = clock_get_ns();
     stime = stime > now ? stime : now;
     uint64_t max_etime = 0;
     ftl_assert(size >= PAGESIZE);
-    for (; tmp_pgidx < pgidx + size / PAGESIZE; ++tmp_pgidx) {
+    for (; tmp_pgidx < pgidx + size / PAGESIZE; ++tmp_pgidx)
+    {
         check_addr(tmp_pgidx, ssd_lower.sp.tt_pgs);
-        if (unlikely(!ssd_lower.ppa_state[tmp_pgidx])) {
+        if (unlikely(!ssd_lower.ppa_state[tmp_pgidx]))
+        {
             ftl_err("PPA not written: %d\n", tmp_pgidx);
             abort();
         }
@@ -300,16 +320,19 @@ uint64_t ssd_read_ppa(uint32_t pgidx, uint64_t size, uint64_t stime) {
     return max_etime - stime;
 }
 
-uint64_t ssd_trim_block(uint32_t pgidx) {
+uint64_t ssd_trim_block(uint32_t pgidx)
+{
     check_addr(pgidx, ssd_lower.sp.tt_pgs);
     ftl_assert(pgidx % ssd_lower.sp.pgs_per_line == 0);
     uint32_t maxlat = 0;
     uint64_t stime = clock_get_ns();
-    for (int i = 0; i < ssd_lower.sp.tt_luns; ++i) {
+    for (int i = 0; i < ssd_lower.sp.tt_luns; ++i)
+    {
         struct ppa ppa = pgidx2ppa(&ssd_lower, pgidx + i);
         ssd_li.stats->nr_nand_er_lun[ppa.g.ch * ssd_lower.sp.luns_per_ch + ppa.g.lun]++;
         uint64_t lat = ssd_advance_status(&ssd_lower, &ppa, NAND_ERASE, stime);
-        if (lat > maxlat) {
+        if (lat > maxlat)
+        {
             maxlat = lat;
         }
     }
