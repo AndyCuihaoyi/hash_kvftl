@@ -182,7 +182,7 @@ void *algo_thread()
 void check_dcache_queue()
 {
     demand_cache *pd_cache = &d_cache;
-    struct cmt_struct **cmt = pd_cache->member.cmt;
+    struct cmt_struct **cmt = pd_cache->member.cold_cmt;
     for (int i = 0; i < d_cache.env.nr_valid_tpages; ++i)
     {
         int retry_cnt = cmt[i]->retry_q->size;

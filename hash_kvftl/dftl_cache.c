@@ -72,8 +72,8 @@ static void cache_member_init(struct cache_member *member)
 		cmt[i]->retry_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
 		cmt[i]->wait_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
 	}
-	member->cmt = cmt;
-
+	member->cold_cmt = cmt;
+	/*mem_table cached all mapping pages for emulation*/
 	member->mem_table = g_malloc0(d_cache.env.nr_valid_tpages * sizeof(struct pt_struct *));
 	for (int i = 0; i < d_cache.env.nr_valid_tpages; i++)
 	{
@@ -121,9 +121,9 @@ static void cache_member_free(demand_cache *self, struct cache_member *member)
 {
 	for (int i = 0; i < self->env.nr_valid_tpages; i++)
 	{
-		free(member->cmt[i]);
+		free(member->cold_cmt[i]);
 	}
-	free(member->cmt);
+	free(member->cold_cmt);
 
 	for (int i = 0; i < self->env.nr_valid_tpages; i++)
 	{
@@ -145,7 +145,7 @@ int dftl_cache_destroy(demand_cache *self)
 
 int dftl_cache_load(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry)
 {
-	struct cmt_struct *cmt = self->member.cmt[D_IDX];
+	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
 	struct inflight_params *i_params;
 
 	if (IS_INITIAL_PPA(cmt->t_ppa))
@@ -178,7 +178,7 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 {
 	int rc = 0;
 
-	struct cmt_struct *cmt = self->member.cmt[D_IDX];
+	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
 	struct cmt_struct *victim = NULL;
 	algorithm *palgo = self->env.palgo;
 	w_buffer_t *pw_buffer = D_ENV(palgo)->pw_buffer;
@@ -237,7 +237,6 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 
 	cmt->pt = self->member.mem_table[D_IDX];
 	cmt->lru_ptr = lru_push(self->member.lru, (void *)cmt);
-	/*FIXME: EVERY EPP CONTRIBUTES ONE MAPPING PAGE*/
 	self->member.nr_cached_tpages++;
 	if (cmt->is_flying)
 	{
@@ -272,7 +271,7 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 
 int dftl_cache_wait_if_flying(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry)
 {
-	struct cmt_struct *cmt = self->member.cmt[D_IDX];
+	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
 	if (cmt->is_flying)
 	{
 		self->stat.blocked_miss++;
@@ -293,14 +292,14 @@ int dftl_cache_wait_if_flying(demand_cache *self, lpa_t lpa, request *const req,
 
 int dftl_cache_touch(demand_cache *self, lpa_t lpa)
 {
-	struct cmt_struct *cmt = self->member.cmt[D_IDX];
+	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
 	lru_update(self->member.lru, cmt->lru_ptr);
 	return 0;
 }
 
 int dftl_cache_update(demand_cache *self, lpa_t lpa, struct pt_struct pte)
 {
-	struct cmt_struct *cmt = self->member.cmt[D_IDX];
+	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
 
 	if (cmt->pt)
 	{
@@ -324,7 +323,7 @@ int dftl_cache_update(demand_cache *self, lpa_t lpa, struct pt_struct pte)
 
 struct pt_struct dftl_cache_get_pte(demand_cache *self, lpa_t lpa)
 {
-	struct cmt_struct *cmt = self->member.cmt[D_IDX];
+	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
 	if (cmt->pt)
 	{
 		return cmt->pt[P_IDX];
@@ -338,12 +337,12 @@ struct pt_struct dftl_cache_get_pte(demand_cache *self, lpa_t lpa)
 
 struct cmt_struct *dftl_cache_get_cmt(demand_cache *self, lpa_t lpa)
 {
-	return self->member.cmt[D_IDX];
+	return self->member.cold_cmt[D_IDX];
 }
 
 bool dftl_cache_is_hit(demand_cache *self, lpa_t lpa)
 {
-	struct cmt_struct *cmt = self->member.cmt[D_IDX];
+	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
 	if (cmt->pt != NULL)
 	{
 		return 1;

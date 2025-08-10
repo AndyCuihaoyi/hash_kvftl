@@ -11,7 +11,8 @@
 #include "../tools/skiplist.h"
 
 /* Structures */
-struct cache_env {
+struct cache_env
+{
 	uint64_t nr_tpages_optimal_caching;
 	uint64_t nr_valid_tpages;
 	uint64_t nr_valid_tentries;
@@ -24,8 +25,9 @@ struct cache_env {
 	algorithm *palgo;
 };
 
-struct cache_member {
-	struct cmt_struct **cmt;
+struct cache_member
+{
+	struct cmt_struct **cold_cmt;
 	struct pt_struct **mem_table;
 	LRU *lru;
 
@@ -37,7 +39,8 @@ struct cache_member {
 	volatile int nr_valid_read_done;
 };
 
-struct cache_stat {
+struct cache_stat
+{
 	/* cache performance */
 	uint64_t cache_hit;
 	uint64_t cache_miss;
@@ -51,22 +54,23 @@ struct cache_stat {
 	uint64_t cache_load;
 };
 
-typedef struct demand_cache {
-	int (*create) (struct demand_cache *);
-	int (*destroy) ();
+typedef struct demand_cache
+{
+	int (*create)(struct demand_cache *);
+	int (*destroy)();
 
-	int (*load) (struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
-	int (*list_up) (struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
-	int (*wait_if_flying) (struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
+	int (*load)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
+	int (*list_up)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
+	int (*wait_if_flying)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
 
-	int (*touch) (struct demand_cache *self, lpa_t lpa);
-	int (*update) (struct demand_cache *self, lpa_t lpa, struct pt_struct pte);
+	int (*touch)(struct demand_cache *self, lpa_t lpa);
+	int (*update)(struct demand_cache *self, lpa_t lpa, struct pt_struct pte);
 
-	struct pt_struct (*get_pte) (struct demand_cache *self, lpa_t lpa);
-	struct cmt_struct *(*get_cmt) (struct demand_cache *self, lpa_t lpa);
+	struct pt_struct (*get_pte)(struct demand_cache *self, lpa_t lpa);
+	struct cmt_struct *(*get_cmt)(struct demand_cache *self, lpa_t lpa);
 
-	bool (*is_hit) (struct demand_cache *self, lpa_t lpa);
-	bool (*is_full) (struct demand_cache *self);
+	bool (*is_hit)(struct demand_cache *self, lpa_t lpa);
+	bool (*is_full)(struct demand_cache *self);
 
 	struct cache_env env;
 	struct cache_member member;
