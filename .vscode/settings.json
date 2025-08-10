@@ -31,7 +31,8 @@
         "unistd.h": "c",
         "zipf.h": "c",
         "getopt.h": "c",
-        "stddef.h": "c"
+        "stddef.h": "c",
+        "algo_queue.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "editor.formatOnSave": true
