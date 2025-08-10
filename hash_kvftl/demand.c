@@ -23,7 +23,7 @@ uint64_t extra_mem_lat = 0;
 KEYT key_max, key_min;
 
 extern lower_info ssd_li; // in lower/ssd.c
-
+struct demand_env d_env;
 algorithm __demand = {.create = demand_create,
                       .destroy = demand_destroy,
                       .read = demand_get,
@@ -39,8 +39,6 @@ extern demand_cache d_cache;
 extern demand_cache *pd_cache;
 extern block_mgr_t bm;
 extern block_mgr_t *pbm;
-
-struct demand_env d_env;
 
 static inline int KEYCMP(KEYT a, KEYT b)
 {

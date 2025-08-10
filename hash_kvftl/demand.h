@@ -8,6 +8,7 @@
 #include "cache.h"
 #include "write_buffer.h"
 #include <stdint.h>
+#include "../tools/bloomfilter.h"
 
 extern uint64_t extra_mem_lat;
 
@@ -28,7 +29,8 @@ extern uint64_t extra_mem_lat;
 #define D_ENV(p_algo) ((demand_env *)(p_algo->env))
 
 // Page table entry
-typedef struct __attribute__((packed)) pt_struct {
+typedef struct __attribute__((packed)) pt_struct
+{
     ppa_t ppa; // Index = lpa
 #ifdef STORE_KEY_FP
     fp_t key_fp;
@@ -38,7 +40,8 @@ typedef struct __attribute__((packed)) pt_struct {
 extern KEYT *real_keys;
 
 // Cache mapping table data strcuture
-typedef struct cmt_struct {
+typedef struct cmt_struct
+{
     int32_t idx;
     pte_t *pt;
     ppa_t t_ppa;
@@ -53,9 +56,24 @@ typedef struct cmt_struct {
     bool *is_cached;
     uint32_t cached_cnt;
     uint32_t dirty_cnt;
+    uint32_t heat_cnt;
 } cmt_t;
 
-typedef struct demand_env {
+typedef struct hot_cmt_struct
+{
+    int32_t idx;
+    ppa_t t_ppa;
+    bool state; // CLEAN / DIRTY
+    bool is_flying;
+
+    struct rte_ring *retry_q;
+    struct rte_ring *wait_q;
+    uint32_t wp; // write_pointer
+    BF *bf;
+} hot_cmt_t;
+
+typedef struct demand_env
+{
     uint32_t num_page;
     uint32_t num_grain;
     uint32_t max_cache_entry;
@@ -77,7 +95,7 @@ typedef struct demand_env {
     uint64_t num_rd_data_rd;
     uint64_t num_rd_data_miss_rd;
     uint64_t r_hash_collision_cnt[MAX_HASH_COLLISION + 1];
-	uint64_t w_hash_collision_cnt[MAX_HASH_COLLISION + 1];
+    uint64_t w_hash_collision_cnt[MAX_HASH_COLLISION + 1];
 
     /* components */
     demand_cache *pd_cache;
@@ -94,7 +112,7 @@ void demand_destroy(algorithm *, lower_info *);
 lpa_t get_lpa(demand_cache *pd_cache, KEYT key, void *_h_params);
 uint32_t demand_set(algorithm *, request *const);
 uint32_t demand_get(algorithm *, request *const);
-uint32_t demand_remove(algorithm *, request *const);     // not implemented
+uint32_t demand_remove(algorithm *, request *const); // not implemented
 
 // dftl_range.c
 uint32_t demand_range_query(algorithm *, request *const);

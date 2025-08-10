@@ -19,6 +19,7 @@ struct cache_env
 
 	uint64_t max_cached_tpages;
 	uint64_t max_cached_tentries;
+	uint64_t max_cached_hot_tpages;
 	uint64_t max_cache_entry;
 
 	/* add attributes here */
@@ -28,7 +29,9 @@ struct cache_env
 struct cache_member
 {
 	struct cmt_struct **cold_cmt;
+	struct hot_cmt_struct **hot_cmt;
 	struct pt_struct **mem_table;
+	struct pt_struct **hot_mem_table;
 	LRU *lru;
 
 	int nr_cached_tpages;
@@ -37,6 +40,7 @@ struct cache_member
 	/* add attributes here */
 	volatile int nr_tpages_read_done;
 	volatile int nr_valid_read_done;
+	uint32_t max_hit;
 };
 
 struct cache_stat

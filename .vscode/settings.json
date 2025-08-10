@@ -32,7 +32,9 @@
         "zipf.h": "c",
         "getopt.h": "c",
         "stddef.h": "c",
-        "algo_queue.h": "c"
+        "algo_queue.h": "c",
+        "random": "c",
+        "cmath": "c"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "editor.formatOnSave": true

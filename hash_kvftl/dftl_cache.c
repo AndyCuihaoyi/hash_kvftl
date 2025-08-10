@@ -9,6 +9,7 @@
 #include "../tools/valueset.h"
 #include "glib-2.0/glib.h"
 #include "write_buffer.h"
+#include <math.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,7 +17,6 @@
 #ifdef CMT_USE_NUMA
 #include <numa.h>
 #endif // CMT_USE_NUMA
-
 extern block_mgr_t bm;
 extern block_mgr_t *pbm;
 
@@ -49,13 +49,16 @@ static void cache_env_init(struct cache_env *env)
 	env->nr_valid_tentries = env->nr_valid_tpages * EPP;
 	env->max_cache_entry = (_NOP_NO_OP / EPP + ((_NOP_NO_OP % EPP) ? 1 : 0)) * GRAIN_PER_PAGE * 4 / 3; // number of tpages
 	// env->max_cached_tpages = _NOP_NO_OP;
-	env->max_cached_tpages = _NOP_NO_OP / 1024;
+	env->max_cached_tpages = ceil(_NOP_NO_OP / 1024 * 0.9);
+	env->max_cached_hot_tpages = ceil(_NOP_NO_OP / 1024 * 0.1);
 	env->max_cached_tentries = env->max_cached_tpages * EPP;
 }
 
 static void cache_member_init(struct cache_member *member)
 {
+	/*init cold cmt pages*/
 	struct cmt_struct **cmt = g_malloc0(d_cache.env.nr_valid_tpages * sizeof(struct cmt_struct *));
+	member->max_hit = 0;
 	for (int i = 0; i < d_cache.env.nr_valid_tpages; i++)
 	{
 		cmt[i] = g_malloc0(sizeof(struct cmt_struct));
@@ -68,11 +71,26 @@ static void cache_member_init(struct cache_member *member)
 		cmt[i]->is_cached = NULL;
 		cmt[i]->cached_cnt = 0;
 		cmt[i]->dirty_cnt = 0;
-
+		cmt[i]->heat_cnt = 0;
 		cmt[i]->retry_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
 		cmt[i]->wait_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
 	}
 	member->cold_cmt = cmt;
+	/*init hot mapping pages*/
+	struct hot_cmt_struct **hot_cmt = g_malloc0(d_cache.env.max_cached_hot_tpages * sizeof(struct hot_cmt_tpages *));
+	for (int i = 0; i < d_cache.env.max_cached_hot_tpages; i++)
+	{
+		hot_cmt[i] = g_malloc0(sizeof(struct hot_cmt_struct));
+		hot_cmt[i]->idx = i;
+		hot_cmt[i]->state = CLEAN;
+		hot_cmt[i]->t_ppa = UINT32_MAX;
+		hot_cmt[i]->wp = 0;
+		hot_cmt[i]->is_flying = false;
+		hot_cmt[i]->retry_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
+		hot_cmt[i]->wait_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
+		hot_cmt[i]->bf = bf_init(EPP, bf_fpr_from_memory(EPP, 512)); // about 2%
+	}
+	member->hot_cmt = hot_cmt;
 	/*mem_table cached all mapping pages for emulation*/
 	member->mem_table = g_malloc0(d_cache.env.nr_valid_tpages * sizeof(struct pt_struct *));
 	for (int i = 0; i < d_cache.env.nr_valid_tpages; i++)
@@ -89,6 +107,24 @@ static void cache_member_init(struct cache_member *member)
 			member->mem_table[i][j].ppa = UINT32_MAX;
 #ifdef STORE_KEY_FP
 			member->mem_table[i][j].key_fp = 0;
+#endif
+		}
+	}
+	member->hot_mem_table = g_malloc0(d_cache.env.max_cached_hot_tpages * sizeof(struct pt_struct *));
+	for (int i = 0; i < d_cache.env.max_cached_hot_tpages; i++)
+	{
+#ifdef CMT_USE_NUMA
+		member->hot_mem_table[i] = numa_alloc_onnode(EPP * sizeof(struct pt_struct), 1);
+		memset(member->hot_mem_table[i], 0, EPP * sizeof(struct pt_struct));
+#else
+		member->hot_mem_table[i] = g_malloc0(EPP * sizeof(struct pt_struct));
+		mlock(member->hot_mem_table[i], EPP * sizeof(struct pt_struct));
+#endif // CMT_USE_NUMA
+		for (int j = 0; j < EPP; j++)
+		{
+			member->hot_mem_table[i][j].ppa = UINT32_MAX;
+#ifdef STORE_KEY_FP
+			member->hot_mem_table[i][j].key_fp = 0;
 #endif
 		}
 	}
@@ -192,7 +228,7 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 
 		victim->lru_ptr = NULL;
 		victim->pt = NULL;
-
+		victim->heat_cnt = 0;
 		if (victim->state == DIRTY)
 		{
 			self->stat.dirty_evict++;
@@ -345,6 +381,8 @@ bool dftl_cache_is_hit(demand_cache *self, lpa_t lpa)
 	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
 	if (cmt->pt != NULL)
 	{
+		cmt->heat_cnt++;
+		self->member.max_hit = MAX(cmt->heat_cnt, self->member.max_hit);
 		return 1;
 	}
 	else

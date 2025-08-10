@@ -688,7 +688,7 @@ void show_stats()
             write_buffer.stats->nr_flush, write_buffer.stats->nr_rd_hit, write_buffer.stats->nr_rd_miss, write_buffer.stats->nr_wr_hit, write_buffer.stats->nr_wr_miss);
     ftl_log("d_cache_hit: %lu, miss: %lu, hit_by_collision: %lu, miss_by_collision: %lu\n",
             d_cache.stat.cache_hit, d_cache.stat.cache_miss, d_cache.stat.cache_hit_by_collision, d_cache.stat.cache_miss_by_collision);
-    ftl_log("cmt_nr_cached_pages: %d, cmt_nr_cached_entries %d\n", d_cache.member.nr_cached_tpages, d_cache.member.nr_cached_tentries);
+    ftl_log("max hit num: %d \n", d_cache.member.max_hit);
     ftl_log("hash_sign_collision: %lu\n", d_env.num_rd_data_miss_rd);
     // for (int i = 0; i < 64; ++i) {
     //     ftl_log("lun[%d]: rd: %ld, wr: %ld, er: %ld\n", i, ssd_li.stats->nr_nand_rd_lun[i], ssd_li.stats->nr_nand_wr_lun[i], ssd_li.stats->nr_nand_er_lun[i]);
