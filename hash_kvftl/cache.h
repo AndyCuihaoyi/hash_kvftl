@@ -9,7 +9,7 @@
 #include "dftl_utils.h"
 #include "../tools/lru_list.h"
 #include "../tools/skiplist.h"
-
+#include "../tools/bloomfilter.h"
 /* Structures */
 struct cache_env
 {
@@ -31,16 +31,17 @@ struct cache_member
 	struct cmt_struct **cold_cmt;
 	struct hot_cmt_struct **hot_cmt;
 	struct pt_struct **mem_table;
-	struct pt_struct **hot_mem_table;
+	struct hot_pt_struct **hot_mem_table;
+	BF *hot_bf;
 	LRU *lru;
 
-	int nr_cached_tpages;
-	int nr_cached_tentries;
+	uint64_t nr_cached_tpages;
+	uint64_t nr_cached_tentries;
 
 	/* add attributes here */
 	volatile int nr_tpages_read_done;
 	volatile int nr_valid_read_done;
-	uint32_t max_hit;
+	uint32_t hot_evict;
 };
 
 struct cache_stat
@@ -56,6 +57,8 @@ struct cache_stat
 	uint64_t cache_miss_by_collision;
 	uint64_t cache_hit_by_collision;
 	uint64_t cache_load;
+	uint64_t hot_cmt_evict;
+	uint64_t hot_cmt_hit;
 };
 
 typedef struct demand_cache
@@ -72,9 +75,11 @@ typedef struct demand_cache
 
 	struct pt_struct (*get_pte)(struct demand_cache *self, lpa_t lpa);
 	struct cmt_struct *(*get_cmt)(struct demand_cache *self, lpa_t lpa);
-
+	int (*upgrade_hot)(struct demand_cache *self, struct cmt_struct *victim);
 	bool (*is_hit)(struct demand_cache *self, lpa_t lpa);
-	bool (*is_full)(struct demand_cache *self);
+	uint32_t (*is_full)(struct demand_cache *self);
+	int (*hot_evict)(struct demand_cache *self);
+	bool (*hot_is_hit)(struct demand_cache *self, lpa_t lpa, struct pt_struct *pte);
 
 	struct cache_env env;
 	struct cache_member member;

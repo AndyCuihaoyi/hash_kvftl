@@ -19,6 +19,13 @@
 #endif // CMT_USE_NUMA
 extern block_mgr_t bm;
 extern block_mgr_t *pbm;
+#define T (4) // hot threshold
+enum
+{
+	HOT_FULL = 1,
+	COLD_FULL = 2,
+	NOT_FULL = 0
+};
 
 demand_cache d_cache = {
 	.create = dftl_cache_create,
@@ -32,10 +39,11 @@ demand_cache d_cache = {
 	.get_cmt = dftl_cache_get_cmt,
 	.is_hit = dftl_cache_is_hit,
 	.is_full = dftl_cache_is_full,
-};
-
+	.upgrade_hot = dftl_cache_upgrade_hot,
+	.hot_evict = dftl_cache_hot_evict,
+	.hot_is_hit = dftl_cache_hot_is_hit};
 demand_cache *pd_cache = &d_cache;
-uint64_t map_size_frac = 2;
+uint64_t map_size_frac = 1;
 static void cache_env_init(struct cache_env *env)
 {
 	/* hash table cache */
@@ -49,8 +57,8 @@ static void cache_env_init(struct cache_env *env)
 	env->nr_valid_tentries = env->nr_valid_tpages * EPP;
 	env->max_cache_entry = (_NOP_NO_OP / EPP + ((_NOP_NO_OP % EPP) ? 1 : 0)) * GRAIN_PER_PAGE * 4 / 3; // number of tpages
 	// env->max_cached_tpages = _NOP_NO_OP;
-	env->max_cached_tpages = ceil(_NOP_NO_OP / 1024 * 0.9);
-	env->max_cached_hot_tpages = ceil(_NOP_NO_OP / 1024 * 0.1);
+	env->max_cached_tpages = ceil(_NOP_NO_OP / 1024 * 0.6);
+	env->max_cached_hot_tpages = ceil(_NOP_NO_OP / 1024 * 0.4);
 	env->max_cached_tentries = env->max_cached_tpages * EPP;
 }
 
@@ -58,7 +66,6 @@ static void cache_member_init(struct cache_member *member)
 {
 	/*init cold cmt pages*/
 	struct cmt_struct **cmt = g_malloc0(d_cache.env.nr_valid_tpages * sizeof(struct cmt_struct *));
-	member->max_hit = 0;
 	for (int i = 0; i < d_cache.env.nr_valid_tpages; i++)
 	{
 		cmt[i] = g_malloc0(sizeof(struct cmt_struct));
@@ -84,13 +91,13 @@ static void cache_member_init(struct cache_member *member)
 		hot_cmt[i]->idx = i;
 		hot_cmt[i]->state = CLEAN;
 		hot_cmt[i]->t_ppa = UINT32_MAX;
-		hot_cmt[i]->wp = 0;
 		hot_cmt[i]->is_flying = false;
 		hot_cmt[i]->retry_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
 		hot_cmt[i]->wait_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
-		hot_cmt[i]->bf = bf_init(EPP, bf_fpr_from_memory(EPP, 512)); // about 2%
 	}
 	member->hot_cmt = hot_cmt;
+	// 4MB about
+	member->hot_bf = bf_init(EPP * d_cache.env.max_cached_hot_tpages, bf_fpr_from_memory(EPP * d_cache.env.max_cached_hot_tpages, 4 * 1024 * 1024));
 	/*mem_table cached all mapping pages for emulation*/
 	member->mem_table = g_malloc0(d_cache.env.nr_valid_tpages * sizeof(struct pt_struct *));
 	for (int i = 0; i < d_cache.env.nr_valid_tpages; i++)
@@ -117,11 +124,12 @@ static void cache_member_init(struct cache_member *member)
 		member->hot_mem_table[i] = numa_alloc_onnode(EPP * sizeof(struct pt_struct), 1);
 		memset(member->hot_mem_table[i], 0, EPP * sizeof(struct pt_struct));
 #else
-		member->hot_mem_table[i] = g_malloc0(EPP * sizeof(struct pt_struct));
-		mlock(member->hot_mem_table[i], EPP * sizeof(struct pt_struct));
+		member->hot_mem_table[i] = g_malloc0(EPP * sizeof(struct hot_pt_struct));
+		mlock(member->hot_mem_table[i], EPP * sizeof(struct hot_pt_struct));
 #endif // CMT_USE_NUMA
 		for (int j = 0; j < EPP; j++)
 		{
+			member->hot_mem_table[i][j].lpa = UINT32_MAX;
 			member->hot_mem_table[i][j].ppa = UINT32_MAX;
 #ifdef STORE_KEY_FP
 			member->hot_mem_table[i][j].key_fp = 0;
@@ -143,6 +151,8 @@ static void cache_stat_init(struct cache_stat *stat)
 	stat->cache_miss_by_collision = 0;
 	stat->cache_hit_by_collision = 0;
 	stat->cache_load = 0;
+	stat->hot_cmt_evict = 0;
+	stat->hot_cmt_hit = 0;
 }
 
 int dftl_cache_create(demand_cache *d_cache)
@@ -210,6 +220,33 @@ int dftl_cache_load(demand_cache *self, lpa_t lpa, request *const req, snode *wb
 	return 1;
 }
 
+int dftl_cache_upgrade_hot(demand_cache *self, struct cmt_struct *victim)
+{
+	// if (self->is_full(self) == HOT_FULL)
+	// {
+	// 	self->hot_evict(self);
+	// }
+	for (int i = 0; i < EPP; i++)
+	{
+		/*direct mapping may cause rewrite and collision*/
+		if (victim->pt[i].ppa != UINT32_MAX)
+		{
+			lpa_t lpa = IDX_TO_LPA(victim->idx, i);
+			bf_set(self->member.hot_bf, lpa); // for whole member
+			lpa_t new_lpa = lpa % self->env.max_cached_hot_tpages;
+			uint32_t D_IDX_HOT = new_lpa / EPP;
+			uint32_t P_IDX_HOT = new_lpa % EPP;
+			self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].lpa = lpa;
+			self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].ppa = victim->pt[i].ppa;
+			self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].key_fp = victim->pt[i].key_fp;
+		}
+	}
+}
+
+int dftl_cache_hot_evict(demand_cache *self)
+{
+}
+
 int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry)
 {
 	int rc = 0;
@@ -221,18 +258,20 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 
 	struct inflight_params *i_params;
 
-	if (self->is_full(self))
+	if (self->is_full(self) == COLD_FULL)
 	{
 		victim = (struct cmt_struct *)lru_pop(self->member.lru);
+		if (victim->heat_cnt > T)
+		{
+			self->upgrade_hot(self, victim);
+		}
 		self->member.nr_cached_tpages--;
-
 		victim->lru_ptr = NULL;
 		victim->pt = NULL;
 		victim->heat_cnt = 0;
 		if (victim->state == DIRTY)
 		{
 			self->stat.dirty_evict++;
-
 			i_params = get_iparams(req, wb_entry);
 			i_params->jump = GOTO_COMPLETE;
 			// i_params->pte = cmbr->mem_table[D_IDX][P_IDX];
@@ -262,7 +301,6 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 				.lpa = victim->idx,
 				.length = PAGESIZE};
 			pbm->set_oob(pbm, victim->t_ppa * GRAIN_PER_PAGE, &new_oob);
-
 			rc = 1;
 		}
 		else
@@ -382,7 +420,6 @@ bool dftl_cache_is_hit(demand_cache *self, lpa_t lpa)
 	if (cmt->pt != NULL)
 	{
 		cmt->heat_cnt++;
-		self->member.max_hit = MAX(cmt->heat_cnt, self->member.max_hit);
 		return 1;
 	}
 	else
@@ -391,7 +428,29 @@ bool dftl_cache_is_hit(demand_cache *self, lpa_t lpa)
 	}
 }
 
-bool dftl_cache_is_full(demand_cache *self)
+uint32_t dftl_cache_is_full(demand_cache *self)
 {
-	return (self->member.nr_cached_tpages >= self->env.max_cached_tpages);
+	if (0)
+		return HOT_FULL;
+	if (self->member.nr_cached_tpages >= self->env.max_cached_tpages)
+		return COLD_FULL;
+	return NOT_FULL;
+}
+
+bool dftl_cache_hot_is_hit(demand_cache *self, lpa_t lpa, pte_t *pte)
+{
+	if (bf_check(self->member.hot_bf, lpa))
+	{
+		lpa_t new_lpa = lpa % self->env.max_cached_hot_tpages;
+		uint32_t D_IDX_HOT = new_lpa / EPP;
+		uint32_t P_IDX_HOT = new_lpa % EPP;
+		if (lpa == self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].lpa)
+		{
+			pte->ppa = self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].ppa;
+			pte->key_fp = self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].key_fp;
+			self->stat.hot_cmt_hit++;
+			return true;
+		}
+	}
+	return false;
 }

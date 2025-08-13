@@ -257,8 +257,16 @@ read_retry:
             goto read_ret;
         }
     }
-
     /* 2. check cache */
+    if (pd_cache->hot_is_hit(pd_cache, lpa, &pte))
+    {
+        if (h_params->key_fp != pte.key_fp)
+        {
+            h_params->cnt++;
+            goto read_retry;
+        }
+        goto data_read;
+    }
     if (pd_cache->is_hit(pd_cache, lpa))
     {
         pd_cache->touch(pd_cache, lpa);

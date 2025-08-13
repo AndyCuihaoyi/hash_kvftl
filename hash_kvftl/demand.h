@@ -17,6 +17,7 @@ extern uint64_t extra_mem_lat;
 #define EPP (PAGESIZE / ENTRY_SIZE) // Number of table entries per page
 #define D_IDX (lpa / EPP)           // Idx of directory table
 #define P_IDX (lpa % EPP)           // Idx of page table
+#define IDX_TO_LPA(d_idx, p_idx) ((d_idx) * EPP + (p_idx))
 
 #define CLEAN 0
 #define DIRTY 1
@@ -36,6 +37,16 @@ typedef struct __attribute__((packed)) pt_struct
     fp_t key_fp;
 #endif
 } pte_t;
+
+// Page table entry
+typedef struct __attribute__((packed)) hot_pt_struct
+{
+    lpa_t lpa;
+    ppa_t ppa; // Index = lpa
+#ifdef STORE_KEY_FP
+    fp_t key_fp;
+#endif
+} h_pte_t;
 
 extern KEYT *real_keys;
 
@@ -68,8 +79,6 @@ typedef struct hot_cmt_struct
 
     struct rte_ring *retry_q;
     struct rte_ring *wait_q;
-    uint32_t wp; // write_pointer
-    BF *bf;
 } hot_cmt_t;
 
 typedef struct demand_env

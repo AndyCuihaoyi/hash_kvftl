@@ -336,6 +336,12 @@ void _do_wb_mapping_update(w_buffer_t *self, request *req)
                 abort();
             }
         }
+        /*check hot cmt*/
+        // if (pd_cache->hot_is_hit(pd_cache, lpa))
+        // {
+
+        // }
+        /*check cold cmt*/
         if (pd_cache->is_hit(pd_cache, lpa))
         {
             pd_cache->touch(pd_cache, lpa);

@@ -35,7 +35,7 @@ demand_cache d_cache = {
 };
 
 demand_cache *pd_cache = &d_cache;
-uint64_t map_size_frac = 2;
+uint64_t map_size_frac = 1;
 static void cache_env_init(struct cache_env *env)
 {
 	/* hash table cache */
