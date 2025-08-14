@@ -32,7 +32,7 @@ struct cache_member
 	struct hot_cmt_struct **hot_cmt;
 	struct pt_struct **mem_table;
 	struct hot_pt_struct **hot_mem_table;
-	BF *hot_bf;
+	BF **hot_bf;
 	LRU *lru;
 
 	uint64_t nr_cached_tpages;
