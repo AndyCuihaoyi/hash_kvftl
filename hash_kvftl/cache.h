@@ -41,7 +41,7 @@ struct cache_member
 	/* add attributes here */
 	volatile int nr_tpages_read_done;
 	volatile int nr_valid_read_done;
-	uint32_t hot_evict;
+	uint32_t hot_entries;
 };
 
 struct cache_stat
@@ -59,6 +59,7 @@ struct cache_stat
 	uint64_t cache_load;
 	uint64_t hot_cmt_evict;
 	uint64_t hot_cmt_hit;
+	uint64_t hot_cmt_hit_by_collision;
 };
 
 typedef struct demand_cache

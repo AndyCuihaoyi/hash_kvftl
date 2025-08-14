@@ -782,17 +782,17 @@ int main(int argc, char **argv)
     fflush(stdout);
     sleep(2);
     clean_stats();
-    ftl_log("start random reading. iodepth: %d\n", iodepth);
-    toggle_ssd_lat(true);
-    test_read(palgo, pool_size, num_read, false, seed, NUM_WORKERS);
-    ftl_log("finish random reading.\n");
-    fflush(stdout);
-    sleep(2);
-    // ftl_log("start zipfian reading. iodepth: %d\n", iodepth);
-    // test_read(palgo, pool_size, num_read, true, seed, NUM_WORKERS);
-    // ftl_log("finish zipfian reading.\n");
+    // ftl_log("start random reading. iodepth: %d\n", iodepth);
+    // toggle_ssd_lat(true);
+    // test_read(palgo, pool_size, num_read, false, seed, NUM_WORKERS);
+    // ftl_log("finish random reading.\n");
     // fflush(stdout);
-    // sleep(5);
+    // sleep(2);
+    ftl_log("start zipfian reading. iodepth: %d\n", iodepth);
+    test_read(palgo, pool_size, num_read, true, seed, NUM_WORKERS);
+    ftl_log("finish zipfian reading.\n");
+    fflush(stdout);
+    sleep(5);
     show_stats();
     return 0;
 }
