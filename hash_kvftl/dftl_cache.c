@@ -19,8 +19,7 @@
 #endif // CMT_USE_NUMA
 extern block_mgr_t bm;
 extern block_mgr_t *pbm;
-#define T (1)			// hot threshold
-#define DIVID_SPACE (5) // divided space
+#define T (4) // hot threshold
 enum
 {
 	HOT_FULL = 1,
@@ -141,7 +140,6 @@ static void cache_member_init(struct cache_member *member)
 	}
 	lru_init(&(member->lru));
 	member->nr_cached_tpages = 0;
-	member->hot_entries = 0;
 	member->nr_cached_tentries = 0;
 }
 
@@ -157,7 +155,6 @@ static void cache_stat_init(struct cache_stat *stat)
 	stat->cache_load = 0;
 	stat->hot_cmt_evict = 0;
 	stat->hot_cmt_hit = 0;
-	stat->hot_cmt_hit_by_collision = 0;
 }
 
 int dftl_cache_create(demand_cache *d_cache)
@@ -238,23 +235,13 @@ int dftl_cache_upgrade_hot(demand_cache *self, struct cmt_struct *victim)
 		if (victim->pt[i].ppa != UINT32_MAX)
 		{
 			lpa_t lpa = IDX_TO_LPA(victim->idx, i);
-			lpa_t new_lpa;
-			uint32_t D_IDX_HOT;
-			uint32_t P_IDX_HOT;
-			for (int j = 0; j < DIVID_SPACE; j++)
-			{
-				new_lpa = lpa % (max_hot_pages_per_area * EPP) + j * max_hot_pages_per_area;
-				D_IDX_HOT = new_lpa / EPP;
-				P_IDX_HOT = new_lpa % EPP;
-				if (self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].lpa == UINT32_MAX)
-				{
-					self->member.hot_entries++;
-					bf_set(self->member.hot_bf[j], lpa); // for whole member
-					self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].lpa = lpa;
-					self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].ppa = victim->pt[i].ppa;
-					self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].key_fp = victim->pt[i].key_fp;
-				}
-			}
+			bf_set(self->member.hot_bf, lpa); // for whole member
+			lpa_t new_lpa = lpa % self->env.max_cached_hot_tpages;
+			uint32_t D_IDX_HOT = new_lpa / EPP;
+			uint32_t P_IDX_HOT = new_lpa % EPP;
+			self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].lpa = lpa;
+			self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].ppa = victim->pt[i].ppa;
+			self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].key_fp = victim->pt[i].key_fp;
 		}
 	}
 }
@@ -458,19 +445,15 @@ bool dftl_cache_hot_is_hit(demand_cache *self, lpa_t lpa, pte_t *pte)
 	uint64_t max_hot_pages_per_area = self->env.max_cached_hot_tpages / DIVID_SPACE;
 	for (int i = 0; i < DIVID_SPACE; i++)
 	{
-		if (bf_check(self->member.hot_bf[i], lpa))
+		lpa_t new_lpa = lpa % self->env.max_cached_hot_tpages;
+		uint32_t D_IDX_HOT = new_lpa / EPP;
+		uint32_t P_IDX_HOT = new_lpa % EPP;
+		if (lpa == self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].lpa)
 		{
-			lpa_t new_lpa = lpa % (max_hot_pages_per_area * EPP) + i * max_hot_pages_per_area;
-			uint32_t D_IDX_HOT = new_lpa / EPP;
-			uint32_t P_IDX_HOT = new_lpa % EPP;
-			if (lpa == self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].lpa)
-			{
-				pte->ppa = self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].ppa;
-				pte->key_fp = self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].key_fp;
-				self->stat.hot_cmt_hit++;
-				return true;
-			}
-			self->stat.hot_cmt_hit_by_collision++;
+			pte->ppa = self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].ppa;
+			pte->key_fp = self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].key_fp;
+			self->stat.hot_cmt_hit++;
+			return true;
 		}
 	}
 
