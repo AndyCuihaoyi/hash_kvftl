@@ -689,6 +689,7 @@ void show_stats()
     ftl_log("d_cache_hit: %lu, miss: %lu, hit_by_collision: %lu, miss_by_collision: %lu, hot_hit: %lu\n",
             d_cache.stat.cache_hit, d_cache.stat.cache_miss, d_cache.stat.cache_hit_by_collision, d_cache.stat.cache_miss_by_collision, d_cache.stat.hot_cmt_hit);
     ftl_log("hash_sign_collision: %lu\n", d_env.num_rd_data_miss_rd);
+    ftl_log("hot valid entries: %lu, hot valid pages: %lu\n", d_cache.stat.hot_invalid_entries, d_cache.stat.hot_invalid_entries / EPP);
     // for (int i = 0; i < 64; ++i) {
     //     ftl_log("lun[%d]: rd: %ld, wr: %ld, er: %ld\n", i, ssd_li.stats->nr_nand_rd_lun[i], ssd_li.stats->nr_nand_wr_lun[i], ssd_li.stats->nr_nand_er_lun[i]);
     // }
@@ -781,17 +782,17 @@ int main(int argc, char **argv)
     fflush(stdout);
     sleep(2);
     clean_stats();
-    ftl_log("start random reading. iodepth: %d\n", iodepth);
-    toggle_ssd_lat(true);
-    test_read(palgo, pool_size, num_read, false, seed, NUM_WORKERS);
-    ftl_log("finish random reading.\n");
-    fflush(stdout);
-    sleep(2);
-    // ftl_log("start zipfian reading. iodepth: %d\n", iodepth);
-    // test_read(palgo, pool_size, num_read, true, seed, NUM_WORKERS);
-    // ftl_log("finish zipfian reading.\n");
+    // ftl_log("start random reading. iodepth: %d\n", iodepth);
+    // toggle_ssd_lat(true);
+    // test_read(palgo, pool_size, num_read, false, seed, NUM_WORKERS);
+    // ftl_log("finish random reading.\n");
     // fflush(stdout);
-    // sleep(5);
+    // sleep(2);
+    ftl_log("start zipfian reading. iodepth: %d\n", iodepth);
+    test_read(palgo, pool_size, num_read, true, seed, NUM_WORKERS);
+    ftl_log("finish zipfian reading.\n");
+    fflush(stdout);
+    sleep(5);
     show_stats();
     return 0;
 }

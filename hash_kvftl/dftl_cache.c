@@ -19,7 +19,7 @@
 #endif // CMT_USE_NUMA
 extern block_mgr_t bm;
 extern block_mgr_t *pbm;
-#define T (4) // hot threshold
+#define T (1) // hot threshold
 enum
 {
 	HOT_FULL = 1,
@@ -97,9 +97,7 @@ static void cache_member_init(struct cache_member *member)
 	}
 	member->hot_cmt = hot_cmt;
 	// 4MB about
-	member->hot_bf = g_malloc0(DIVID_SPACE * sizeof(BF *));
-	for (int i = 0; i < DIVID_SPACE; i++)
-		member->hot_bf[i] = bf_init(EPP * d_cache.env.max_cached_hot_tpages / DIVID_SPACE, bf_fpr_from_memory(EPP * d_cache.env.max_cached_hot_tpages / DIVID_SPACE, 4 * 1024 * 1024 / DIVID_SPACE));
+	member->hot_bf = bf_init(EPP * d_cache.env.max_cached_hot_tpages, bf_fpr_from_memory(EPP * d_cache.env.max_cached_hot_tpages, 4 * 1024 * 1024));
 	/*mem_table cached all mapping pages for emulation*/
 	member->mem_table = g_malloc0(d_cache.env.nr_valid_tpages * sizeof(struct pt_struct *));
 	for (int i = 0; i < d_cache.env.nr_valid_tpages; i++)
@@ -155,6 +153,7 @@ static void cache_stat_init(struct cache_stat *stat)
 	stat->cache_load = 0;
 	stat->hot_cmt_evict = 0;
 	stat->hot_cmt_hit = 0;
+	stat->hot_invalid_entries = 0;
 }
 
 int dftl_cache_create(demand_cache *d_cache)
@@ -228,17 +227,18 @@ int dftl_cache_upgrade_hot(demand_cache *self, struct cmt_struct *victim)
 	// {
 	// 	self->hot_evict(self);
 	// }
-	uint64_t max_hot_pages_per_area = self->env.max_cached_hot_tpages / DIVID_SPACE;
 	for (int i = 0; i < EPP; i++)
 	{
 		/*direct mapping may cause rewrite and collision*/
 		if (victim->pt[i].ppa != UINT32_MAX)
 		{
 			lpa_t lpa = IDX_TO_LPA(victim->idx, i);
-			bf_set(self->member.hot_bf, lpa); // for whole member
-			lpa_t new_lpa = lpa % self->env.max_cached_hot_tpages;
+			lpa_t new_lpa = lpa % (self->env.max_cached_hot_tpages * EPP);
 			uint32_t D_IDX_HOT = new_lpa / EPP;
 			uint32_t P_IDX_HOT = new_lpa % EPP;
+			if (self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].lpa != UINT32_MAX)
+				self->stat.hot_invalid_entries++;
+			bf_set(self->member.hot_bf, lpa); // for whole member
 			self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].lpa = lpa;
 			self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].ppa = victim->pt[i].ppa;
 			self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].key_fp = victim->pt[i].key_fp;
@@ -442,20 +442,15 @@ uint32_t dftl_cache_is_full(demand_cache *self)
 
 bool dftl_cache_hot_is_hit(demand_cache *self, lpa_t lpa, pte_t *pte)
 {
-	uint64_t max_hot_pages_per_area = self->env.max_cached_hot_tpages / DIVID_SPACE;
-	for (int i = 0; i < DIVID_SPACE; i++)
+	lpa_t new_lpa = lpa % (self->env.max_cached_hot_tpages * EPP);
+	uint32_t D_IDX_HOT = new_lpa / EPP;
+	uint32_t P_IDX_HOT = new_lpa % EPP;
+	if (lpa == self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].lpa)
 	{
-		lpa_t new_lpa = lpa % self->env.max_cached_hot_tpages;
-		uint32_t D_IDX_HOT = new_lpa / EPP;
-		uint32_t P_IDX_HOT = new_lpa % EPP;
-		if (lpa == self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].lpa)
-		{
-			pte->ppa = self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].ppa;
-			pte->key_fp = self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].key_fp;
-			self->stat.hot_cmt_hit++;
-			return true;
-		}
+		pte->ppa = self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].ppa;
+		pte->key_fp = self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].key_fp;
+		self->stat.hot_cmt_hit++;
+		return true;
 	}
-
 	return false;
 }
