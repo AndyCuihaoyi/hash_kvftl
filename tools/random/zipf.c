@@ -5,10 +5,12 @@
 #include "minmax.h"
 #include "hash.h"
 
-#define ZIPF_MAX_GEN	10000000UL
+#define ZIPF_MAX_GEN 10000000UL
 
-void shuffle(uint64_t *array, uint64_t n) {
-	for (uint64_t i = n - 1; i > 0; i--) {
+void shuffle(uint64_t *array, uint64_t n)
+{
+	for (uint64_t i = n - 1; i > 0; i--)
+	{
 		uint64_t j = rand() % (i + 1);
 		uint64_t temp = array[i];
 		array[i] = array[j];
@@ -26,14 +28,14 @@ static void zipf_update(struct zipf_state *zs)
 	 * 10M max, that should be doable in 1-2s on even slow machines.
 	 * Precision will take a slight hit, but nothing major.
 	 */
-	to_gen = min(zs->nranges, (uint64_t) ZIPF_MAX_GEN);
+	to_gen = min(zs->nranges, (uint64_t)ZIPF_MAX_GEN);
 
 	for (i = 0; i < to_gen; i++)
-		zs->zetan += pow(1.0 / (double) (i + 1), zs->theta);
+		zs->zetan += pow(1.0 / (double)(i + 1), zs->theta);
 }
 
 static void shared_rand_init(struct zipf_state *zs, uint64_t nranges,
-			     double center, unsigned int seed)
+							 double center, unsigned int seed)
 {
 	memset(zs, 0, sizeof(*zs));
 	zs->nranges = nranges;
@@ -45,7 +47,7 @@ static void shared_rand_init(struct zipf_state *zs, uint64_t nranges,
 }
 
 void zipf_init(struct zipf_state *zs, uint64_t nranges, double theta,
-	       double center, unsigned int seed)
+			   double center, unsigned int seed)
 {
 	srand(seed);
 	shared_rand_init(zs, nranges, center, seed);
@@ -55,10 +57,30 @@ void zipf_init(struct zipf_state *zs, uint64_t nranges, double theta,
 
 	zipf_update(zs);
 	zs->shuffle_map = malloc(sizeof(uint64_t) * nranges);
-	for (uint64_t i = 0; i < nranges; i++) {
+	for (uint64_t i = 0; i < nranges; i++)
+	{
 		zs->shuffle_map[i] = i;
 	}
 	shuffle(zs->shuffle_map, nranges);
+}
+uint64_t *create_shuffle_map(uint64_t nranges)
+{
+	uint64_t *shuffle_map = malloc(sizeof(uint64_t) * nranges);
+	for (uint64_t i = 0; i < nranges; i++)
+	{
+		shuffle_map[i] = i;
+	}
+	shuffle(shuffle_map, nranges);
+	return shuffle_map;
+}
+
+void zipf_use_shuffle_map(struct zipf_state *dst_zs, uint64_t *shuffle_map)
+{
+	if (dst_zs->shuffle_map)
+	{
+		free(dst_zs->shuffle_map);
+	}
+	dst_zs->shuffle_map = shuffle_map;
 }
 
 uint64_t zipf_next(struct zipf_state *zs)
@@ -70,7 +92,7 @@ uint64_t zipf_next(struct zipf_state *zs)
 	alpha = 1.0 / (1.0 - zs->theta);
 	eta = (1.0 - pow(2.0 / n, 1.0 - zs->theta)) / (1.0 - zs->zeta2 / zs->zetan);
 
-	rand_uni = (double) __rand(&zs->rand) / (double) FRAND32_MAX;
+	rand_uni = (double)__rand(&zs->rand) / (double)FRAND32_MAX;
 	rand_z = rand_uni * zs->zetan;
 
 	if (rand_z < 1.0)
@@ -78,7 +100,7 @@ uint64_t zipf_next(struct zipf_state *zs)
 	else if (rand_z < (1.0 + pow(0.5, zs->theta)))
 		val = 2;
 	else
-		val = 1 + (unsigned long long)(n * pow(eta*rand_uni - eta + 1.0, alpha));
+		val = 1 + (unsigned long long)(n * pow(eta * rand_uni - eta + 1.0, alpha));
 
 	val--;
 
@@ -90,7 +112,7 @@ uint64_t zipf_next(struct zipf_state *zs)
 }
 
 void pareto_init(struct zipf_state *zs, uint64_t nranges, double h,
-		 double center, unsigned int seed)
+				 double center, unsigned int seed)
 {
 	shared_rand_init(zs, nranges, center, seed);
 	zs->pareto_pow = log(h) / log(1.0 - h);
@@ -98,7 +120,7 @@ void pareto_init(struct zipf_state *zs, uint64_t nranges, double h,
 
 uint64_t pareto_next(struct zipf_state *zs)
 {
-	double rand = (double) __rand(&zs->rand) / (double) FRAND32_MAX;
+	double rand = (double)__rand(&zs->rand) / (double)FRAND32_MAX;
 	unsigned long long n;
 
 	n = (zs->nranges - 1) * pow(rand, zs->pareto_pow);
@@ -106,7 +128,7 @@ uint64_t pareto_next(struct zipf_state *zs)
 	if (!zs->disable_hash)
 		n = __hash_u64(n);
 
-	return (n + zs->rand_off)  % zs->nranges;
+	return (n + zs->rand_off) % zs->nranges;
 }
 
 void zipf_disable_hash(struct zipf_state *zs)

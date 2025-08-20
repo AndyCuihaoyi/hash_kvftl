@@ -33,6 +33,7 @@ struct cache_member
 	struct pt_struct **mem_table;
 	struct hot_pt_struct **hot_mem_table;
 	BF *hot_bf;
+	BF *delete_bf;
 	LRU *lru;
 
 	uint64_t nr_cached_tpages;
@@ -51,6 +52,7 @@ struct cache_stat
 	uint64_t clean_evict;
 	uint64_t dirty_evict;
 	uint64_t blocked_miss;
+	uint64_t hot_false_positive;
 
 	/* add attributes here */
 	uint64_t cache_miss_by_collision;

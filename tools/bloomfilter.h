@@ -21,5 +21,5 @@ uint64_t bf_bits(int entry, float fpr);
 void bf_set(BF *, lpa_t);
 BF *bf_cpy(BF *src);
 bool bf_check(BF *, lpa_t);
-void bf_save(BF *);
+void bf_reset(BF *bf);
 #endif

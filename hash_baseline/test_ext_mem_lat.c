@@ -22,13 +22,12 @@
 #include <getopt.h>
 #define NUM_ITEMS (44000000)
 #define NUM_UPDATES (44000000)
-#define NUM_WORKERS (1)
+#define NUM_WORKERS (8)
 
 // #define VALUE_CHECK
 
 extern lower_info ssd_li;
 int iodepth = 64;
-
 pthread_spinlock_t global_inner_timer_lock;
 struct req_inner_timer global_inner_timer[INNER_TIMER_SIZE] = {0};
 
@@ -145,7 +144,7 @@ void *algo_thread()
     {
         request *req = NULL;
         uint64_t now = clock_get_ns();
-        if (palgo->retry_q->head != NULL && ((request *)palgo->retry_q->head->payload)->etime <= now)
+        while (palgo->retry_q->head != NULL && ((request *)palgo->retry_q->head->payload)->etime <= now)
         {
             req = algo_q_dequeue(palgo->retry_q);
             switch (req->type)
@@ -159,11 +158,12 @@ void *algo_thread()
             default:
                 break;
             }
+            now = clock_get_ns();
         }
-        else if (ring_count(palgo->req_q) > 0)
+        if (ring_count(palgo->req_q) > 0)
         {
             ring_dequeue(palgo->req_q, (void *)&req, 1);
-            req->etime = req->stime = clock_get_ns();
+            req->etime = clock_get_ns();
             switch (req->type)
             {
             case DATAR:
@@ -382,7 +382,7 @@ void test_insert_update_read(algorithm *palgo)
 void test_load(algorithm *palgo, uint64_t num)
 {
     // load
-    ftl_log("load workload size: %.2f GB\n", (double)num * PAGESIZE / G);
+    ftl_log("load workload size: %.2f GB\n", (double)num * PIECE / G);
     wr_start_ns = clock_get_ns();
     uint64_t max = num;
     volatile int tr_nr_ios = 0;
@@ -433,6 +433,7 @@ void *test_update_tr(void *args)
     struct zipf_state zs;
     srand(seed);
     zipf_init(&zs, max - 1, 0.99, -1, seed);
+    zipf_disable_hash(&zs);
     while (!(*pargs->pstart))
         ;
     for (uint64_t i = 0; i < num; ++i)
@@ -505,7 +506,7 @@ void test_update(algorithm *palgo, uint64_t max, uint64_t num, bool is_zipf, int
         pthread_join(workers[i], NULL);
     }
 }
-
+uint64_t *shuffle_map = NULL;
 void *test_read_tr(void *args)
 {
     // read
@@ -530,7 +531,11 @@ void *test_read_tr(void *args)
 
     struct zipf_state zs;
     if (is_zipf)
+    {
         zipf_init(&zs, max - 1, 0.99, -1, seed);
+        assert(shuffle_map);
+        zipf_use_shuffle_map(&zs, shuffle_map);
+    }
     srand(seed);
     while (!(*pargs->pstart))
         ;
@@ -560,7 +565,7 @@ void *test_read_tr(void *args)
 void test_read(algorithm *palgo, uint64_t max, uint64_t num, bool is_zipf, int seed, int nr_workers)
 {
     // read
-    ftl_log("read workload size: %.2f GB\n", (double)num * NUM_WORKERS * PAGESIZE / G);
+    ftl_log("read workload size: %.2f GB\n", (double)num * NUM_WORKERS * PIECE / G);
     rd_start_ns = clock_get_ns();
     pthread_t workers[nr_workers];
     volatile bool start = false;
@@ -583,7 +588,7 @@ void test_read(algorithm *palgo, uint64_t max, uint64_t num, bool is_zipf, int s
     {
         pthread_create(&workers[i], NULL, test_read_tr, &args);
     }
-    sleep(10);
+    sleep(5);
     start = true;
     for (int i = 0; i < nr_workers; ++i)
     {
@@ -708,10 +713,10 @@ int main(int argc, char **argv)
     };
     // for read test
     ftl_log("hello world\n");
-    uint64_t pool_size = 10000000;
+    uint64_t pool_size = 8000000;
     uint64_t num_update = 0;
-    uint64_t num_read = 10000000 / NUM_WORKERS;
-    uint64_t map_size_frac = 1;
+    uint64_t num_read = 2000000 / NUM_WORKERS;
+    uint64_t map_size_frac = 4;
     int seed = 1;
     uint64_t ext_mem_lat = 0;
     char *shortopts = "";
@@ -763,7 +768,11 @@ int main(int argc, char **argv)
     ssd_li.create(&ssd_li);
     palgo->create(palgo, &ssd_li);
     init_global_timer();
-
+    if (map_size_frac > 1)
+    {
+        d_cache.env.nr_valid_tpages /= map_size_frac;
+        d_cache.env.nr_valid_tentries = d_cache.env.nr_valid_tpages * EPP;
+    }
     ftl_log("hash_table_size: %lu MB, cached: %lu MB\n", (uint64_t)d_cache.env.nr_valid_tpages * PAGESIZE / 1024 / 1024, (uint64_t)d_cache.env.max_cached_tpages * PAGESIZE / 1024 / 1024);
     fflush(stdout);
     pthread_attr_t attr;
@@ -774,6 +783,7 @@ int main(int argc, char **argv)
     pthread_create(&finish_tr[0], &cq_cpl_attr, process_cq_cpl, NULL);
     pthread_create(&finish_tr[1], &cq_cpl_attr, process_cq_cpl, NULL);
     ftl_log("start test.\n");
+    /*load and update*/
     ftl_log("start loading. iodepth: %d\n", iodepth);
     toggle_ssd_lat(true);
     test_load(palgo, pool_size);
@@ -782,17 +792,20 @@ int main(int argc, char **argv)
     fflush(stdout);
     sleep(2);
     clean_stats();
+    /*random read*/
     ftl_log("start random reading. iodepth: %d\n", iodepth);
     toggle_ssd_lat(true);
     test_read(palgo, pool_size, num_read, false, seed, NUM_WORKERS);
     ftl_log("finish random reading.\n");
     fflush(stdout);
     sleep(2);
+    /*zipfan read*/
+    // shuffle_map = create_shuffle_map(pool_size - 1);
     // ftl_log("start zipfian reading. iodepth: %d\n", iodepth);
     // test_read(palgo, pool_size, num_read, true, seed, NUM_WORKERS);
     // ftl_log("finish zipfian reading.\n");
     // fflush(stdout);
-    // sleep(5);
+    // sleep(2);
     show_stats();
     return 0;
 }

@@ -8,8 +8,8 @@
             "args": [
                 "-fcommon",
                 "-g",
-                //"${workspaceFolder}/hash_baseline/*.c",
-                "${workspaceFolder}/hash_kvftl/*.c",
+                "${workspaceFolder}/hash_baseline/*.c",
+                //"${workspaceFolder}/hash_kvftl/*.c",
                 "${workspaceFolder}/lower/*.c",
                 "${workspaceFolder}/tools/*.c",
                 "${workspaceFolder}/tools/random/*.c",

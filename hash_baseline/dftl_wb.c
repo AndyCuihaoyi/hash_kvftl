@@ -393,7 +393,6 @@ void _do_wb_mapping_update(w_buffer_t *self, request *req)
         {
             h_params->find = HASH_KEY_DIFF;
             h_params->cnt++;
-
             goto wb_retry;
         }
 #endif

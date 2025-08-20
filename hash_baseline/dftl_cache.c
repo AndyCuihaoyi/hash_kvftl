@@ -35,20 +35,14 @@ demand_cache d_cache = {
 };
 
 demand_cache *pd_cache = &d_cache;
-uint64_t map_size_frac = 1;
 static void cache_env_init(struct cache_env *env)
 {
 	/* hash table cache */
 	env->nr_tpages_optimal_caching = _NOP_NO_OP * 4 / PAGESIZE;
 	// num of mapping page div hash factor(0.75)
 	env->nr_valid_tpages = (_NOP_NO_OP / EPP + ((_NOP_NO_OP % EPP) ? 1 : 0)) * GRAIN_PER_PAGE * 4 / 3; // 0.75 is for hash table load factor
-	if (map_size_frac > 1)
-	{
-		env->nr_valid_tpages /= map_size_frac;
-	}
 	env->nr_valid_tentries = env->nr_valid_tpages * EPP;
 	env->max_cache_entry = (_NOP_NO_OP / EPP + ((_NOP_NO_OP % EPP) ? 1 : 0)) * GRAIN_PER_PAGE * 4 / 3; // number of tpages
-	// env->max_cached_tpages = _NOP_NO_OP;
 	env->max_cached_tpages = _NOP_NO_OP / 1024;
 	env->max_cached_tentries = env->max_cached_tpages * EPP;
 }

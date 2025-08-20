@@ -147,6 +147,11 @@ BF *bf_init(int entry, float fpr)
     return res;
 }
 
+void bf_reset(BF *bf)
+{
+    memset(bf->body, 0, bf->targetsize);
+}
+
 /*calculate fpr based on memory size(Byte)*/
 float bf_fpr_from_memory(int entry, uint32_t memory)
 {
