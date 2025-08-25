@@ -295,7 +295,7 @@ read_retry:
         {
             goto read_ret;
         }
-        rc = pd_cache->load(pd_cache, lpa, req, NULL);
+        rc = pd_cache->load(pd_cache, lpa, req, NULL, false);
         if (!rc)
         {
             rc = UINT32_MAX;

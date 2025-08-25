@@ -76,8 +76,8 @@ static void ssd_init_params(struct ssdparams *spp)
     spp->pgs_per_blk = 512 * 4; // 512 128MB SBLK
     spp->blks_per_pl = 564;     /* 564 70.5GB */
     spp->pls_per_lun = 1;       // 1
-    spp->luns_per_ch = 4;       // 8
-    spp->nchs = 4;              // 8
+    spp->luns_per_ch = 4;       // 4
+    spp->nchs = 4;              // 4
 
     ftl_log("ssd created! size: %lu MB\n", (uint64_t)spp->secsz * spp->secs_per_pg * spp->pgs_per_blk * spp->blks_per_pl * spp->pls_per_lun * spp->luns_per_ch * spp->nchs / 1024 / 1024);
 

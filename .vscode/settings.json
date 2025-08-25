@@ -34,7 +34,15 @@
         "stddef.h": "c",
         "algo_queue.h": "c",
         "random": "c",
-        "cmath": "c"
+        "cmath": "c",
+        "skiplist.h": "c",
+        "optional": "c",
+        "limits": "c",
+        "numeric": "c",
+        "tuple": "c",
+        "new": "c",
+        "utility": "c",
+        "memory": "c"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "editor.formatOnSave": true

@@ -15,6 +15,7 @@ struct cache_env
 {
 	uint64_t nr_tpages_optimal_caching;
 	uint64_t nr_valid_tpages;
+	uint64_t nr_valid_hot_tpages;
 	uint64_t nr_valid_tentries;
 
 	uint64_t max_cached_tpages;
@@ -29,13 +30,14 @@ struct cache_env
 struct cache_member
 {
 	struct cmt_struct **cold_cmt;
-	struct hot_cmt_struct **hot_cmt;
+	struct cmt_struct **hot_cmt;
 	struct pt_struct **mem_table;
 	struct hot_pt_struct **hot_mem_table;
 	BF *hot_bf;
-	BF *delete_bf;
-	LRU *lru;
-
+	// BF *delete_bf;
+	LRU *cold_lru;
+	LRU *hot_lru;
+	uint64_t nr_cached_hot_tpages;
 	uint64_t nr_cached_tpages;
 	uint64_t nr_cached_tentries;
 
@@ -60,7 +62,7 @@ struct cache_stat
 	uint64_t cache_load;
 	uint64_t hot_cmt_evict;
 	uint64_t hot_cmt_hit;
-	uint64_t hot_invalid_entries;
+	uint64_t hot_valid_entries;
 };
 
 typedef struct demand_cache
@@ -68,7 +70,7 @@ typedef struct demand_cache
 	int (*create)(struct demand_cache *);
 	int (*destroy)();
 
-	int (*load)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
+	int (*load)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry, bool is_hot);
 	int (*list_up)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
 	int (*wait_if_flying)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
 
@@ -77,10 +79,10 @@ typedef struct demand_cache
 
 	struct pt_struct (*get_pte)(struct demand_cache *self, lpa_t lpa);
 	struct cmt_struct *(*get_cmt)(struct demand_cache *self, lpa_t lpa);
-	int (*upgrade_hot)(struct demand_cache *self, struct cmt_struct *victim);
+	int (*upgrade_hot)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry, struct cmt_struct *victim);
 	bool (*is_hit)(struct demand_cache *self, lpa_t lpa);
-	uint32_t (*is_full)(struct demand_cache *self);
-	int (*hot_evict)(struct demand_cache *self);
+	uint32_t (*is_full)(struct demand_cache *self, bool is_hot);
+	int (*hot_evict)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
 	bool (*hot_is_hit)(struct demand_cache *self, lpa_t lpa, struct pt_struct *pte);
 
 	struct cache_env env;

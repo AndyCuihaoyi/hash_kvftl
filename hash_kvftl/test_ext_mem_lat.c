@@ -28,7 +28,6 @@
 
 extern lower_info ssd_li;
 int iodepth = 64;
-uint64_t map_size_frac = 1;
 pthread_spinlock_t global_inner_timer_lock;
 struct req_inner_timer global_inner_timer[INNER_TIMER_SIZE] = {0};
 
@@ -691,10 +690,11 @@ void show_stats()
         ftl_log("w_hash_collision[%d]: %lu\n", i, d_env.w_hash_collision_cnt[i]);
     ftl_log("w_buffer: flush: %lu, w_buffer: rd_hit: %lu, rd_miss: %lu, wr_hit: %lu, wr_miss: %lu\n",
             write_buffer.stats->nr_flush, write_buffer.stats->nr_rd_hit, write_buffer.stats->nr_rd_miss, write_buffer.stats->nr_wr_hit, write_buffer.stats->nr_wr_miss);
-    ftl_log("d_cache_hit: %lu, miss: %lu, hit_by_collision: %lu, miss_by_collision: %lu, hot_hit: %lu, hot_false_positive:%lu \n",
-            d_cache.stat.cache_hit, d_cache.stat.cache_miss, d_cache.stat.cache_hit_by_collision, d_cache.stat.cache_miss_by_collision, d_cache.stat.hot_cmt_hit, d_cache.stat.hot_false_positive);
+    ftl_log("d_cache_hit: %lu, miss: %lu, hit_by_collision: %lu, miss_by_collision: %lu, hot_hit: %lu, hot_false_positive:%lu, hit_rt: %.2f%%\n",
+            d_cache.stat.cache_hit, d_cache.stat.cache_miss, d_cache.stat.cache_hit_by_collision, d_cache.stat.cache_miss_by_collision, d_cache.stat.hot_cmt_hit,
+            d_cache.stat.hot_false_positive, (d_cache.stat.cache_hit + d_cache.stat.hot_cmt_hit) / (double)(d_cache.stat.cache_hit + d_cache.stat.cache_miss + d_cache.stat.hot_cmt_hit) * 100);
     ftl_log("hash_sign_collision: %lu\n", d_env.num_rd_data_miss_rd);
-    ftl_log("hot valid entries: %lu, hot valid pages: %lu, max hot pages: %lu\n", d_cache.stat.hot_invalid_entries, d_cache.stat.hot_invalid_entries / EPP, d_cache.env.max_cached_hot_tpages);
+    ftl_log("hot valid entries: %lu, hot valid pages: %lu, max hot pages: %lu\n", d_cache.stat.hot_valid_entries, d_cache.stat.hot_valid_entries / EPP, d_cache.env.max_cached_hot_tpages);
     // for (int i = 0; i < 64; ++i) {
     //     ftl_log("lun[%d]: rd: %ld, wr: %ld, er: %ld\n", i, ssd_li.stats->nr_nand_rd_lun[i], ssd_li.stats->nr_nand_wr_lun[i], ssd_li.stats->nr_nand_er_lun[i]);
     // }
@@ -713,10 +713,12 @@ int main(int argc, char **argv)
     };
     // for read test
     ftl_log("hello world\n");
-    uint64_t pool_size = 6000000;
+    uint64_t nr_G_workload = 1048576;
+    uint64_t pool_size = 8 * nr_G_workload;
     uint64_t num_update = 0;
-    uint64_t num_read = 4000000 / NUM_WORKERS;
+    uint64_t num_read = 8 * nr_G_workload / NUM_WORKERS;
     uint64_t map_size_frac = 1;
+
     int seed = 1;
     uint64_t ext_mem_lat = 0;
     char *shortopts = "";
@@ -768,7 +770,7 @@ int main(int argc, char **argv)
     ssd_li.create(&ssd_li);
     palgo->create(palgo, &ssd_li);
     init_global_timer();
-    if (map_size_frac >= 1)
+    if (map_size_frac > 1)
     {
         d_cache.env.nr_valid_tpages /= map_size_frac;
         d_cache.env.nr_valid_tentries = d_cache.env.nr_valid_tpages * EPP;

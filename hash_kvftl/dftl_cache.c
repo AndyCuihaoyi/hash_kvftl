@@ -52,9 +52,10 @@ static void cache_env_init(struct cache_env *env)
 	env->nr_valid_tpages = (_NOP_NO_OP / EPP + ((_NOP_NO_OP % EPP) ? 1 : 0)) * GRAIN_PER_PAGE * 4 / 3; // 0.75 is for hash table load factor
 	env->nr_valid_tentries = env->nr_valid_tpages * EPP;
 	env->max_cache_entry = (_NOP_NO_OP / EPP + ((_NOP_NO_OP % EPP) ? 1 : 0)) * GRAIN_PER_PAGE * 4 / 3; // number of tpages
-	// env->max_cached_tpages = _NOP_NO_OP;
 	env->max_cached_tpages = ceil(_NOP_NO_OP / 1024 * (1 - HOT_CMT_FAC));
 	env->max_cached_hot_tpages = ceil(_NOP_NO_OP / 1024 * HOT_CMT_FAC);
+	// env->nr_valid_hot_tpages = env->max_cached_hot_tpages;
+	env->nr_valid_hot_tpages = env->max_cached_hot_tpages * 2;
 	env->max_cached_tentries = env->max_cached_tpages * EPP;
 }
 
@@ -71,7 +72,7 @@ static void cache_member_init(struct cache_member *member)
 		cmt[i]->state = CLEAN;
 		cmt[i]->is_flying = false;
 		cmt[i]->lru_ptr = NULL;
-		cmt[i]->is_cached = NULL;
+		cmt[i]->is_cached = false;
 		cmt[i]->cached_cnt = 0;
 		cmt[i]->dirty_cnt = 0;
 		cmt[i]->heat_cnt = 0;
@@ -80,14 +81,20 @@ static void cache_member_init(struct cache_member *member)
 	}
 	member->cold_cmt = cmt;
 	/*init hot mapping pages*/
-	struct hot_cmt_struct **hot_cmt = g_malloc0(d_cache.env.max_cached_hot_tpages * sizeof(struct hot_cmt_tpages *));
-	for (int i = 0; i < d_cache.env.max_cached_hot_tpages; i++)
+	struct cmt_struct **hot_cmt = g_malloc0(d_cache.env.nr_valid_hot_tpages * sizeof(struct cmt_struct *));
+	for (int i = 0; i < d_cache.env.nr_valid_hot_tpages; i++)
 	{
-		hot_cmt[i] = g_malloc0(sizeof(struct hot_cmt_struct));
-		hot_cmt[i]->idx = i;
-		hot_cmt[i]->state = CLEAN;
+		hot_cmt[i] = g_malloc0(sizeof(struct cmt_struct));
+		hot_cmt[i]->idx = i + d_cache.env.nr_valid_tpages;
+		hot_cmt[i]->pt = NULL;
 		hot_cmt[i]->t_ppa = UINT32_MAX;
+		hot_cmt[i]->state = CLEAN;
 		hot_cmt[i]->is_flying = false;
+		hot_cmt[i]->lru_ptr = NULL;
+		hot_cmt[i]->is_cached = false;
+		hot_cmt[i]->cached_cnt = 0;
+		hot_cmt[i]->dirty_cnt = 0;
+		hot_cmt[i]->heat_cnt = 0;
 		hot_cmt[i]->retry_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
 		hot_cmt[i]->wait_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
 	}
@@ -113,8 +120,8 @@ static void cache_member_init(struct cache_member *member)
 #endif
 		}
 	}
-	member->hot_mem_table = g_malloc0(d_cache.env.max_cached_hot_tpages * sizeof(struct pt_struct *));
-	for (int i = 0; i < d_cache.env.max_cached_hot_tpages; i++)
+	member->hot_mem_table = g_malloc0(d_cache.env.nr_valid_hot_tpages * sizeof(struct pt_struct *));
+	for (int i = 0; i < d_cache.env.nr_valid_hot_tpages; i++)
 	{
 #ifdef CMT_USE_NUMA
 		member->hot_mem_table[i] = numa_alloc_onnode(EPP * sizeof(struct pt_struct), 1);
@@ -132,8 +139,10 @@ static void cache_member_init(struct cache_member *member)
 #endif
 		}
 	}
-	lru_init(&(member->lru));
+	lru_init(&(member->cold_lru));
+	lru_init(&(member->hot_lru));
 	member->nr_cached_tpages = 0;
+	member->nr_cached_hot_tpages = 0;
 	member->nr_cached_tentries = 0;
 }
 
@@ -149,7 +158,7 @@ static void cache_stat_init(struct cache_stat *stat)
 	stat->cache_load = 0;
 	stat->hot_cmt_evict = 0;
 	stat->hot_cmt_hit = 0;
-	stat->hot_invalid_entries = 0;
+	stat->hot_valid_entries = 0;
 	stat->hot_false_positive = 0;
 }
 
@@ -178,7 +187,8 @@ static void cache_member_free(demand_cache *self, struct cache_member *member)
 #endif // CMT_USE_NUMA
 	}
 
-	lru_free(member->lru);
+	lru_free(member->cold_lru);
+	lru_free(member->hot_lru);
 }
 
 int dftl_cache_destroy(demand_cache *self)
@@ -187,9 +197,19 @@ int dftl_cache_destroy(demand_cache *self)
 	return 0;
 }
 
-int dftl_cache_load(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry)
+int dftl_cache_load(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry, bool is_hot)
 {
-	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
+	struct cmt_struct *cmt;
+	if (is_hot)
+	{
+		lpa_t new_lpa = lpa;
+		cmt = self->member.hot_cmt[D_IDX_HOT];
+	}
+	else
+	{
+		cmt = self->member.cold_cmt[D_IDX];
+	}
+
 	struct inflight_params *i_params;
 
 	if (IS_INITIAL_PPA(cmt->t_ppa))
@@ -201,7 +221,8 @@ int dftl_cache_load(demand_cache *self, lpa_t lpa, request *const req, snode *wb
 	i_params->jump = GOTO_LIST;
 
 	self->stat.cache_load++;
-	uint64_t lat = __demand.li->read(cmt->t_ppa, PAGESIZE, 0);
+	uint64_t lat = 0;
+	__demand.li->read(cmt->t_ppa, PAGESIZE, 0);
 	if (req)
 	{
 		req->etime = clock_get_ns() + lat;
@@ -218,33 +239,81 @@ int dftl_cache_load(demand_cache *self, lpa_t lpa, request *const req, snode *wb
 	return 1;
 }
 
-int dftl_cache_upgrade_hot(demand_cache *self, struct cmt_struct *victim)
+int dftl_cache_upgrade_hot(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry, struct cmt_struct *victim)
 {
-	// if (self->is_full(self) == HOT_FULL)
-	// {
-	// 	self->hot_evict(self);
-	// }
+	int result = -1;
 	for (int i = 0; i < EPP; i++)
 	{
 		/*direct mapping may cause rewrite and collision*/
 		if (victim->pt[i].ppa != UINT32_MAX)
 		{
 			lpa_t lpa = IDX_TO_LPA(victim->idx, i);
-			lpa_t new_lpa = lpa % (self->env.max_cached_hot_tpages * EPP);
-			uint32_t D_IDX_HOT = new_lpa / EPP;
-			uint32_t P_IDX_HOT = new_lpa % EPP;
+			lpa_t new_lpa = lpa % (self->env.nr_valid_hot_tpages * EPP);
+			struct cmt_struct *cmt = self->member.hot_cmt[D_IDX_HOT];
+			if (cmt->is_cached == false)
+			{
+				result = self->load(self, new_lpa, req, wb_entry, true);
+				result = self->hot_evict(self, new_lpa, req, wb_entry);
+			}
 			if (self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].lpa == UINT32_MAX)
-				self->stat.hot_invalid_entries++;
+				self->stat.hot_valid_entries++;
 			bf_set(self->member.hot_bf, lpa); // for whole member
 			self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].lpa = lpa;
 			self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].ppa = victim->pt[i].ppa;
 			self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].key_fp = victim->pt[i].key_fp;
 		}
 	}
+	return result;
 }
 
-int dftl_cache_hot_evict(demand_cache *self)
+int dftl_cache_hot_evict(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry)
 {
+	int result = 0;
+	lpa_t new_lpa = lpa;
+	struct cmt_struct *cmt = self->member.hot_cmt[D_IDX_HOT];
+	struct cmt_struct *victim = NULL;
+	algorithm *palgo = self->env.palgo;
+	w_buffer_t *pw_buffer = D_ENV(palgo)->pw_buffer;
+
+	if (self->is_full(self, true) == HOT_FULL)
+	{
+		victim = (struct cmt_struct *)lru_pop(self->member.hot_lru);
+		self->member.nr_cached_hot_tpages--;
+		victim->lru_ptr = NULL;
+		victim->is_cached = false;
+		if (!IS_INITIAL_PPA(victim->t_ppa))
+			pbm->invalidate_page(pbm, victim->t_ppa);
+
+		victim->t_ppa = tp_alloc(pbm);
+		pbm->validate_page(pbm, victim->t_ppa);
+		victim->state = CLEAN;
+
+		uint64_t lat = __demand.li->write(victim->t_ppa, PAGESIZE, 0);
+
+		if (req)
+		{
+			req->etime = clock_get_ns() + lat;
+		}
+		else if (wb_entry)
+		{
+			wb_entry->etime = clock_get_ns() + lat;
+		}
+		else
+		{
+			abort();
+		}
+
+		bm_oob_t new_oob = {
+			.is_tpage = true,
+			.lpa = victim->idx,
+			.length = PAGESIZE};
+		pbm->set_oob(pbm, victim->t_ppa * GRAIN_PER_PAGE, &new_oob);
+	}
+
+	cmt->is_cached = true;
+	cmt->lru_ptr = lru_push(self->member.hot_lru, (void *)cmt);
+	self->member.nr_cached_hot_tpages++;
+	return result;
 }
 
 int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry)
@@ -258,12 +327,13 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 
 	struct inflight_params *i_params;
 
-	if (self->is_full(self) == COLD_FULL)
+	if (self->is_full(self, false) == COLD_FULL)
 	{
-		victim = (struct cmt_struct *)lru_pop_top(self->member.lru);
-		if (victim->heat_cnt >= T)
+		// victim = (struct cmt_struct *)lru_pop(self->member.cold_lru);
+		victim = (struct cmt_struct *)lru_pop_top(self->member.cold_lru);
+		if (victim->heat_cnt > T)
 		{
-			self->upgrade_hot(self, victim);
+			self->upgrade_hot(self, UINT32_MAX, req, wb_entry, victim);
 		}
 		self->member.nr_cached_tpages--;
 		victim->lru_ptr = NULL;
@@ -310,7 +380,7 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 	}
 
 	cmt->pt = self->member.mem_table[D_IDX];
-	cmt->lru_ptr = lru_push(self->member.lru, (void *)cmt);
+	cmt->lru_ptr = lru_push(self->member.cold_lru, (void *)cmt);
 	self->member.nr_cached_tpages++;
 	if (cmt->is_flying)
 	{
@@ -339,7 +409,6 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 			}
 		}
 	}
-
 	return rc;
 }
 
@@ -367,7 +436,7 @@ int dftl_cache_wait_if_flying(demand_cache *self, lpa_t lpa, request *const req,
 int dftl_cache_touch(demand_cache *self, lpa_t lpa)
 {
 	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
-	lru_update(self->member.lru, cmt->lru_ptr);
+	lru_update(self->member.cold_lru, cmt->lru_ptr);
 	return 0;
 }
 
@@ -385,7 +454,7 @@ int dftl_cache_update(demand_cache *self, lpa_t lpa, struct pt_struct pte)
 			cmt->t_ppa = UINT32_MAX;
 		}
 		cmt->state = DIRTY;
-		lru_update(self->member.lru, cmt->lru_ptr);
+		lru_update(self->member.cold_lru, cmt->lru_ptr);
 	}
 	else
 	{
@@ -428,32 +497,31 @@ bool dftl_cache_is_hit(demand_cache *self, lpa_t lpa)
 	}
 }
 
-uint32_t dftl_cache_is_full(demand_cache *self)
+uint32_t dftl_cache_is_full(demand_cache *self, bool is_hot)
 {
-	if (0)
+	if (self->member.nr_cached_hot_tpages > self->env.max_cached_hot_tpages && is_hot)
 		return HOT_FULL;
-	if (self->member.nr_cached_tpages >= self->env.max_cached_tpages)
+	else if (self->member.nr_cached_tpages >= self->env.max_cached_tpages)
 		return COLD_FULL;
 	return NOT_FULL;
 }
 
 bool dftl_cache_hot_is_hit(demand_cache *self, lpa_t lpa, pte_t *pte)
 {
-	lpa_t new_lpa = lpa % (self->env.max_cached_hot_tpages * EPP);
-	uint32_t D_IDX_HOT = new_lpa / EPP;
-	uint32_t P_IDX_HOT = new_lpa % EPP;
-	if (bf_check(self->member.hot_bf, lpa))
+	lpa_t new_lpa = lpa % (self->env.nr_valid_hot_tpages * EPP);
+	if (self->member.hot_cmt[D_IDX_HOT]->is_cached == true && bf_check(self->member.hot_bf, lpa))
+	// if (bf_check(self->member.hot_bf, lpa))
 	{
 		if (lpa == self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].lpa)
 		{
 			pte->ppa = self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].ppa;
 			pte->key_fp = self->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].key_fp;
 			self->stat.hot_cmt_hit++;
+			lru_update(self->member.hot_lru, self->member.hot_cmt[D_IDX_HOT]->lru_ptr);
 			return true;
 		}
 		else
 			self->stat.hot_false_positive++;
 	}
-
 	return false;
 }

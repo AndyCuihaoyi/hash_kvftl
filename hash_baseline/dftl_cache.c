@@ -183,7 +183,6 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 	{
 		victim = (struct cmt_struct *)lru_pop(self->member.lru);
 		self->member.nr_cached_tpages--;
-
 		victim->lru_ptr = NULL;
 		victim->pt = NULL;
 

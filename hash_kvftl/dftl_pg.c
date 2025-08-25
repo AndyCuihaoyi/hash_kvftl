@@ -374,8 +374,10 @@ static int _do_bulk_write_valid_tpages(block_mgr_t *bm,
             .length = PAGESIZE,
         };
         bm->set_oob(bm, new_ppa * GRAIN_PER_PAGE, &new_oob);
-
-        pd_cache->member.cold_cmt[bulk_table[i]->lpa]->t_ppa = new_ppa;
+        if (bulk_table[i]->lpa < pd_cache->env.nr_valid_tpages)
+            pd_cache->member.cold_cmt[bulk_table[i]->lpa]->t_ppa = new_ppa;
+        else
+            pd_cache->member.hot_cmt[bulk_table[i]->lpa - pd_cache->env.nr_valid_tpages]->t_ppa = new_ppa;
 
         // inf_free_valueset(&bulk_table[i]->origin); // NULL
     }

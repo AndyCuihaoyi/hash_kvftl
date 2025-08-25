@@ -369,7 +369,7 @@ void _do_wb_mapping_update(w_buffer_t *self, request *req)
             // if (rc)
             //     continue; /* pending */
 
-            rc = pd_cache->load(pd_cache, lpa, NULL, wb_entry);
+            rc = pd_cache->load(pd_cache, lpa, NULL, wb_entry, false);
             if (rc)
             {
                 algo_q_insert_sorted(env->wb_retry_q, NULL, wb_entry);

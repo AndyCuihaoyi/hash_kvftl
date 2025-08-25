@@ -17,6 +17,8 @@ extern uint64_t extra_mem_lat;
 #define EPP (PAGESIZE / ENTRY_SIZE) // Number of table entries per page
 #define D_IDX (lpa / EPP)           // Idx of directory table
 #define P_IDX (lpa % EPP)           // Idx of page table
+#define D_IDX_HOT (new_lpa / EPP)
+#define P_IDX_HOT (new_lpa % EPP)
 #define IDX_TO_LPA(d_idx, p_idx) ((d_idx) * EPP + (p_idx))
 
 #define CLEAN 0
@@ -64,7 +66,7 @@ typedef struct cmt_struct
     struct rte_ring *wait_q;
     NODE *lru_ptr;
 
-    bool *is_cached;
+    bool is_cached;
     uint32_t cached_cnt;
     uint32_t dirty_cnt;
     uint32_t heat_cnt;
