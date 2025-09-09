@@ -10,6 +10,19 @@
 #include "../tools/lru_list.h"
 #include "../tools/skiplist.h"
 #include "../tools/bloomfilter.h"
+enum
+{
+	HOT_FULL = 1,
+	COLD_FULL = 2,
+	NOT_FULL = 0
+};
+
+enum
+{
+	HOT_UNCACHE = 1,
+	HOT_HIT = 2,
+	HOT_MISS = 0
+};
 /* Structures */
 struct cache_env
 {
@@ -55,6 +68,9 @@ struct cache_stat
 	uint64_t dirty_evict;
 	uint64_t blocked_miss;
 	uint64_t hot_false_positive;
+	uint64_t up_grain_cnt;
+	uint64_t up_hit_cnt;
+	uint64_t up_page_cnt;
 
 	/* add attributes here */
 	uint64_t cache_miss_by_collision;
@@ -62,6 +78,7 @@ struct cache_stat
 	uint64_t cache_load;
 	uint64_t hot_cmt_evict;
 	uint64_t hot_cmt_hit;
+	uint64_t hot_rewrite_grain;
 	uint64_t hot_valid_entries;
 };
 
@@ -83,7 +100,7 @@ typedef struct demand_cache
 	bool (*is_hit)(struct demand_cache *self, lpa_t lpa);
 	uint32_t (*is_full)(struct demand_cache *self, bool is_hot);
 	int (*hot_evict)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
-	bool (*hot_is_hit)(struct demand_cache *self, lpa_t lpa, struct pt_struct *pte);
+	int (*hot_is_hit)(struct demand_cache *self, lpa_t lpa, struct pt_struct *pte);
 
 	struct cache_env env;
 	struct cache_member member;

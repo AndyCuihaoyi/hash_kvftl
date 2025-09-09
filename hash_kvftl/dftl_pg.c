@@ -17,7 +17,7 @@
 extern demand_cache *pd_cache;
 bm_superblock_t *d_active = NULL, *d_reserve = NULL;
 bm_superblock_t *t_active = NULL, *t_reserve = NULL;
-
+static int true_nr_valid_tpages;
 static bool contains_valid_grain(block_mgr_t *bm, ppa_t ppa);
 static int _do_bulk_write_valid_items(block_mgr_t *bm,
                                       gc_table_struct **bulk_table,
@@ -41,6 +41,7 @@ static int lpa_compare(const void *a, const void *b)
 
 int dftl_page_init(block_mgr_t *bm)
 {
+    true_nr_valid_tpages = pd_cache->env.nr_valid_tpages;
     d_reserve = bm->get_active_superblock(bm, DATA_S, true);
     d_active = NULL;
 
@@ -374,11 +375,11 @@ static int _do_bulk_write_valid_tpages(block_mgr_t *bm,
             .length = PAGESIZE,
         };
         bm->set_oob(bm, new_ppa * GRAIN_PER_PAGE, &new_oob);
-        if (bulk_table[i]->lpa < pd_cache->env.nr_valid_tpages)
+        pd_cache->member.cold_cmt[bulk_table[i]->lpa]->t_ppa = new_ppa;
+        if (bulk_table[i]->lpa < true_nr_valid_tpages)
             pd_cache->member.cold_cmt[bulk_table[i]->lpa]->t_ppa = new_ppa;
         else
-            pd_cache->member.hot_cmt[bulk_table[i]->lpa - pd_cache->env.nr_valid_tpages]->t_ppa = new_ppa;
-
+            pd_cache->member.hot_cmt[bulk_table[i]->lpa - true_nr_valid_tpages]->t_ppa = new_ppa;
         // inf_free_valueset(&bulk_table[i]->origin); // NULL
     }
 

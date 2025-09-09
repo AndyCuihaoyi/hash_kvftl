@@ -715,10 +715,10 @@ int main(int argc, char **argv)
     // for read test
     ftl_log("hello world\n");
     uint64_t nr_G_workload = 1048576;
-    uint64_t pool_size = 32 * nr_G_workload;
+    uint64_t pool_size = 8 * nr_G_workload;
     uint64_t num_update = 0;
-    uint64_t num_read = 32 * nr_G_workload / NUM_WORKERS;
-    uint64_t map_size_frac = 2;
+    uint64_t num_read = 8 * nr_G_workload / NUM_WORKERS;
+    uint64_t map_size_frac = 8;
     int seed = 1;
     uint64_t ext_mem_lat = 0;
     char *shortopts = "";

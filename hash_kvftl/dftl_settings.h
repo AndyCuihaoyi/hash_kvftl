@@ -22,7 +22,7 @@
 #define _PPS (1 << 15)     // 128MB
 #define _NOS (_NOP / _PPS) // 256
 
-#define _NOP_NO_OP (1 << 24) // 64GB
+#define _NOP_NO_OP ((1 << 24)) // 64GB
 
 #define STORE_KEY_FP
 #define UPDATE_DATA_CHECK

@@ -337,9 +337,22 @@ void _do_wb_mapping_update(w_buffer_t *self, request *req)
             }
         }
         /*check hot cmt*/
-        // if (pd_cache->hot_is_hit(pd_cache, lpa))
+        // int hot_result = pd_cache->hot_is_hit(pd_cache, lpa, &pte);
+        // lpa_t new_lpa = lpa % (pd_cache->env.nr_valid_hot_tpages * EPP);
+        // if (hot_result == HOT_UNCACHE)
         // {
-
+        //     pd_cache->load(pd_cache, new_lpa, req, wb_entry, true);
+        //     pd_cache->hot_evict(pd_cache, new_lpa, req, wb_entry);
+        //     hot_result = pd_cache->hot_is_hit(pd_cache, lpa, &pte);
+        // }
+        // if (hot_result == HOT_HIT)
+        // {
+        //     pd_cache->member.hot_cmt[D_IDX_HOT]->state = DIRTY;
+        //     if (!IS_INITIAL_PPA(pd_cache->member.hot_cmt[D_IDX_HOT]->t_ppa))
+        //         pbm->invalidate_page(pbm, pd_cache->member.hot_cmt[D_IDX_HOT]->t_ppa);
+        //     pd_cache->member.hot_cmt[D_IDX_HOT]->t_ppa = UINT32_MAX;
+        //     pd_cache->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].ppa = new_pte.ppa;
+        //     pd_cache->member.hot_mem_table[D_IDX_HOT][P_IDX_HOT].key_fp = new_pte.key_fp;
         // }
         /*check cold cmt*/
         if (pd_cache->is_hit(pd_cache, lpa))
@@ -510,6 +523,8 @@ void _do_wb_flush(w_buffer_t *self, request *req)
     {
         ppa_t ppa = fl->list[i].ppa;
         uint64_t lat = __demand.li->write(ppa, (uint64_t)fl->list[i].length * PAGESIZE, 0);
+        /*For read test*/
+        lat = 0;
         maxlat = lat > maxlat ? lat : maxlat;
         tt_pgs += fl->list[i].length;
     }

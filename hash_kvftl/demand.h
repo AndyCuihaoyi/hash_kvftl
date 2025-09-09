@@ -61,6 +61,8 @@ typedef struct cmt_struct
 
     bool state; // CLEAN / DIRTY
     bool is_flying;
+    bool *hit_bitmap;
+    uint8_t *cnt_map;
 
     struct rte_ring *retry_q;
     struct rte_ring *wait_q;

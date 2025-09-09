@@ -39,7 +39,6 @@ extern demand_cache d_cache;
 extern demand_cache *pd_cache;
 extern block_mgr_t bm;
 extern block_mgr_t *pbm;
-
 static inline int KEYCMP(KEYT a, KEYT b)
 {
     if (!a.len && !b.len)
@@ -258,14 +257,13 @@ read_retry:
         }
     }
     /* 2. check cache */
-    if (pd_cache->hot_is_hit(pd_cache, lpa, &pte))
+    if (h_params->cnt == 0 && pd_cache->hot_is_hit(pd_cache, lpa, &pte) == HOT_HIT)
     {
-        if (h_params->key_fp != pte.key_fp)
+        if (h_params->key_fp == pte.key_fp)
         {
-            h_params->cnt++;
-            goto read_retry;
+            pd_cache->stat.hot_cmt_hit++;
+            goto data_read;
         }
-        goto data_read;
     }
     if (pd_cache->is_hit(pd_cache, lpa))
     {

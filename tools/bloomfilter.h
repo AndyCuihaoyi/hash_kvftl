@@ -10,6 +10,7 @@ typedef struct
     uint64_t m;
     uint32_t targetsize;
     int nr_entry;
+    int valid_entry;
     float fpr;
     char *body;
 } BF;
