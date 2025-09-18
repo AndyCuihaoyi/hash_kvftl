@@ -23,7 +23,7 @@ void lru_init(LRU **);
 void lru_free(LRU *);
 NODE *lru_push(LRU *, void *);
 void *lru_pop(LRU *);
-void *lru_pop_top(LRU *lru);
+void *lru_pop_top(LRU *);
 void lru_update(LRU *, NODE *);
 void lru_delete(LRU *, NODE *);
 

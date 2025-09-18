@@ -11,12 +11,18 @@
 #include <stdint.h>
 #include <string.h>
 
-uint32_t hashing_key(char *key, uint8_t len) {
-    return murmurhash(key, len, 1);
+uint32_t hashing_key(char *key, uint8_t len)
+{
+    uint32_t hash_key;
+    MurmurHash3_x86_32(key, len, 1, &hash_key);
+    return hash_key;
 }
 
-fp_t hashing_key_fp(char *key, uint8_t len) {
-    return murmurhash(key, len, 2);
+fp_t hashing_key_fp(char *key, uint8_t len)
+{
+    fp_t hash_key_fp;
+    MurmurHash3_x86_32(key, len, 8, &hash_key_fp);
+    return hash_key_fp;
 }
 
 // uint32_t hashing_key(char *key, uint8_t len) {
@@ -74,7 +80,8 @@ fp_t hashing_key_fp(char *key, uint8_t len) {
 // }
 
 /* make hash params if request has no valid hash params */
-hash_params *make_hash_params(request *const req) {
+hash_params *make_hash_params(request *const req)
+{
     struct hash_params *h_params =
         (struct hash_params *)malloc(sizeof(struct hash_params));
     h_params->hash = hashing_key(req->key.key, req->key.len);
@@ -86,27 +93,37 @@ hash_params *make_hash_params(request *const req) {
     return h_params;
 }
 
-inflight_params *get_iparams(request *const req, snode *wb_entry) {
+inflight_params *get_iparams(request *const req, snode *wb_entry)
+{
     struct inflight_params *i_params;
-    if (req) {
+    if (req)
+    {
         if (!req->params)
             req->params = malloc(sizeof(struct inflight_params));
         i_params = (struct inflight_params *)req->params;
-    } else if (wb_entry) {
+    }
+    else if (wb_entry)
+    {
         if (!wb_entry->params)
             wb_entry->params = malloc(sizeof(struct inflight_params));
         i_params = (struct inflight_params *)wb_entry->params;
-    } else {
+    }
+    else
+    {
         abort();
     }
     return i_params;
 }
 
-void free_iparams(request *const req, snode *wb_entry) {
-    if (req && req->params) {
+void free_iparams(request *const req, snode *wb_entry)
+{
+    if (req && req->params)
+    {
         free(req->params);
         req->params = NULL;
-    } else if (wb_entry && wb_entry->params) {
+    }
+    else if (wb_entry && wb_entry->params)
+    {
         free(wb_entry->params);
         wb_entry->params = NULL;
     }

@@ -6,6 +6,7 @@
 extern demand_cache d_cache;
 
 int dftl_cache_create(demand_cache *self);
+int dftl_cache_reset(demand_cache *self);
 int dftl_cache_destroy(demand_cache *self);
 int dftl_cache_load(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry, bool is_hot);
 int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
@@ -19,5 +20,4 @@ int dftl_cache_upgrade_hot(demand_cache *self, lpa_t lpa, request *const req, sn
 uint32_t dftl_cache_is_full(demand_cache *self, bool is_hot);
 int dftl_cache_hot_is_hit(demand_cache *self, lpa_t lpa, struct pt_struct *pte);
 int dftl_cache_hot_evict(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
-
 #endif // __DFTL_CACHE_H__

@@ -718,7 +718,8 @@ int main(int argc, char **argv)
     uint64_t pool_size = 8 * nr_G_workload;
     uint64_t num_update = 0;
     uint64_t num_read = 8 * nr_G_workload / NUM_WORKERS;
-    uint64_t map_size_frac = 8;
+    float map_size_frac = 8.0 / 64;
+
     int seed = 1;
     uint64_t ext_mem_lat = 0;
     char *shortopts = "";
@@ -762,7 +763,7 @@ int main(int argc, char **argv)
         ftl_err("need pool_size and num_read\n");
         abort();
     }
-    ftl_log("pool_size = %lu, num_update = %lu, num_read = %lu, map_size_frac = %lu, seed = %d, ext_mem_lat = %lu\n", pool_size, num_update, num_read, map_size_frac, seed, ext_mem_lat);
+    ftl_log("pool_size = %lu, num_update = %lu, num_read = %lu, map_size_frac = %0.2f, seed = %d, ext_mem_lat = %lu\n", pool_size, num_update, num_read, map_size_frac, seed, ext_mem_lat);
     extra_mem_lat = ext_mem_lat;
     timer_start_ns = clock_get_ns();
     algorithm *palgo = &__demand;
@@ -770,9 +771,9 @@ int main(int argc, char **argv)
     ssd_li.create(&ssd_li);
     palgo->create(palgo, &ssd_li);
     init_global_timer();
-    if (map_size_frac > 1)
+    if (map_size_frac < 1)
     {
-        d_cache.env.nr_valid_tpages /= map_size_frac;
+        d_cache.env.nr_valid_tpages *= map_size_frac;
         d_cache.env.nr_valid_tentries = d_cache.env.nr_valid_tpages * EPP;
     }
     ftl_log("hash_table_size: %lu MB, cached: %lu MB\n", (uint64_t)d_cache.env.nr_valid_tpages * PAGESIZE / 1024 / 1024, (uint64_t)d_cache.env.max_cached_tpages * PAGESIZE / 1024 / 1024);
@@ -802,8 +803,8 @@ int main(int argc, char **argv)
     // fflush(stdout);
     // sleep(2);
     /*zipfan read*/
-    shuffle_map = create_shuffle_map(pool_size - 1);
     ftl_log("start zipfian reading. iodepth: %d\n", iodepth);
+    shuffle_map = create_shuffle_map(pool_size - 1);
     test_read(palgo, pool_size, num_read, true, seed, NUM_WORKERS);
     ftl_log("finish zipfian reading.\n");
     fflush(stdout);

@@ -230,7 +230,6 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 
 	cmt->pt = self->member.mem_table[D_IDX];
 	cmt->lru_ptr = lru_push(self->member.lru, (void *)cmt);
-	/*FIXME: EVERY EPP CONTRIBUTES ONE MAPPING PAGE*/
 	self->member.nr_cached_tpages++;
 	if (cmt->is_flying)
 	{

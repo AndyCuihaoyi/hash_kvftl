@@ -74,17 +74,6 @@ typedef struct cmt_struct
     uint32_t heat_cnt;
 } cmt_t;
 
-typedef struct hot_cmt_struct
-{
-    int32_t idx;
-    ppa_t t_ppa;
-    bool state; // CLEAN / DIRTY
-    bool is_flying;
-
-    struct rte_ring *retry_q;
-    struct rte_ring *wait_q;
-} hot_cmt_t;
-
 typedef struct demand_env
 {
     uint32_t num_page;

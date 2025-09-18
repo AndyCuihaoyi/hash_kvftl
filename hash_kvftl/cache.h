@@ -67,10 +67,11 @@ struct cache_stat
 	uint64_t clean_evict;
 	uint64_t dirty_evict;
 	uint64_t blocked_miss;
-	uint64_t hot_false_positive;
+	uint64_t hot_miss;
 	uint64_t up_grain_cnt;
 	uint64_t up_hit_cnt;
 	uint64_t up_page_cnt;
+	uint32_t up_grain_distribute[100];
 
 	/* add attributes here */
 	uint64_t cache_miss_by_collision;
@@ -85,8 +86,8 @@ struct cache_stat
 typedef struct demand_cache
 {
 	int (*create)(struct demand_cache *);
+	int (*reset)(struct demand_cache *);
 	int (*destroy)();
-
 	int (*load)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry, bool is_hot);
 	int (*list_up)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
 	int (*wait_if_flying)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry);
