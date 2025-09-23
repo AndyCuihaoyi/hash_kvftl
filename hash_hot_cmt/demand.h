@@ -8,7 +8,6 @@
 #include "cache.h"
 #include "write_buffer.h"
 #include <stdint.h>
-#include "../tools/bloomfilter.h"
 
 extern uint64_t extra_mem_lat;
 
@@ -17,9 +16,11 @@ extern uint64_t extra_mem_lat;
 #define EPP (PAGESIZE / ENTRY_SIZE) // Number of table entries per page
 #define D_IDX (lpa / EPP)           // Idx of directory table
 #define P_IDX (lpa % EPP)           // Idx of page table
+#ifdef HOT_CMT
 #define D_IDX_HOT (new_lpa / EPP)
 #define P_IDX_HOT (new_lpa % EPP)
 #define IDX_TO_LPA(d_idx, p_idx) ((d_idx) * EPP + (p_idx))
+#endif
 
 #define CLEAN 0
 #define DIRTY 1
@@ -40,7 +41,7 @@ typedef struct __attribute__((packed)) pt_struct
 #endif
 } pte_t;
 
-// Page table entry
+// Hot page table entry
 typedef struct __attribute__((packed)) hot_pt_struct
 {
     lpa_t lpa;
@@ -61,17 +62,18 @@ typedef struct cmt_struct
 
     bool state; // CLEAN / DIRTY
     bool is_flying;
-    bool *hit_bitmap;
-    uint8_t *cnt_map;
 
     struct rte_ring *retry_q;
     struct rte_ring *wait_q;
     NODE *lru_ptr;
 
-    bool is_cached;
+    bool *is_cached;
     uint32_t cached_cnt;
     uint32_t dirty_cnt;
+#ifdef HOT_CMT
     uint32_t heat_cnt;
+    uint8_t *cnt_map;
+#endif
 } cmt_t;
 
 typedef struct demand_env

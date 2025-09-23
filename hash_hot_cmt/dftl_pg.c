@@ -17,17 +17,16 @@
 extern demand_cache *pd_cache;
 bm_superblock_t *d_active = NULL, *d_reserve = NULL;
 bm_superblock_t *t_active = NULL, *t_reserve = NULL;
-static int true_nr_valid_tpages;
+
 static bool contains_valid_grain(block_mgr_t *bm, ppa_t ppa);
 static int _do_bulk_write_valid_items(block_mgr_t *bm,
-                                      gc_table_struct **bulk_table,
-                                      int nr_read_pages, page_t type);
+                                       gc_table_struct **bulk_table,
+                                       int nr_read_pages, page_t type);
 static int _do_bulk_mapping_update(block_mgr_t *bm, int nr_valid_items,
                                    page_t type);
 static void _do_wait_until_read_all(int nr_valid_pages);
 
-static int lpa_compare(const void *a, const void *b)
-{
+static int lpa_compare(const void *a, const void *b) {
     lpa_t a_lpa = (*(struct gc_bucket_node **)a)->lpa;
     lpa_t b_lpa = (*(struct gc_bucket_node **)b)->lpa;
 
@@ -39,33 +38,26 @@ static int lpa_compare(const void *a, const void *b)
         return 1;
 }
 
-int dftl_page_init(block_mgr_t *bm)
-{
-    true_nr_valid_tpages = pd_cache->env.nr_valid_tpages;
-    d_reserve = bm->get_active_superblock(bm, DATA_S, true);
-    d_active = NULL;
+int dftl_page_init(block_mgr_t *bm) {
+	d_reserve = bm->get_active_superblock(bm, DATA_S, true);
+	d_active = NULL;
 
-    t_reserve = bm->get_active_superblock(bm, MAP_S, true);
-    t_active = NULL;
+	t_reserve = bm->get_active_superblock(bm, MAP_S, true);
+	t_active = NULL;
 
-    return 0;
+	return 0;
 }
 
-ppa_t dp_alloc(block_mgr_t *bm)
-{
+ppa_t dp_alloc(block_mgr_t *bm) {
     ppa_t ppa;
-    if (!d_active || bm->check_full(bm, d_active))
-    {
-        if (bm->isgc_needed(bm, DATA_S))
-        {
+    if (!d_active || bm->check_full(bm, d_active)) {
+        if (bm->isgc_needed(bm, DATA_S)) {
             int nr_valid_pages = dpage_gc_dvalue(bm);
 
 #ifdef PRINT_GC_STATUS
             printf("DATA GC - (valid/total: %d/%d)\n", nr_valid_pages, _PPS);
 #endif
-        }
-        else
-        {
+        } else {
             d_active = bm->get_active_superblock(bm, DATA_S, false);
         }
     }
@@ -73,20 +65,15 @@ ppa_t dp_alloc(block_mgr_t *bm)
     return ppa;
 }
 
-ppa_t tp_alloc(block_mgr_t *bm)
-{
+ppa_t tp_alloc(block_mgr_t *bm) {
     ppa_t ppa;
-    if (!t_active || bm->check_full(bm, t_active))
-    {
-        if (bm->isgc_needed(bm, MAP_S))
-        {
+    if (!t_active || bm->check_full(bm, t_active)) {
+        if (bm->isgc_needed(bm, MAP_S)) {
             int nr_valid_pages = tpage_gc(bm);
 #ifdef PRINT_GC_STATUS
             printf("TRANS GC - (valid/total: %d/%d)\n", nr_valid_pages, _PPS);
 #endif
-        }
-        else
-        {
+        } else {
             t_active = bm->get_active_superblock(bm, MAP_S, false);
         }
     }
@@ -94,10 +81,8 @@ ppa_t tp_alloc(block_mgr_t *bm)
     return ppa;
 }
 
-static bool contains_valid_grain(block_mgr_t *bm, ppa_t ppa)
-{
-    for (int i = 0; i < GRAIN_PER_PAGE; i++)
-    {
+static bool contains_valid_grain(block_mgr_t *bm, ppa_t ppa) {
+    for (int i = 0; i < GRAIN_PER_PAGE; i++) {
         ppa_t grain = ppa * GRAIN_PER_PAGE + i;
         if (bm->isvalid_grain(bm, grain))
             return true;
@@ -108,24 +93,19 @@ static bool contains_valid_grain(block_mgr_t *bm, ppa_t ppa)
 struct gc_bucket *gc_bucket;
 struct gc_bucket_node *gcb_node_arr[_PPS * GRAIN_PER_PAGE];
 static int _do_bulk_write_valid_items(block_mgr_t *bm,
-                                      gc_table_struct **bulk_table,
-                                      int nr_read_pages, page_t type)
-{
-    if (!nr_read_pages)
-        return 0;
+                                       gc_table_struct **bulk_table,
+                                       int nr_read_pages, page_t type) {
+    if (!nr_read_pages) return 0;
     gc_bucket = (struct gc_bucket *)malloc(sizeof(struct gc_bucket));
     for (int i = 0; i < PAGESIZE / GRAINED_UNIT + 1; i++)
         gc_bucket->idx[i] = 0;
 
     int nr_valid_grains = 0;
     int nr_valid_items = 0;
-    for (int i = 0; i < nr_read_pages; i++)
-    {
-        for (int j = 0; j < GRAIN_PER_PAGE; j++)
-        {
+    for (int i = 0; i < nr_read_pages; i++) {
+        for (int j = 0; j < GRAIN_PER_PAGE; j++) {
             pga_t pga = bulk_table[i]->ppa * GRAIN_PER_PAGE + j;
-            if (bm->isvalid_grain(bm, pga))
-            {
+            if (bm->isvalid_grain(bm, pga)) {
                 bm_oob_t *oob = bm->get_oob(bm, pga);
                 int len = oob->length;
 
@@ -134,8 +114,7 @@ static int _do_bulk_write_valid_items(block_mgr_t *bm,
                 // here we do not assign gcb_node->ptr since no memcpy is needed
                 // gcb_node->ptr = bulk_table[i]->origin->value + j * GRAINED_UNIT;
                 gcb_node->lpa = oob->lpa;
-                if (unlikely(oob->length == 0))
-                {
+                if (unlikely(oob->length == 0)) {
                     ftl_err("pga: %d has no corresponding oob data!\n", pga);
                     abort();
                 }
@@ -144,8 +123,7 @@ static int _do_bulk_write_valid_items(block_mgr_t *bm,
 
                 gcb_node_arr[nr_valid_items++] = gcb_node;
 
-                for (int inner_pga = pga; inner_pga < pga + len; inner_pga++)
-                {
+                for (int inner_pga = pga; inner_pga < pga + len; inner_pga++) {
                     nr_valid_grains++;
                     bm->invalidate_grain(bm, inner_pga);
                 }
@@ -162,24 +140,20 @@ static int _do_bulk_write_valid_items(block_mgr_t *bm,
     ppa_t sppa = -2;
     ppa_t last_ppa = -2;
     // assign new ppas to valid grains
-    while (ordering_done < nr_valid_items)
-    {
+    while (ordering_done < nr_valid_items) {
         int remain = PAGESIZE;
         ppa_t ppa = bm->get_page_num(bm, d_reserve);
         uint64_t offset = 0;
 
         ftl_assert(last_ppa == -2 || last_ppa == ppa - 1);
         last_ppa = ppa;
-        if (sppa == -2)
-        {
+        if (sppa == -2) {
             sppa = ppa;
         }
 
-        while (remain > 0)
-        {
+        while (remain > 0) {
             int target_length = remain / GRAINED_UNIT;
-            while (gc_bucket->idx[target_length] == 0 && target_length != 0)
-            {
+            while (gc_bucket->idx[target_length] == 0 && target_length != 0) {
                 target_length--;
             }
             if (target_length == 0)
@@ -197,8 +171,7 @@ static int _do_bulk_write_valid_items(block_mgr_t *bm,
                 .length = target_length,
             };
             bm->set_oob(bm, gcb_node->ppa, &new_oob); // here ppa = pga
-            for (int i = 0; i < target_length; i++)
-            {
+            for (int i = 0; i < target_length; i++) {
                 bm->validate_grain(bm, gcb_node->ppa + i);
             }
 
@@ -213,7 +186,7 @@ static int _do_bulk_write_valid_items(block_mgr_t *bm,
     }
     __demand.li->write(sppa, (uint64_t)copied_pages * PAGESIZE, 0);
     ftl_log("dGC: [valid grains: %d -> packed grains: %d], reclaimed: %d\n", nr_valid_grains,
-            copied_pages * GRAIN_PER_PAGE, _PPS * GRAIN_PER_PAGE - copied_pages * GRAIN_PER_PAGE);
+           copied_pages * GRAIN_PER_PAGE, _PPS * GRAIN_PER_PAGE - copied_pages * GRAIN_PER_PAGE);
 
     return nr_valid_items;
 }
@@ -221,21 +194,18 @@ static int _do_bulk_write_valid_items(block_mgr_t *bm,
 static int
 _do_bulk_read_pages_containing_valid_grain(block_mgr_t *bm,
                                            gc_table_struct **bulk_table,
-                                           bm_superblock_t *target_seg)
-{
+                                           bm_superblock_t *target_seg) {
     int i = 0;
-    for (int ppa_offt = 0; ppa_offt < SBLK_END; ++ppa_offt)
-    {
+    for (int ppa_offt = 0; ppa_offt < SBLK_END; ++ppa_offt) {
         ppa_t ppa = SBLK_OFFT2PPA(target_seg, ppa_offt);
-        if (contains_valid_grain(bm, ppa))
-        {
+        if (contains_valid_grain(bm, ppa)) {
             __demand.li->read(ppa, PAGESIZE, 0);
 
             bulk_table[i] = (struct gc_table_struct *)malloc(
                 sizeof(struct gc_table_struct));
             bulk_table[i]->origin = NULL;
             // bulk_table[i]->lpa = bm->get_oob(bm, ppa * GRAIN_PER_PAGE)->lpa;
-            bulk_table[i]->lpa = 0; // not used
+            bulk_table[i]->lpa = 0;     // not used
             bulk_table[i]->ppa = ppa;
             i++;
         }
@@ -245,10 +215,8 @@ _do_bulk_read_pages_containing_valid_grain(block_mgr_t *bm,
 }
 
 static int _do_bulk_mapping_update(block_mgr_t *bm, int nr_valid_grains,
-                                   page_t type)
-{
-    if (!nr_valid_grains)
-        return 0;
+                                   page_t type) {
+    if (!nr_valid_grains) return 0;
     qsort(gcb_node_arr, nr_valid_grains, sizeof(struct gc_bucket_node *),
           lpa_compare);
 
@@ -256,24 +224,20 @@ static int _do_bulk_mapping_update(block_mgr_t *bm, int nr_valid_grains,
 
     /* read mapping table which needs update */
     volatile int nr_update_tpages = 0;
-    for (int i = 0; i < nr_valid_grains; i++)
-    {
+    for (int i = 0; i < nr_valid_grains; i++) {
         struct gc_bucket_node *gcb_node = gcb_node_arr[i];
         lpa_t lpa = gcb_node->lpa;
 
-        if (pd_cache->is_hit(pd_cache, lpa))
-        {
+        if (pd_cache->is_hit(pd_cache, lpa)) {
             struct pt_struct pte = pd_cache->get_pte(pd_cache, lpa);
             pte.ppa = gcb_node->ppa;
             pd_cache->update(pd_cache, lpa, pte);
 
             skip_update[i] = true;
-        }
-        else
-        {
+
+        } else {
             struct cmt_struct *cmt = pd_cache->get_cmt(pd_cache, lpa);
-            if (cmt->t_ppa == UINT32_MAX)
-            {
+            if (cmt->t_ppa == UINT32_MAX) {
                 continue;
             }
             __demand.li->read(cmt->t_ppa, PAGESIZE, 0);
@@ -290,22 +254,18 @@ static int _do_bulk_mapping_update(block_mgr_t *bm, int nr_valid_grains,
     // pd_cache->member.nr_tpages_read_done = 0;
 
     /* write */
-    for (int i = 0; i < nr_valid_grains; i++)
-    {
-        if (skip_update[i])
-        {
+    for (int i = 0; i < nr_valid_grains; i++) {
+        if (skip_update[i]) {
             continue;
         }
         lpa_t lpa = gcb_node_arr[i]->lpa;
-        struct cmt_struct *cmt = pd_cache->member.cold_cmt[D_IDX];
+        struct cmt_struct *cmt = pd_cache->member.cmt[D_IDX];
         struct pt_struct *pt = pd_cache->member.mem_table[cmt->idx];
 
         pt[P_IDX].ppa = gcb_node_arr[i]->ppa;
-        if (i + 1 < nr_valid_grains)
-        {
+        if (i + 1 < nr_valid_grains) {
             lpa = gcb_node_arr[i + 1]->lpa;
-            while (D_IDX == cmt->idx)
-            {
+            while (D_IDX == cmt->idx) {
                 pt[P_IDX].ppa = gcb_node_arr[i + 1]->ppa;
                 i++;
                 if (i + 1 >= nr_valid_grains)
@@ -331,14 +291,11 @@ static int _do_bulk_mapping_update(block_mgr_t *bm, int nr_valid_grains,
 
 static int _do_bulk_read_valid_tpages(block_mgr_t *bm,
                                       struct gc_table_struct **bulk_table,
-                                      bm_superblock_t *target_seg)
-{
+                                      bm_superblock_t *target_seg) {
     int i = 0;
-    for (int ppa_offt = 0; ppa_offt < SBLK_END; ++ppa_offt)
-    {
+    for (int ppa_offt = 0; ppa_offt < SBLK_END; ++ppa_offt) {
         ppa_t ppa = SBLK_OFFT2PPA(target_seg, ppa_offt);
-        if (bm->isvalid_page(bm, ppa))
-        {
+        if (bm->isvalid_page(bm, ppa)) {
             __demand.li->read(ppa, PAGESIZE, 0);
             bm->invalidate_page(bm, ppa);
 
@@ -356,16 +313,12 @@ static int _do_bulk_read_valid_tpages(block_mgr_t *bm,
 
 static int _do_bulk_write_valid_tpages(block_mgr_t *bm,
                                        struct gc_table_struct **bulk_table,
-                                       int nr_valid_pages)
-{
-    if (!nr_valid_pages)
-        return 0;
+                                       int nr_valid_pages) {
+    if (!nr_valid_pages) return 0;
     ppa_t sppa = -1;
-    for (int i = 0; i < nr_valid_pages; i++)
-    {
+    for (int i = 0; i < nr_valid_pages; i++) {
         ppa_t new_ppa = bm->get_page_num(bm, t_reserve);
-        if (sppa == -1)
-            sppa = new_ppa;
+        if (sppa == -1) sppa = new_ppa;
 
         bulk_table[i]->ppa = new_ppa;
         bm->validate_page(bm, new_ppa);
@@ -375,11 +328,9 @@ static int _do_bulk_write_valid_tpages(block_mgr_t *bm,
             .length = PAGESIZE,
         };
         bm->set_oob(bm, new_ppa * GRAIN_PER_PAGE, &new_oob);
-        pd_cache->member.cold_cmt[bulk_table[i]->lpa]->t_ppa = new_ppa;
-        if (bulk_table[i]->lpa < true_nr_valid_tpages)
-            pd_cache->member.cold_cmt[bulk_table[i]->lpa]->t_ppa = new_ppa;
-        else
-            pd_cache->member.hot_cmt[bulk_table[i]->lpa - true_nr_valid_tpages]->t_ppa = new_ppa;
+
+        pd_cache->member.cmt[bulk_table[i]->lpa]->t_ppa = new_ppa;
+
         // inf_free_valueset(&bulk_table[i]->origin); // NULL
     }
 
@@ -388,22 +339,18 @@ static int _do_bulk_write_valid_tpages(block_mgr_t *bm,
     return 0;
 }
 
-static void _do_wait_until_read_all(int nr_valid_pages)
-{
-    while (pd_cache->member.nr_valid_read_done != nr_valid_pages)
-    {
+static void _do_wait_until_read_all(int nr_valid_pages) {
+    while (pd_cache->member.nr_valid_read_done != nr_valid_pages) {
     }
     pd_cache->member.nr_valid_read_done = 0;
 }
 
-int dpage_gc_dvalue(block_mgr_t *bm)
-{
+int dpage_gc_dvalue(block_mgr_t *bm) {
     gc_table_struct **bulk_table =
         (struct gc_table_struct **)calloc(_PPS, sizeof(gc_table_struct *));
     bm_superblock_t *target_seg = bm->get_gc_target(bm, DATA_S);
 
-    if (target_seg->valid_cnt >= target_seg->wp_offt * GRAIN_PER_PAGE)
-    {
+    if (target_seg->valid_cnt >= target_seg->wp_offt * GRAIN_PER_PAGE) {
         ftl_err("no invalid grain left!\n");
         abort();
     }
@@ -426,8 +373,7 @@ int dpage_gc_dvalue(block_mgr_t *bm)
     d_active = d_reserve;
     d_reserve = bm->change_reserve(bm, DATA_S, tobe_reserve);
 
-    for (int i = 0; i < nr_read_pages; i++)
-    {
+    for (int i = 0; i < nr_read_pages; i++) {
         free(bulk_table[i]);
     }
     free(bulk_table);
@@ -437,8 +383,7 @@ int dpage_gc_dvalue(block_mgr_t *bm)
     return nr_read_pages;
 }
 
-int tpage_gc(block_mgr_t *bm)
-{
+int tpage_gc(block_mgr_t *bm) {
     struct gc_table_struct **bulk_table = (struct gc_table_struct **)calloc(
         sizeof(struct gc_table_struct *), _PPS);
 
@@ -467,10 +412,8 @@ int tpage_gc(block_mgr_t *bm)
     return nr_valid_pages;
 }
 
-uint32_t read_actual_dpage(ppa_t ppa, request *const req)
-{
-    if (ppa == UINT32_MAX)
-    {
+uint32_t read_actual_dpage(ppa_t ppa, request *const req) {
+    if (ppa == UINT32_MAX) {
         warn_notfound(__FILE__, __LINE__);
         return UINT32_MAX;
     }
@@ -480,10 +423,9 @@ uint32_t read_actual_dpage(ppa_t ppa, request *const req)
     return 0;
 }
 
-uint32_t read_for_data_check(ppa_t ppa, snode *wb_entry)
-{
+uint32_t read_for_data_check(ppa_t ppa, snode *wb_entry) {
     uint64_t real_ppa = G_IDX(ppa);
-    uint64_t lat = __demand.li->read(real_ppa, PAGESIZE, 0);
+	uint64_t lat = __demand.li->read(real_ppa, PAGESIZE, 0);
     wb_entry->etime = clock_get_ns() + lat;
-    return 0;
+	return 0;
 }

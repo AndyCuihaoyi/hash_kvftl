@@ -9,7 +9,6 @@
 #include "../tools/valueset.h"
 #include "glib-2.0/glib.h"
 #include "write_buffer.h"
-#include <math.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,12 +16,18 @@
 #ifdef CMT_USE_NUMA
 #include <numa.h>
 #endif // CMT_USE_NUMA
+#ifdef HOT_CMT
+#define T (2) // hot threshold
+#define HOT_CMT_FAC (0.15)
+#define MAX_PROBE (80)
+#endif
 extern block_mgr_t bm;
 extern block_mgr_t *pbm;
-#define T (3) // hot threshold
-#define HOT_CMT_FAC (0.03)
-#define MAX_PROBE (20)
-// #define BLOOM_FILTER
+#ifdef HOT_CMT
+int dftl_cache_promote_hot(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry, struct cmt_struct *victim);
+bool dftl_cache_hot_is_hit(demand_cache *self, lpa_t lpa, pte_t *pte);
+#endif
+
 demand_cache d_cache = {
 	.create = dftl_cache_create,
 	.destroy = dftl_cache_destroy,
@@ -35,10 +40,12 @@ demand_cache d_cache = {
 	.get_cmt = dftl_cache_get_cmt,
 	.is_hit = dftl_cache_is_hit,
 	.is_full = dftl_cache_is_full,
-	.upgrade_hot = dftl_cache_upgrade_hot,
-	.hot_evict = dftl_cache_hot_evict,
-	.reset = dftl_cache_reset,
-	.hot_is_hit = dftl_cache_hot_is_hit};
+#ifdef HOT_CMT
+	.promote_hot = dftl_cache_promote_hot,
+	.hot_is_hit = dftl_cache_hot_is_hit,
+#endif
+};
+
 demand_cache *pd_cache = &d_cache;
 static void cache_env_init(struct cache_env *env)
 {
@@ -48,16 +55,18 @@ static void cache_env_init(struct cache_env *env)
 	env->nr_valid_tpages = (_NOP_NO_OP / EPP + ((_NOP_NO_OP % EPP) ? 1 : 0)) * GRAIN_PER_PAGE * 4 / 3; // 0.75 is for hash table load factor
 	env->nr_valid_tentries = env->nr_valid_tpages * EPP;
 	env->max_cache_entry = (_NOP_NO_OP / EPP + ((_NOP_NO_OP % EPP) ? 1 : 0)) * GRAIN_PER_PAGE * 4 / 3; // number of tpages
+#ifdef HOT_CMT
 	env->max_cached_tpages = ceil(_NOP_NO_OP / 1024 * (1 - HOT_CMT_FAC));
 	env->max_cached_hot_tpages = ceil(_NOP_NO_OP / 1024 * HOT_CMT_FAC);
-	env->nr_valid_hot_tpages = env->max_cached_hot_tpages;
-	// env->nr_valid_hot_tpages = env->max_cached_hot_tpages * 2;
+	env->max_cached_hot_entries = env->max_cached_hot_tpages * EPP;
+#else
+	env->max_cached_tpages = _NOP_NO_OP / 1024;
+#endif
 	env->max_cached_tentries = env->max_cached_tpages * EPP;
 }
 
 static void cache_member_init(struct cache_member *member)
 {
-	/*init cold cmt pages*/
 	struct cmt_struct **cmt = g_malloc0(d_cache.env.nr_valid_tpages * sizeof(struct cmt_struct *));
 	for (int i = 0; i < d_cache.env.nr_valid_tpages; i++)
 	{
@@ -68,36 +77,16 @@ static void cache_member_init(struct cache_member *member)
 		cmt[i]->state = CLEAN;
 		cmt[i]->is_flying = false;
 		cmt[i]->lru_ptr = NULL;
-		cmt[i]->is_cached = false;
+		cmt[i]->is_cached = NULL;
 		cmt[i]->cached_cnt = 0;
 		cmt[i]->dirty_cnt = 0;
+#ifdef HOT_CMT
 		cmt[i]->heat_cnt = 0;
+#endif
 		cmt[i]->retry_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
 		cmt[i]->wait_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
 	}
-	member->cold_cmt = cmt;
-	/*init hot mapping pages*/
-	struct cmt_struct **hot_cmt = g_malloc0(d_cache.env.nr_valid_hot_tpages * sizeof(struct cmt_struct *));
-	for (int i = 0; i < d_cache.env.nr_valid_hot_tpages; i++)
-	{
-		hot_cmt[i] = g_malloc0(sizeof(struct cmt_struct));
-		hot_cmt[i]->idx = i + d_cache.env.nr_valid_tpages;
-		hot_cmt[i]->pt = NULL;
-		hot_cmt[i]->t_ppa = UINT32_MAX;
-		hot_cmt[i]->state = CLEAN;
-		hot_cmt[i]->is_flying = false;
-		hot_cmt[i]->lru_ptr = NULL;
-		hot_cmt[i]->is_cached = false;
-		hot_cmt[i]->cached_cnt = 0;
-		hot_cmt[i]->dirty_cnt = 0;
-		hot_cmt[i]->heat_cnt = 0;
-		hot_cmt[i]->retry_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
-		hot_cmt[i]->wait_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
-	}
-	member->hot_cmt = hot_cmt;
-#ifdef BLOOM_FILTER
-	member->hot_bf = bf_init(EPP * d_cache.env.max_cached_hot_tpages, bf_fpr_from_memory(EPP * d_cache.env.max_cached_hot_tpages, 4 * 1024 * 1024 * (HOT_CMT_FAC / 0.1)));
-#endif
+	member->cmt = cmt;
 	member->mem_table = g_malloc0(d_cache.env.nr_valid_tpages * sizeof(struct pt_struct *));
 	for (int i = 0; i < d_cache.env.nr_valid_tpages; i++)
 	{
@@ -116,9 +105,32 @@ static void cache_member_init(struct cache_member *member)
 #endif
 		}
 	}
-	member->hot_mem_table = g_malloc0(d_cache.env.nr_valid_hot_tpages * sizeof(struct pt_struct *));
-	for (int i = 0; i < d_cache.env.nr_valid_hot_tpages; i++)
+	lru_init(&(member->lru));
+	member->nr_cached_tpages = 0;
+	member->nr_cached_tentries = 0;
+#ifdef HOT_CMT
+	struct cmt_struct **hot_cmt = g_malloc0(d_cache.env.max_cached_hot_tpages * sizeof(struct cmt_struct *));
+	for (int i = 0; i < d_cache.env.max_cached_hot_tpages; i++)
 	{
+		hot_cmt[i] = g_malloc0(sizeof(struct cmt_struct));
+		hot_cmt[i]->idx = i + d_cache.env.nr_valid_tpages;
+		hot_cmt[i]->pt = NULL;
+		hot_cmt[i]->t_ppa = UINT32_MAX;
+		hot_cmt[i]->state = CLEAN;
+		hot_cmt[i]->is_flying = false;
+		hot_cmt[i]->lru_ptr = NULL;
+		hot_cmt[i]->is_cached = NULL;
+		hot_cmt[i]->cached_cnt = 0;
+		hot_cmt[i]->dirty_cnt = 0;
+
+		hot_cmt[i]->retry_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
+		hot_cmt[i]->wait_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
+	}
+	member->hot_cmt = hot_cmt;
+	member->hot_mem_table = g_malloc0(d_cache.env.max_cached_hot_tpages * sizeof(struct hot_pt_struct *));
+	for (int i = 0; i < d_cache.env.max_cached_hot_tpages; i++)
+	{
+
 #ifdef CMT_USE_NUMA
 		member->hot_mem_table[i] = numa_alloc_onnode(EPP * sizeof(struct pt_struct), 1);
 		memset(member->hot_mem_table[i], 0, EPP * sizeof(struct pt_struct));
@@ -135,11 +147,9 @@ static void cache_member_init(struct cache_member *member)
 #endif
 		}
 	}
-	lru_init(&(member->cold_lru));
-	lru_init(&(member->hot_lru));
-	member->nr_cached_tpages = 0;
 	member->nr_cached_hot_tpages = 0;
-	member->nr_cached_tentries = 0;
+	member->nr_cached_hot_tentries = 0;
+#endif
 }
 
 static void cache_stat_init(struct cache_stat *stat)
@@ -152,11 +162,14 @@ static void cache_stat_init(struct cache_stat *stat)
 	stat->cache_miss_by_collision = 0;
 	stat->cache_hit_by_collision = 0;
 	stat->cache_load = 0;
-	stat->hot_cmt_evict = 0;
+#ifdef HOT_CMT
 	stat->hot_cmt_hit = 0;
-	stat->hot_valid_entries = 0;
-	stat->hot_rewrite_grain = 0;
-	stat->hot_miss = 0;
+	stat->hot_rewrite_entries = 0;
+	stat->up_grain_cnt = 0;
+	stat->up_hit_cnt = 0;
+	stat->up_page_cnt = 0;
+	stat->grain_heat_distribute = g_malloc0(sizeof(uint32_t) * (1000));
+#endif
 }
 
 int dftl_cache_create(demand_cache *d_cache)
@@ -171,9 +184,9 @@ static void cache_member_free(demand_cache *self, struct cache_member *member)
 {
 	for (int i = 0; i < self->env.nr_valid_tpages; i++)
 	{
-		free(member->cold_cmt[i]);
+		free(member->cmt[i]);
 	}
-	free(member->cold_cmt);
+	free(member->cmt);
 
 	for (int i = 0; i < self->env.nr_valid_tpages; i++)
 	{
@@ -183,12 +196,14 @@ static void cache_member_free(demand_cache *self, struct cache_member *member)
 		free(member->mem_table[i]);
 #endif // CMT_USE_NUMA
 	}
-	for (int i = 0; i < self->env.nr_valid_hot_tpages; i++)
+	lru_free(member->lru);
+#ifdef HOT_CMT
+	for (int i = 0; i < self->env.max_cached_hot_tpages; i++)
 	{
 		free(member->hot_cmt[i]);
 	}
 	free(member->hot_cmt);
-	for (int i = 0; i < self->env.nr_valid_hot_tpages; i++)
+	for (int i = 0; i < self->env.max_cached_hot_tpages; i++)
 	{
 #ifdef CMT_USE_NUMA
 		numa_free(member->hot_mem_table[i], EPP * sizeof(struct pt_struct));
@@ -196,8 +211,7 @@ static void cache_member_free(demand_cache *self, struct cache_member *member)
 		free(member->hot_mem_table[i]);
 #endif // CMT_USE_NUMA
 	}
-	lru_free(member->cold_lru);
-	lru_free(member->hot_lru);
+#endif
 }
 
 int dftl_cache_destroy(demand_cache *self)
@@ -206,14 +220,10 @@ int dftl_cache_destroy(demand_cache *self)
 	return 0;
 }
 
+#ifdef HOT_CMT
 int dftl_cache_reset(demand_cache *d_cache)
 {
-	d_cache->stat.hot_valid_entries = 0;
-	d_cache->stat.hot_rewrite_grain = 0;
-#ifdef BLOOM_FILTER
-	bf_reset(d_cache->member.hot_bf);
-#endif
-	for (int i = 0; i < d_cache->env.nr_valid_hot_tpages; i++)
+	for (int i = 0; i < d_cache->env.max_cached_hot_tpages; i++)
 	{
 		for (int j = 0; j < EPP; j++)
 		{
@@ -227,20 +237,96 @@ int dftl_cache_reset(demand_cache *d_cache)
 	return 0;
 }
 
-int dftl_cache_load(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry, bool is_hot)
+int dftl_cache_promote_hot(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry, struct cmt_struct *victim)
 {
-	struct cmt_struct *cmt;
-	if (is_hot)
+	for (int i = 0; i < EPP; i++)
 	{
-		lpa_t new_lpa = lpa;
-		cmt = self->member.hot_cmt[D_IDX_HOT];
-	}
-	else
-	{
-		cmt = self->member.cold_cmt[D_IDX];
-	}
+		/*direct mapping may cause rewrite and collision*/
+		if (victim->pt[i].ppa != UINT32_MAX && victim->cnt_map[i] >= T)
+		{
+			lpa_t lpa = IDX_TO_LPA(victim->idx, i);
+			lpa_t new_lpa = lpa % (self->env.max_cached_hot_entries);
+			struct cmt_struct *cmt = self->member.hot_cmt[D_IDX_HOT];
+			self->stat.up_grain_cnt++;
+			self->stat.up_hit_cnt += victim->cnt_map[i];
+			int d_idx = D_IDX_HOT;
+			int p_idx = P_IDX_HOT;
+			int probe = 1;
+			bool found = false;
 
+			while (self->member.hot_mem_table[d_idx][p_idx].lpa != UINT32_MAX && probe < MAX_PROBE)
+			{
+				// linear
+				// p_idx = (p_idx + 1);
+				// quadratic
+				p_idx = (p_idx + probe * probe);
+				probe++;
+				if (p_idx > EPP)
+				{
+					d_idx = (d_idx + p_idx / EPP) % self->env.max_cached_hot_tpages;
+					p_idx = p_idx % EPP;
+				}
+			}
+
+			if (self->member.hot_mem_table[d_idx][p_idx].lpa == UINT32_MAX)
+			{
+				self->stat.hot_valid_entries++;
+				found = true;
+			}
+			else
+			{
+				self->stat.hot_rewrite_entries++;
+				d_idx = D_IDX_HOT;
+				p_idx = P_IDX_HOT;
+			}
+			self->member.hot_mem_table[d_idx][p_idx].lpa = lpa;
+			self->member.hot_mem_table[d_idx][p_idx].ppa = victim->pt[i].ppa;
+			self->member.hot_mem_table[d_idx][p_idx].key_fp = victim->pt[i].key_fp;
+		}
+		self->stat.grain_heat_distribute[victim->cnt_map[i]]++;
+	}
+	self->stat.up_page_cnt++;
+	return 1;
+}
+
+bool dftl_cache_hot_is_hit(demand_cache *self, lpa_t lpa, pte_t *pte)
+{
+	lpa_t new_lpa = lpa % (self->env.max_cached_hot_entries);
+	int d_idx = D_IDX_HOT;
+	int p_idx = P_IDX_HOT;
+	int probe = 1;
+	while (probe < MAX_PROBE)
+	{
+		if (self->member.hot_mem_table[d_idx][p_idx].lpa == lpa)
+		{
+			pte->ppa = self->member.hot_mem_table[d_idx][p_idx].ppa;
+			pte->key_fp = self->member.hot_mem_table[d_idx][p_idx].key_fp;
+			return true;
+		}
+		else if (self->member.hot_mem_table[d_idx][p_idx].lpa == UINT32_MAX)
+		{
+			return false;
+		}
+		// linear
+		// p_idx = p_idx + 1;
+		// quadratic
+		p_idx = (p_idx + probe * probe);
+		probe++;
+		if (p_idx > EPP)
+		{
+			d_idx = (d_idx + p_idx / EPP) % self->env.max_cached_hot_tpages;
+			p_idx = p_idx % EPP;
+		}
+	}
+	return false;
+}
+#endif
+
+int dftl_cache_load(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry)
+{
+	struct cmt_struct *cmt = self->member.cmt[D_IDX];
 	struct inflight_params *i_params;
+
 	if (IS_INITIAL_PPA(cmt->t_ppa))
 	{
 		return 0;
@@ -250,8 +336,7 @@ int dftl_cache_load(demand_cache *self, lpa_t lpa, request *const req, snode *wb
 	i_params->jump = GOTO_LIST;
 
 	self->stat.cache_load++;
-	uint64_t lat = 0;
-	__demand.li->read(cmt->t_ppa, PAGESIZE, 0);
+	uint64_t lat = __demand.li->read(cmt->t_ppa, PAGESIZE, 0);
 	if (req)
 	{
 		req->etime = clock_get_ns() + lat;
@@ -268,150 +353,48 @@ int dftl_cache_load(demand_cache *self, lpa_t lpa, request *const req, snode *wb
 	return 1;
 }
 
-int dftl_cache_upgrade_hot(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry, struct cmt_struct *victim)
-{
-	for (int i = 0; i < EPP; i++)
-	{
-		/*direct mapping may cause rewrite and collision*/
-		if (victim->pt[i].ppa != UINT32_MAX && victim->cnt_map[i] >= T)
-		{
-			lpa_t lpa = IDX_TO_LPA(victim->idx, i);
-			lpa_t new_lpa = lpa % (self->env.nr_valid_hot_tpages * EPP);
-			struct cmt_struct *cmt = self->member.hot_cmt[D_IDX_HOT];
-			self->stat.up_grain_cnt++;
-			self->stat.up_hit_cnt += victim->cnt_map[i];
-			int d_idx = D_IDX_HOT;
-			int p_idx = P_IDX_HOT;
-			int probe = 1;
-			bool found = false;
-
-			// 线性探测找到空闲位置
-			while (self->member.hot_mem_table[d_idx][p_idx].lpa != UINT32_MAX && probe < MAX_PROBE)
-			{
-				// linear
-				// p_idx = (p_idx + 1);
-				// quadratic
-				p_idx = (p_idx + probe * probe);
-				probe++;
-				if (p_idx > EPP)
-				{
-					d_idx = (d_idx + p_idx / EPP) % self->env.nr_valid_hot_tpages;
-					p_idx = p_idx % EPP;
-				}
-			}
-
-			if (self->member.hot_mem_table[d_idx][p_idx].lpa == UINT32_MAX)
-			{
-				self->stat.hot_valid_entries++;
-				found = true;
-			}
-			else
-			{
-				self->stat.hot_rewrite_grain++;
-				d_idx = D_IDX_HOT;
-				p_idx = P_IDX_HOT;
-			}
-#ifdef BLOOM_FILTER
-			bf_set(self->member.hot_bf, lpa);
-			self->member.hot_bf->valid_entry++;
-#endif
-			self->member.hot_mem_table[d_idx][p_idx].lpa = lpa;
-			self->member.hot_mem_table[d_idx][p_idx].ppa = victim->pt[i].ppa;
-			self->member.hot_mem_table[d_idx][p_idx].key_fp = victim->pt[i].key_fp;
-		}
-		self->stat.up_grain_distribute[victim->cnt_map[i]]++;
-	}
-	self->stat.up_page_cnt++;
-	return 1;
-}
-
-int dftl_cache_hot_evict(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry)
-{
-	int result = 0;
-	lpa_t new_lpa = lpa;
-	struct cmt_struct *cmt = self->member.hot_cmt[D_IDX_HOT];
-	struct cmt_struct *victim = NULL;
-	algorithm *palgo = self->env.palgo;
-	w_buffer_t *pw_buffer = D_ENV(palgo)->pw_buffer;
-
-	if (self->is_full(self, true) == HOT_FULL)
-	{
-		victim = (struct cmt_struct *)lru_pop(self->member.hot_lru);
-		self->member.nr_cached_hot_tpages--;
-		victim->lru_ptr = NULL;
-		victim->is_cached = false;
-		if (!IS_INITIAL_PPA(victim->t_ppa))
-			pbm->invalidate_page(pbm, victim->t_ppa);
-
-		victim->t_ppa = tp_alloc(pbm);
-		pbm->validate_page(pbm, victim->t_ppa);
-		victim->state = CLEAN;
-
-		uint64_t lat = __demand.li->write(victim->t_ppa, PAGESIZE, 0);
-
-		if (req)
-		{
-			req->etime = clock_get_ns() + lat;
-		}
-		else if (wb_entry)
-		{
-			wb_entry->etime = clock_get_ns() + lat;
-		}
-		else
-		{
-			abort();
-		}
-
-		bm_oob_t new_oob = {
-			.is_tpage = true,
-			.lpa = victim->idx,
-			.length = PAGESIZE};
-		pbm->set_oob(pbm, victim->t_ppa * GRAIN_PER_PAGE, &new_oob);
-	}
-
-	cmt->is_cached = true;
-	cmt->lru_ptr = lru_push(self->member.hot_lru, (void *)cmt);
-	self->member.nr_cached_hot_tpages++;
-	return result;
-}
-
 int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry)
 {
 	int rc = 0;
 
-	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
+	struct cmt_struct *cmt = self->member.cmt[D_IDX];
 	struct cmt_struct *victim = NULL;
 	algorithm *palgo = self->env.palgo;
 	w_buffer_t *pw_buffer = D_ENV(palgo)->pw_buffer;
 
 	struct inflight_params *i_params;
 
-	if (self->is_full(self, false) == COLD_FULL)
+	if (self->is_full(self))
 	{
-		// upgrade to hot cmt
-		// victim = (struct cmt_struct *)lru_pop(self->member.cold_lru);
-		victim = (struct cmt_struct *)lru_pop(self->member.cold_lru);
-
-		if (victim->heat_cnt > T)
+		victim = (struct cmt_struct *)lru_pop(self->member.lru);
+		// victim = (struct cmt_struct *)lru_pop_top(self->member.lru);
+#ifdef HOT_CMT
+		if (!victim->cnt_map)
+			abort();
+		if (victim->heat_cnt >= T)
 		{
-			self->upgrade_hot(self, UINT32_MAX, NULL, NULL, victim);
+			self->promote_hot(self, UINT32_MAX, NULL, NULL, victim);
 		}
+		victim->heat_cnt = 0;
+		memset(victim->cnt_map, 0, sizeof(uint8_t) * EPP);
+#endif
 		self->member.nr_cached_tpages--;
 		victim->lru_ptr = NULL;
 		victim->pt = NULL;
-		victim->heat_cnt = 0;
-		g_free(victim->hit_bitmap);
-		g_free(victim->cnt_map);
-		// flush dirty page
+
 		if (victim->state == DIRTY)
 		{
 			self->stat.dirty_evict++;
+
 			i_params = get_iparams(req, wb_entry);
 			i_params->jump = GOTO_COMPLETE;
+			// i_params->pte = cmbr->mem_table[D_IDX][P_IDX];
 
 			victim->t_ppa = tp_alloc(pbm);
 			pbm->validate_page(pbm, victim->t_ppa);
 			victim->state = CLEAN;
+
+			// struct pt_struct pte = cmbr->mem_table[D_IDX][P_IDX];
 
 			uint64_t lat = __demand.li->write(victim->t_ppa, PAGESIZE, 0);
 			if (req)
@@ -440,13 +423,15 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 			self->stat.clean_evict++;
 		}
 	}
-
 	cmt->pt = self->member.mem_table[D_IDX];
-	cmt->hit_bitmap = (bool *)g_malloc0(sizeof(bool) * EPP);
-	cmt->cnt_map = (uint8_t *)g_malloc0(sizeof(uint8_t) * EPP);
+#ifdef HOT_CMT
+	if (!cmt->cnt_map)
+		cmt->cnt_map = (uint8_t *)g_malloc0(sizeof(uint8_t) * EPP);
 	cmt->heat_cnt = 0;
-	cmt->lru_ptr = lru_push(self->member.cold_lru, (void *)cmt);
+#endif
+	cmt->lru_ptr = lru_push(self->member.lru, (void *)cmt);
 	self->member.nr_cached_tpages++;
+
 	if (cmt->is_flying)
 	{
 		cmt->is_flying = false;
@@ -480,7 +465,7 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 
 int dftl_cache_wait_if_flying(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry)
 {
-	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
+	struct cmt_struct *cmt = self->member.cmt[D_IDX];
 	if (cmt->is_flying)
 	{
 		self->stat.blocked_miss++;
@@ -501,26 +486,26 @@ int dftl_cache_wait_if_flying(demand_cache *self, lpa_t lpa, request *const req,
 
 int dftl_cache_touch(demand_cache *self, lpa_t lpa)
 {
-	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
-	lru_update(self->member.cold_lru, cmt->lru_ptr);
+	struct cmt_struct *cmt = self->member.cmt[D_IDX];
+	lru_update(self->member.lru, cmt->lru_ptr);
 	return 0;
 }
 
 int dftl_cache_update(demand_cache *self, lpa_t lpa, struct pt_struct pte)
 {
-	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
+	struct cmt_struct *cmt = self->member.cmt[D_IDX];
 
 	if (cmt->pt)
 	{
 		cmt->pt[P_IDX] = pte;
-		cmt->hit_bitmap[P_IDX] = true;
+
 		if (!IS_INITIAL_PPA(cmt->t_ppa) && cmt->state == CLEAN)
 		{
 			pbm->invalidate_page(pbm, cmt->t_ppa);
 			cmt->t_ppa = UINT32_MAX;
 		}
 		cmt->state = DIRTY;
-		lru_update(self->member.cold_lru, cmt->lru_ptr);
+		lru_update(self->member.lru, cmt->lru_ptr);
 	}
 	else
 	{
@@ -532,7 +517,7 @@ int dftl_cache_update(demand_cache *self, lpa_t lpa, struct pt_struct pte)
 
 struct pt_struct dftl_cache_get_pte(demand_cache *self, lpa_t lpa)
 {
-	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
+	struct cmt_struct *cmt = self->member.cmt[D_IDX];
 	if (cmt->pt)
 	{
 		return cmt->pt[P_IDX];
@@ -546,17 +531,18 @@ struct pt_struct dftl_cache_get_pte(demand_cache *self, lpa_t lpa)
 
 struct cmt_struct *dftl_cache_get_cmt(demand_cache *self, lpa_t lpa)
 {
-	return self->member.cold_cmt[D_IDX];
+	return self->member.cmt[D_IDX];
 }
 
 bool dftl_cache_is_hit(demand_cache *self, lpa_t lpa)
 {
-	struct cmt_struct *cmt = self->member.cold_cmt[D_IDX];
+	struct cmt_struct *cmt = self->member.cmt[D_IDX];
 	if (cmt->pt != NULL)
 	{
-		cmt->hit_bitmap[P_IDX] = true;
+#ifdef HOT_CMT
 		cmt->cnt_map[P_IDX]++;
 		cmt->heat_cnt++;
+#endif
 		return 1;
 	}
 	else
@@ -565,52 +551,7 @@ bool dftl_cache_is_hit(demand_cache *self, lpa_t lpa)
 	}
 }
 
-uint32_t dftl_cache_is_full(demand_cache *self, bool is_hot)
+bool dftl_cache_is_full(demand_cache *self)
 {
-	if (self->member.nr_cached_hot_tpages > self->env.max_cached_hot_tpages && is_hot)
-		return HOT_FULL;
-	else if (self->member.nr_cached_tpages >= self->env.max_cached_tpages)
-		return COLD_FULL;
-	return NOT_FULL;
-}
-
-int dftl_cache_hot_is_hit(demand_cache *self, lpa_t lpa, pte_t *pte)
-{
-	// 计算初始索引
-	lpa_t new_lpa = lpa % (self->env.nr_valid_hot_tpages * EPP);
-	int d_idx = D_IDX_HOT;
-	int p_idx = P_IDX_HOT;
-	int probe = 1;
-#ifdef BLOOM_FILTER
-	if (!bf_check(self->member.hot_bf, lpa))
-	{
-		return HOT_MISS;
-	}
-#endif
-	while (probe < MAX_PROBE)
-	{
-		if (self->member.hot_mem_table[d_idx][p_idx].lpa == lpa)
-		{
-			pte->ppa = self->member.hot_mem_table[d_idx][p_idx].ppa;
-			pte->key_fp = self->member.hot_mem_table[d_idx][p_idx].key_fp;
-			return HOT_HIT;
-		}
-		else if (self->member.hot_mem_table[d_idx][p_idx].lpa == UINT32_MAX)
-		{
-			self->stat.hot_miss++;
-			return HOT_MISS;
-		}
-		// linear
-		// p_idx = p_idx + 1;
-		// quadratic
-		p_idx = (p_idx + probe * probe);
-		probe++;
-		if (p_idx > EPP)
-		{
-			d_idx = (d_idx + p_idx / EPP) % self->env.nr_valid_hot_tpages;
-			p_idx = p_idx % EPP;
-		}
-	}
-	self->stat.hot_miss++;
-	return HOT_MISS;
+	return (self->member.nr_cached_tpages >= self->env.max_cached_tpages);
 }

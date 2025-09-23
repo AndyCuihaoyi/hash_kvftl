@@ -56,30 +56,6 @@ void *lru_pop(LRU *lru)
 	return re;
 }
 
-void *lru_pop_top(LRU *lru)
-{
-	if (!lru->head || lru->size == 0)
-	{
-		return NULL;
-	}
-
-	NODE *now = lru->head;
-	void *re = now->DATA;
-	if (lru->head == lru->tail)
-	{
-		lru->head = lru->tail = NULL;
-	}
-	else
-	{
-		lru->head = now->next;
-		lru->head->prev = NULL;
-	}
-
-	lru->size--;
-	free(now);
-	return re;
-}
-
 void lru_update(LRU *lru, NODE *now)
 {
 	if (now == NULL)
@@ -136,4 +112,28 @@ void lru_delete(LRU *lru, NODE *now)
 	}
 	lru->size--;
 	free(now);
+}
+
+void *lru_pop_top(LRU *lru)
+{
+	if (!lru->head || lru->size == 0)
+	{
+		return NULL;
+	}
+
+	NODE *now = lru->head;
+	void *re = now->DATA;
+	if (lru->head == lru->tail)
+	{
+		lru->head = lru->tail = NULL;
+	}
+	else
+	{
+		lru->head = now->next;
+		lru->head->prev = NULL;
+	}
+
+	lru->size--;
+	free(now);
+	return re;
 }

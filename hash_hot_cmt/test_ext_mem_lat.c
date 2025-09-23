@@ -23,7 +23,8 @@
 #define NUM_ITEMS (44000000)
 #define NUM_UPDATES (44000000)
 #define NUM_WORKERS (8)
-
+volatile bool thread_ended[NUM_WORKERS] = {false};
+bool full_worker = true;
 // #define VALUE_CHECK
 
 extern lower_info ssd_li;
@@ -39,7 +40,7 @@ static uint64_t wrong_value_cnt = 0;
 #ifdef VALUE_CHECK
 char *values[NUM_ITEMS] = {0};
 #endif
-#define BATCH_SIZE (250000)
+#define BATCH_SIZE (200000)
 #define MAX_LATENCY_US 10000000 // 10s
 
 static uint64_t wlat_arr[MAX_LATENCY_US] = {0};
@@ -51,6 +52,11 @@ static uint64_t wr_start_ns = 0;
 
 static uint64_t complete_r_slow = 0;
 static uint64_t complete_w_slow = 0;
+
+static double read_iops = 0;
+static double write_iops = 0;
+static uint64_t read_batch_cnt = 0;
+static uint64_t write_batch_cnt = 0;
 
 void *end_request(request *req)
 {
@@ -72,6 +78,22 @@ void *end_request(request *req)
             {
                 uint64_t now = clock_get_ns();
                 double elapsed = (now - rd_start_ns) / 1e9;
+                if (full_worker)
+                {
+                    for (int i = 0; i < NUM_WORKERS; ++i)
+                    {
+                        if (thread_ended[i])
+                        {
+                            ftl_log("Thread %d ended !\n", i);
+                            full_worker = false;
+                        }
+                    }
+                }
+                if (full_worker)
+                {
+                    read_iops += (double)BATCH_SIZE / elapsed;
+                    read_batch_cnt++;
+                }
                 rd_start_ns = now;
                 ftl_log("%lu th read request end. key: %s, iops: %lf, avg_lat: %ld, slow: %ld\n", finished_r_local, req->key.key, (double)BATCH_SIZE / elapsed, sum_rlat_ns_local / BATCH_SIZE, complete_r_slow);
                 g_atomic_pointer_set(&sum_rlat_ns, 0);
@@ -102,6 +124,8 @@ void *end_request(request *req)
             // ftl_log("\033[1;32m%lu\033[0m th write request end.\n", finished_w);
             uint64_t now = clock_get_ns();
             double elapsed = (now - wr_start_ns) / 1e9;
+            write_iops += (double)BATCH_SIZE / elapsed;
+            write_batch_cnt++;
             wr_start_ns = now;
             ftl_log("%lu th write request end, iops: %lf, avg_lat: %ld, slow: %ld\n", finished_w_local, (double)BATCH_SIZE / elapsed, sum_wlat_ns_local / BATCH_SIZE, complete_w_slow);
             g_atomic_pointer_set(&sum_wlat_ns, 0);
@@ -182,7 +206,7 @@ void *algo_thread()
 void check_dcache_queue()
 {
     demand_cache *pd_cache = &d_cache;
-    struct cmt_struct **cmt = pd_cache->member.cold_cmt;
+    struct cmt_struct **cmt = pd_cache->member.cmt;
     for (int i = 0; i < d_cache.env.nr_valid_tpages; ++i)
     {
         int retry_cnt = cmt[i]->retry_q->size;
@@ -433,6 +457,7 @@ void *test_update_tr(void *args)
     struct zipf_state zs;
     srand(seed);
     zipf_init(&zs, max - 1, 0.99, -1, seed);
+    zipf_disable_hash(&zs);
     while (!(*pargs->pstart))
         ;
     for (uint64_t i = 0; i < num; ++i)
@@ -518,7 +543,6 @@ void *test_read_tr(void *args)
         uint64_t max;
         uint64_t num;
         bool is_zipf;
-        bool is_seq;
         int seed;
         volatile bool *pstart;
     } *pargs = args;
@@ -526,7 +550,6 @@ void *test_read_tr(void *args)
     uint64_t max = pargs->max;
     uint64_t num = pargs->num;
     bool is_zipf = pargs->is_zipf;
-    bool is_seq = pargs->is_seq;
     uint32_t seed = pargs->seed + worker_id;
     volatile int tr_nr_ios = 0;
 
@@ -545,8 +568,6 @@ void *test_read_tr(void *args)
         uint64_t rndkey;
         if (is_zipf)
             rndkey = zipf_next(&zs) + 1;
-        else if (is_seq)
-            rndkey = (i % (max - 1)) + 1;
         else
             rndkey = rand_r(&seed) % (max - 1) + 1;
         value_set *r_value = inf_get_valueset(NULL, PAGESIZE);
@@ -561,6 +582,7 @@ void *test_read_tr(void *args)
         r_req->ptr_nr_ios = &tr_nr_ios;
         submit_req(palgo, r_req);
     }
+    thread_ended[worker_id] = true;
     usleep(2000000);
     return NULL;
 }
@@ -610,6 +632,7 @@ void wait_for_nr_ios(request *req)
         }
     }
 }
+
 void submit_req(algorithm *palgo, request *req)
 {
     wait_for_nr_ios(req);
@@ -674,12 +697,18 @@ void clean_stats()
     d_cache.stat.cache_hit = d_cache.stat.cache_miss = d_cache.stat.cache_miss_by_collision = d_cache.stat.cache_hit_by_collision = 0;
     d_env.num_rd_data_rd = d_env.num_rd_data_miss_rd = 0;
     d_cache.stat.dirty_evict = d_cache.stat.cache_load = 0;
-    d_cache.stat.hot_miss = d_cache.stat.hot_cmt_hit = 0;
-    d_cache.stat.up_hit_cnt = d_cache.stat.up_grain_cnt = d_cache.stat.up_page_cnt = 0;
     for (int i = 0; i < sizeof(ssd_li.stats->nr_nand_rd_lun); ++i)
     {
         ssd_li.stats->nr_nand_rd_lun[i] = ssd_li.stats->nr_nand_wr_lun[i] = ssd_li.stats->nr_nand_er_lun[i] = 0;
     }
+#ifdef HOT_CMT
+    d_cache.stat.hot_cmt_hit = 0;
+    d_cache.stat.hot_rewrite_entries = 0;
+    d_cache.stat.up_grain_cnt = 0;
+    d_cache.stat.up_hit_cnt = 0;
+    d_cache.stat.up_page_cnt = 0;
+    memset(d_cache.stat.grain_heat_distribute, 0, sizeof(uint32_t) * 1000);
+#endif
 }
 
 void show_stats()
@@ -689,23 +718,33 @@ void show_stats()
     ftl_log("data_rd: %lu, mapping_rd: %lu, mapping_wr: %lu\n", d_env.num_rd_data_rd, d_cache.stat.cache_load, d_cache.stat.dirty_evict);
     ftl_log("nand_r: %lu, nand_w: %lu, nand_e: %lu\n",
             ssd_li.stats->nr_nand_read, ssd_li.stats->nr_nand_write, ssd_li.stats->nr_nand_erase);
-    for (int i = 0; i <= d_env.max_try; ++i)
-        ftl_log("r_hash_collision[%d]: %lu\n", i, d_env.r_hash_collision_cnt[i]);
-    for (int i = 0; i <= d_env.max_try; ++i)
-        ftl_log("w_hash_collision[%d]: %lu\n", i, d_env.w_hash_collision_cnt[i]);
-    ftl_log("w_buffer: flush: %lu, w_buffer: rd_hit: %lu, rd_miss: %lu, wr_hit: %lu, wr_miss: %lu\n",
-            write_buffer.stats->nr_flush, write_buffer.stats->nr_rd_hit, write_buffer.stats->nr_rd_miss, write_buffer.stats->nr_wr_hit, write_buffer.stats->nr_wr_miss);
-    ftl_log("d_cache_hit: %lu, miss: %lu, hit_by_collision: %lu, miss_by_collision: %lu, hot_hit: %lu, hot_miss:%lu, hit_rt: %.2f%%\n",
-            d_cache.stat.cache_hit, d_cache.stat.cache_miss, d_cache.stat.cache_hit_by_collision, d_cache.stat.cache_miss_by_collision, d_cache.stat.hot_cmt_hit,
-            d_cache.stat.hot_miss, (d_cache.stat.cache_hit + d_cache.stat.hot_cmt_hit) / (double)(d_cache.stat.cache_hit + d_cache.stat.cache_miss + d_cache.stat.hot_cmt_hit) * 100);
-    ftl_log("hash_sign_collision: %lu\n", d_env.num_rd_data_miss_rd);
+// for (int i = 0; i <= d_env.max_try; ++i)
+//     ftl_log("r_hash_collision[%d]: %lu\n", i, d_env.r_hash_collision_cnt[i]);
+// for (int i = 0; i <= d_env.max_try; ++i)
+//     ftl_log("w_hash_collision[%d]: %lu\n", i, d_env.w_hash_collision_cnt[i]);
+// ftl_log("w_buffer: flush: %lu, w_buffer: rd_hit: %lu, rd_miss: %lu, wr_hit: %lu, wr_miss: %lu\n",
+//         write_buffer.stats->nr_flush, write_buffer.stats->nr_rd_hit, write_buffer.stats->nr_rd_miss, write_buffer.stats->nr_wr_hit, write_buffer.stats->nr_wr_miss);
+#ifdef HOT_CMT
+    ftl_log("read iops: %0.2f,  write iops: %0.2f, hit rt:%0.2f%%\n", read_iops / (read_batch_cnt - 1), write_iops / write_batch_cnt, (double)(d_cache.stat.cache_hit + d_cache.stat.hot_cmt_hit) / (d_cache.stat.cache_hit + d_cache.stat.hot_cmt_hit + d_cache.stat.cache_miss) * 100);
     ftl_log("hot valid entries: %lu, hot valid pages: %lu, max hot pages: %lu\n", d_cache.stat.hot_valid_entries, d_cache.stat.hot_valid_entries / EPP, d_cache.env.max_cached_hot_tpages);
     double avg_grain_per_page = (double)d_cache.stat.up_grain_cnt / d_cache.stat.up_page_cnt;
     double avg_grain_hit = (double)d_cache.stat.up_hit_cnt / d_cache.stat.up_grain_cnt;
-    ftl_log("hot_rewrite_grain: %lu, avg_grain_per_page: %.2f, avg_grain_hit: %.2f\n",
-            d_cache.stat.hot_rewrite_grain,
+    ftl_log("avg_grain_per_page: %.2f, avg_grain_hit: %.2f\n",
             avg_grain_per_page,
             avg_grain_hit);
+    ftl_log("hot_hit: %lu, hot_rewrite_entries: %lu, up_page_cnt:%lu, up_grain_cnt:%lu, equal_up_page:%d \n", d_cache.stat.hot_cmt_hit, d_cache.stat.hot_rewrite_entries, d_cache.stat.up_page_cnt, d_cache.stat.up_grain_cnt, d_cache.stat.up_grain_cnt / EPP);
+    for (int i = 0; i < 10; i++)
+    {
+        if (d_cache.stat.grain_heat_distribute[i] > 0)
+            ftl_log("grain_heat_distribute[%d]: %0.6f%%\n", i, (double)d_cache.stat.grain_heat_distribute[i] / d_cache.stat.up_page_cnt / EPP * 100);
+    }
+#else
+    ftl_log("read iops: %0.2f,write iops: %0.2f, hit rt:%0.2f%%\n", read_iops / (read_batch_cnt - 1), write_iops / write_batch_cnt, (d_cache.stat.cache_hit) / (double)(d_cache.stat.cache_hit + d_cache.stat.cache_miss) * 100);
+#endif
+    ftl_log("d_cache_hit: %lu, miss: %lu, hit_by_collision: %lu, miss_by_collision: %lu\n",
+            d_cache.stat.cache_hit, d_cache.stat.cache_miss, d_cache.stat.cache_hit_by_collision, d_cache.stat.cache_miss_by_collision);
+    // ftl_log("cmt_nr_cached_pages: %d, cmt_nr_cached_entries %d\n", d_cache.member.nr_cached_tpages, d_cache.member.nr_cached_tentries);
+    // ftl_log("hash_sign_collision: %lu\n", d_env.num_rd_data_miss_rd);
     // for (int i = 0; i < 64; ++i) {
     //     ftl_log("lun[%d]: rd: %ld, wr: %ld, er: %ld\n", i, ssd_li.stats->nr_nand_rd_lun[i], ssd_li.stats->nr_nand_wr_lun[i], ssd_li.stats->nr_nand_er_lun[i]);
     // }
@@ -773,11 +812,11 @@ int main(int argc, char **argv)
         ftl_err("need pool_size and num_read\n");
         abort();
     }
-    ftl_log("pool_size = %lu, num_update = %lu, num_read = %lu, map_size_frac = %0.3f, seed = %d, ext_mem_lat = %lu\n", pool_size, num_update, num_read, map_size_frac, seed, ext_mem_lat);
+    ftl_log("pool_size = %lu, num_update = %lu, num_read = %lu, map_size_frac = %0.2f, seed = %d, ext_mem_lat = %lu\n", pool_size, num_update, num_read, map_size_frac, seed, ext_mem_lat);
+    // env create
     extra_mem_lat = ext_mem_lat;
     timer_start_ns = clock_get_ns();
     algorithm *palgo = &__demand;
-
     ssd_li.create(&ssd_li);
     palgo->create(palgo, &ssd_li);
     init_global_timer();
@@ -795,6 +834,7 @@ int main(int argc, char **argv)
     pthread_attr_init(&cq_cpl_attr);
     pthread_create(&finish_tr[0], &cq_cpl_attr, process_cq_cpl, NULL);
     pthread_create(&finish_tr[1], &cq_cpl_attr, process_cq_cpl, NULL);
+    // test
     ftl_log("start test.\n");
     /*load and update*/
     ftl_log("start loading. iodepth: %d\n", iodepth);
@@ -804,7 +844,6 @@ int main(int argc, char **argv)
     ftl_log("load finished.\n");
     fflush(stdout);
     sleep(2);
-    d_cache.reset(&d_cache);
     clean_stats();
     /*random read*/
     // ftl_log("start random reading. iodepth: %d\n", iodepth);
@@ -821,5 +860,5 @@ int main(int argc, char **argv)
     fflush(stdout);
     sleep(2);
     show_stats();
-    // return 0;
+    return 0;
 }

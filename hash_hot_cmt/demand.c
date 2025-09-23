@@ -23,7 +23,7 @@ uint64_t extra_mem_lat = 0;
 KEYT key_max, key_min;
 
 extern lower_info ssd_li; // in lower/ssd.c
-struct demand_env d_env;
+
 algorithm __demand = {.create = demand_create,
                       .destroy = demand_destroy,
                       .read = demand_get,
@@ -39,6 +39,9 @@ extern demand_cache d_cache;
 extern demand_cache *pd_cache;
 extern block_mgr_t bm;
 extern block_mgr_t *pbm;
+
+struct demand_env d_env;
+
 static inline int KEYCMP(KEYT a, KEYT b)
 {
     if (!a.len && !b.len)
@@ -256,8 +259,10 @@ read_retry:
             goto read_ret;
         }
     }
-    /* 2. check cache */
-    if (h_params->cnt == 0 && pd_cache->hot_is_hit(pd_cache, lpa, &pte) == HOT_HIT)
+
+/* 2. check cache */
+#ifdef HOT_CMT
+    if (h_params->cnt == 0 && pd_cache->hot_is_hit(pd_cache, lpa, &pte) == true)
     {
         if (h_params->key_fp == pte.key_fp)
         {
@@ -265,6 +270,7 @@ read_retry:
             goto data_read;
         }
     }
+#endif
     if (pd_cache->is_hit(pd_cache, lpa))
     {
         pd_cache->touch(pd_cache, lpa);
@@ -293,7 +299,7 @@ read_retry:
         {
             goto read_ret;
         }
-        rc = pd_cache->load(pd_cache, lpa, req, NULL, false);
+        rc = pd_cache->load(pd_cache, lpa, req, NULL);
         if (!rc)
         {
             rc = UINT32_MAX;
