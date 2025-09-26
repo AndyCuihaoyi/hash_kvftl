@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include "../hash_kvftl/dftl_types.h"
+#include "../hash_baseline/dftl_types.h"
 typedef struct
 {
     int nr_hash;

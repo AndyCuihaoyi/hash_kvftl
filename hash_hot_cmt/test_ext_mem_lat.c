@@ -704,6 +704,7 @@ void clean_stats()
 #ifdef HOT_CMT
     d_cache.stat.hot_cmt_hit = 0;
     d_cache.stat.hot_rewrite_entries = 0;
+    d_cache.stat.hot_valid_entries = 0;
     d_cache.stat.up_grain_cnt = 0;
     d_cache.stat.up_hit_cnt = 0;
     d_cache.stat.up_page_cnt = 0;
@@ -846,19 +847,19 @@ int main(int argc, char **argv)
     sleep(2);
     clean_stats();
     /*random read*/
-    // ftl_log("start random reading. iodepth: %d\n", iodepth);
-    // toggle_ssd_lat(true);
-    // test_read(palgo, pool_size, num_read, false, seed, NUM_WORKERS);
-    // ftl_log("finish random reading.\n");
-    // fflush(stdout);
-    // sleep(2);
-    /*zipfan read*/
-    ftl_log("start zipfian reading. iodepth: %d\n", iodepth);
-    shuffle_map = create_shuffle_map(pool_size - 1);
-    test_read(palgo, pool_size, num_read, true, seed, NUM_WORKERS);
-    ftl_log("finish zipfian reading.\n");
+    ftl_log("start random reading. iodepth: %d\n", iodepth);
+    toggle_ssd_lat(true);
+    test_read(palgo, pool_size, num_read, false, seed, NUM_WORKERS);
+    ftl_log("finish random reading.\n");
     fflush(stdout);
     sleep(2);
+    /*zipfan read*/
+    // ftl_log("start zipfian reading. iodepth: %d\n", iodepth);
+    // shuffle_map = create_shuffle_map(pool_size - 1);
+    // test_read(palgo, pool_size, num_read, true, seed, NUM_WORKERS);
+    // ftl_log("finish zipfian reading.\n");
+    // fflush(stdout);
+    // sleep(2);
     show_stats();
     return 0;
 }

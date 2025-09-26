@@ -18,8 +18,8 @@
 #endif // CMT_USE_NUMA
 #ifdef HOT_CMT
 #define T (2) // hot threshold
-#define HOT_CMT_FAC (0.15)
-#define MAX_PROBE (80)
+#define HOT_CMT_FAC (0.03)
+#define MAX_PROBE (100)
 #endif
 extern block_mgr_t bm;
 extern block_mgr_t *pbm;
@@ -81,7 +81,9 @@ static void cache_member_init(struct cache_member *member)
 		cmt[i]->cached_cnt = 0;
 		cmt[i]->dirty_cnt = 0;
 #ifdef HOT_CMT
-		cmt[i]->heat_cnt = 0;
+		cmt[i]->hit_cnt = 0;
+		cmt[i]->valid_cnt = 0;
+		cmt[i]->multi_hit_cnt = 0;
 #endif
 		cmt[i]->retry_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
 		cmt[i]->wait_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
@@ -320,6 +322,28 @@ bool dftl_cache_hot_is_hit(demand_cache *self, lpa_t lpa, pte_t *pte)
 	}
 	return false;
 }
+
+#define W_CONCENTRATION 0.9
+#define W_ACTIVITY 0.05
+#define W_DENSITY 0.05
+#define PROMOTION_SCORE_THRESHOLD 0.6
+
+bool hotness_score(struct cmt_struct *victim)
+{
+	double concentration_ratio = (double)victim->multi_hit_cnt / victim->hit_cnt;
+	if (victim->multi_hit_cnt == 0)
+		return false;
+	double activity_score = log1p((double)victim->hit_cnt);
+	double density_ratio = (double)victim->valid_cnt / EPP;
+	double hotness_score = (W_CONCENTRATION * concentration_ratio) +
+						   (W_ACTIVITY * activity_score) +
+						   (W_DENSITY * density_ratio);
+	if (hotness_score < PROMOTION_SCORE_THRESHOLD)
+	{
+		return false;
+	}
+	return true;
+}
 #endif
 
 int dftl_cache_load(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry)
@@ -371,11 +395,12 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 #ifdef HOT_CMT
 		if (!victim->cnt_map)
 			abort();
-		if (victim->heat_cnt >= T)
+		// if (victim->hit_cnt > 0 && hotness_score(victim))
+		if (victim->hit_cnt >= T)
 		{
 			self->promote_hot(self, UINT32_MAX, NULL, NULL, victim);
 		}
-		victim->heat_cnt = 0;
+		victim->hit_cnt = 0;
 		memset(victim->cnt_map, 0, sizeof(uint8_t) * EPP);
 #endif
 		self->member.nr_cached_tpages--;
@@ -427,7 +452,8 @@ int dftl_cache_list_up(demand_cache *self, lpa_t lpa, request *const req, snode 
 #ifdef HOT_CMT
 	if (!cmt->cnt_map)
 		cmt->cnt_map = (uint8_t *)g_malloc0(sizeof(uint8_t) * EPP);
-	cmt->heat_cnt = 0;
+	cmt->hit_cnt = 0;
+	cmt->multi_hit_cnt = 0;
 #endif
 	cmt->lru_ptr = lru_push(self->member.lru, (void *)cmt);
 	self->member.nr_cached_tpages++;
@@ -504,6 +530,14 @@ int dftl_cache_update(demand_cache *self, lpa_t lpa, struct pt_struct pte)
 			pbm->invalidate_page(pbm, cmt->t_ppa);
 			cmt->t_ppa = UINT32_MAX;
 		}
+#ifdef HOT_CMT
+		else
+		{
+			cmt->valid_cnt++;
+			if (cmt->valid_cnt > EPP)
+				abort();
+		}
+#endif
 		cmt->state = DIRTY;
 		lru_update(self->member.lru, cmt->lru_ptr);
 	}
@@ -540,8 +574,9 @@ bool dftl_cache_is_hit(demand_cache *self, lpa_t lpa)
 	if (cmt->pt != NULL)
 	{
 #ifdef HOT_CMT
-		cmt->cnt_map[P_IDX]++;
-		cmt->heat_cnt++;
+		if (cmt->cnt_map[P_IDX]++ > 1)
+			cmt->multi_hit_cnt++;
+		cmt->hit_cnt++;
 #endif
 		return 1;
 	}

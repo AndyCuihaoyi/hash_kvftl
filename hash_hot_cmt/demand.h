@@ -71,7 +71,9 @@ typedef struct cmt_struct
     uint32_t cached_cnt;
     uint32_t dirty_cnt;
 #ifdef HOT_CMT
-    uint32_t heat_cnt;
+    uint32_t hit_cnt;
+    uint32_t valid_cnt;
+    uint32_t multi_hit_cnt;
     uint8_t *cnt_map;
 #endif
 } cmt_t;
