@@ -13,5 +13,4 @@ uint32_t _do_wb_insert(w_buffer_t *self, request *const req);
 void _do_wb_assign_ppa(w_buffer_t *self, request *req);
 void _do_wb_mapping_update(w_buffer_t *self, request *req);
 void _do_wb_flush(w_buffer_t *self, request *req);
-
 #endif // __DFTL_WB_H__

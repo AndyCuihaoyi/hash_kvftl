@@ -278,6 +278,7 @@ uint64_t ssd_write_ppa(uint32_t pgidx, uint64_t size, uint64_t stime)
             ftl_err("Overwrite PPA: %d\n", tmp_pgidx);
             abort();
         }
+        // printf("temp_id: %d, line_idx: %d, line_wp: %d, res: %d\n", tmp_pgidx, LINE_IDX(tmp_pgidx), ssd_lower.line_wp[LINE_IDX(tmp_pgidx)], tmp_pgidx - LINE_IDX(tmp_pgidx) * ssd_lower.sp.pgs_per_line);
         if (unlikely(ssd_lower.line_wp[LINE_IDX(tmp_pgidx)] != tmp_pgidx - LINE_IDX(tmp_pgidx) * ssd_lower.sp.pgs_per_line))
         { // tmp_pgidx % ssd_lower.sp.pgs_per_line != 0 && !ssd_lower.ppa_state[tmp_pgidx-1]
             ftl_err("Write PPA out of line wp: %d\n", tmp_pgidx);
@@ -308,7 +309,7 @@ uint64_t ssd_read_ppa(uint32_t pgidx, uint64_t size, uint64_t stime)
         if (unlikely(!ssd_lower.ppa_state[tmp_pgidx]))
         {
             ftl_err("PPA not written: %d\n", tmp_pgidx);
-            abort();
+            // abort();
         }
         struct ppa ppa = pgidx2ppa(&ssd_lower, tmp_pgidx);
         ssd_li.stats->nr_nand_rd_lun[ppa.g.ch * ssd_lower.sp.luns_per_ch + ppa.g.lun]++;

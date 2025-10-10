@@ -50,9 +50,31 @@ int dftl_page_init(block_mgr_t *bm)
     return 0;
 }
 
-ppa_t dp_alloc(block_mgr_t *bm)
+ppa_t dp_segreg_alloc(block_mgr_t *bm, lpa_t lpa)
 {
     ppa_t ppa;
+    if (!d_active || bm->check_full(bm, d_active))
+    {
+        if (bm->isgc_needed(bm, DATA_S))
+        {
+            int nr_valid_pages = dpage_gc_dvalue(bm);
+        }
+    }
+    else
+    {
+    }
+}
+
+ppa_t dp_alloc(block_mgr_t *bm, lpa_t lpa)
+{
+    ppa_t ppa;
+#ifdef DATA_SEGREGATION
+    if (bm->isgc_needed(bm, DATA_S))
+    {
+        int nr_valid_pages = dpage_gc_dvalue(bm);
+    }
+    d_active = bm->get_stream_superblock(bm, lpa);
+#else
     if (!d_active || bm->check_full(bm, d_active))
     {
         if (bm->isgc_needed(bm, DATA_S))
@@ -65,9 +87,11 @@ ppa_t dp_alloc(block_mgr_t *bm)
         }
         else
         {
+
             d_active = bm->get_active_superblock(bm, DATA_S, false);
         }
     }
+#endif
     ppa = bm->get_page_num(bm, d_active);
     return ppa;
 }
@@ -164,6 +188,7 @@ static int _do_bulk_write_valid_items(block_mgr_t *bm,
     while (ordering_done < nr_valid_items)
     {
         int remain = PAGESIZE;
+        // 每次GC的superblock 数据都写到reserve block上，之后再切换reserve和active
         ppa_t ppa = bm->get_page_num(bm, d_reserve);
         uint64_t offset = 0;
 
@@ -398,7 +423,10 @@ int dpage_gc_dvalue(block_mgr_t *bm)
     gc_table_struct **bulk_table =
         (struct gc_table_struct **)calloc(_PPS, sizeof(gc_table_struct *));
     bm_superblock_t *target_seg = bm->get_gc_target(bm, DATA_S);
-
+#ifdef DATA_SEGREGATION
+    if (target_seg->is_flying)
+        abort();
+#endif
     if (target_seg->valid_cnt >= target_seg->wp_offt * GRAIN_PER_PAGE)
     {
         ftl_err("no invalid grain left!\n");

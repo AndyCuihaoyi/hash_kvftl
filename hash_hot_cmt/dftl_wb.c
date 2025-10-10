@@ -78,8 +78,21 @@ void dftl_wb_init(w_buffer_t *self)
     self->wb = skiplist_init();
     env->flush_list = (struct flush_list *)malloc(sizeof(struct flush_list));
     env->flush_list->size = 0;
+
+#ifdef DATA_SEGREGATION
     env->flush_list->list = (struct flush_node *)calloc(
         self->env->max_wb_size, sizeof(struct flush_node));
+    for (int i = 0; i < MAX_GC_STREAM; i++)
+    {
+        env->flush_list->list[i].ppa = UINT32_MAX;
+        env->flush_list->list[i].length = 0;
+        env->flush_list->list[i].value = NULL;
+    }
+#else
+    env->flush_list->list = (struct flush_node *)calloc(
+        self->env->max_wb_size, sizeof(struct flush_node));
+
+#endif
 
     env->wb_master_q = ring_create(RING_TYPE_MP_SC, self->env->max_wb_size * 2);
     env->wb_retry_q = algo_q_create();
@@ -161,7 +174,47 @@ void _do_wb_assign_ppa(w_buffer_t *self, request *req)
 
     snode *wb_entry;
     sk_iter *iter = skiplist_get_iterator(wb);
+#ifdef DATA_SEGREGATION
+    for (size_t i = 0; i < MAX_WRITE_BUF; i++)
+    {
+        wb_entry = skiplist_get_next(iter);
+        int val_len_in_bytes = (wb_entry->value->length_in_bytes + sizeof(uint8_t) + sizeof(uint32_t) + wb_entry->key.len);
+        int val_len = val_len_in_bytes / GRAINED_UNIT + (val_len_in_bytes % GRAINED_UNIT != 0 ? 1 : 0);
+        lpa_t lpa = get_lpa(((demand_env *)self->env->palgo->env)->pd_cache, wb_entry->key, wb_entry->hash_params);
+        ppa_t ppa;
+        uint32_t stream_idx = lpa % MAX_GC_STREAM;
+        bm_stream_manager_t *stream = &pbm->env->stream[stream_idx];
+        if (stream->page_remain <= 0)
+        {
+            fl->list[fl->size].ppa = stream->active_ppa;
+            fl->list[fl->size].length += 1;
+            fl->list[fl->size].value = NULL;
+            fl->size++;
+            stream->active_ppa = dp_alloc(pbm, lpa);
+            stream->page_remain = GRAIN_PER_PAGE;
+        }
+        ppa = stream->active_ppa;
+        uint32_t offset = GRAIN_PER_PAGE - stream->page_remain;
+        wb_entry->ppa = PPA_TO_PGA(ppa, offset);
+        stream->page_remain -= val_len;
 
+        inf_free_valueset(&wb_entry->value);
+        wb_entry->value = NULL;
+
+        for (int i = 0; i < val_len; i++)
+        {
+            pbm->validate_grain(pbm, wb_entry->ppa + i);
+        }
+
+        bm_oob_t new_oob = {
+            .is_tpage = false,
+            .lpa = 0,
+            .length = val_len,
+        };
+        pbm->set_oob(pbm, wb_entry->ppa, &new_oob); // wb_entry->ppa is a pga
+    }
+    free(iter);
+#else
     l_bucket *wb_bucket = (l_bucket *)g_malloc0(sizeof(l_bucket));
     for (int i = 1; i <= GRAIN_PER_PAGE; i++)
     {
@@ -172,6 +225,7 @@ void _do_wb_assign_ppa(w_buffer_t *self, request *req)
     for (size_t i = 0; i < MAX_WRITE_BUF; i++)
     {
         wb_entry = skiplist_get_next(iter);
+
         int val_len_in_bytes = (wb_entry->value->length_in_bytes + sizeof(uint8_t) + sizeof(uint32_t) + wb_entry->key.len);
         int val_len = val_len_in_bytes / GRAINED_UNIT + (val_len_in_bytes % GRAINED_UNIT != 0 ? 1 : 0);
         wb_bucket->bucket[val_len][wb_bucket->idx[val_len]] = wb_entry;
@@ -185,7 +239,8 @@ void _do_wb_assign_ppa(w_buffer_t *self, request *req)
     {
         // value_set *new_vs = inf_get_valueset(NULL, PAGESIZE);
         int remain = PAGESIZE;
-        ppa_t ppa = dp_alloc(pbm);
+        ppa_t ppa;
+        ppa = dp_alloc(pbm, wb_entry->lpa);
         uint64_t offset = 0;
         if (ppa != last_ppa + 1)
         {
@@ -249,6 +304,7 @@ void _do_wb_assign_ppa(w_buffer_t *self, request *req)
     }
     free(wb_bucket);
     free(iter);
+#endif
 }
 
 void _do_wb_mapping_update(w_buffer_t *self, request *req)
@@ -302,7 +358,6 @@ void _do_wb_mapping_update(w_buffer_t *self, request *req)
 
     wb_retry:
         h_params = wb_entry->hash_params;
-
         lpa = get_lpa(((demand_env *)self->env->palgo->env)->pd_cache, wb_entry->key, wb_entry->hash_params);
         new_pte.ppa = wb_entry->ppa;
 #ifdef STORE_KEY_FP

@@ -18,8 +18,8 @@
 #endif // CMT_USE_NUMA
 #ifdef HOT_CMT
 #define T (2) // hot threshold
-#define HOT_CMT_FAC (0.03)
-#define MAX_PROBE (100)
+#define HOT_CMT_FAC (0.06)
+#define MAX_PROBE (80)
 #endif
 extern block_mgr_t bm;
 extern block_mgr_t *pbm;

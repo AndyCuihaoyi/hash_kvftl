@@ -43,7 +43,12 @@
         "new": "c",
         "utility": "c",
         "memory": "c",
-        "write_buffer.h": "c"
+        "write_buffer.h": "c",
+        "string_view": "c",
+        "system_error": "c",
+        "functional": "c",
+        "istream": "c",
+        "ostream": "c"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "editor.formatOnSave": true

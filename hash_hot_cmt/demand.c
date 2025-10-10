@@ -338,6 +338,14 @@ cache_check_complete:
 data_read:
     /* 3. read actual data */
     D_ENV(palgo)->num_rd_data_rd++;
+#ifdef DATA_SEGREGATION
+    for (int i = 0; i < MAX_GC_STREAM; i++)
+    {
+        uint64_t real_ppa = G_IDX(pte.ppa);
+        if (real_ppa == pbm->env->stream[i].active_ppa)
+            goto read_ret;
+    }
+#endif
     rc = read_actual_dpage(pte.ppa, req); // after async read, should check full key.
     if (rc == UINT32_MAX)
     {

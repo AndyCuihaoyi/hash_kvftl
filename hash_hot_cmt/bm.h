@@ -9,7 +9,10 @@
 #define INSBLK_OFFSET(x) ((x) % _PPS)
 #define SBLK_END (_PPS)
 #define SBLK_OFFT2PPA(sblk, offt) (sblk->index * _PPS + offt)
-
+#ifdef DATA_SEGREGATION
+#define MAX_GC_STREAM (15)
+#define PPA2SBLK_IDX(ppa) ((ppa) / _PPS)
+#endif
 enum
 {
     MAP_S = 0,
@@ -35,6 +38,9 @@ typedef struct bm_superblock_t
     const uint32_t index;
     uint32_t valid_cnt; // in grains
     uint32_t wp_offt;
+#ifdef DATA_SEGREGATION
+    bool is_flying;
+#endif
 } bm_superblock_t;
 
 typedef struct bm_part_ext_t
@@ -46,6 +52,17 @@ typedef struct bm_part_ext_t
     uint32_t active_sblk;
 } bm_part_ext_t;
 
+#ifdef DATA_SEGREGATION
+typedef struct bm_stream_manager_t
+{
+    uint32_t idx;
+    ppa_t active_ppa;
+    uint32_t page_remain;
+    bm_superblock_t *active_sblk;
+} bm_stream_manager_t;
+
+#endif
+
 typedef struct bm_env_t
 {
     uint64_t grain_cnt;
@@ -56,6 +73,9 @@ typedef struct bm_env_t
     int part_num;
     bm_part_ext_t *part;
     bm_superblock_t *sblk;
+#ifdef DATA_SEGREGATION
+    bm_stream_manager_t *stream;
+#endif
 } bm_env_t;
 
 typedef struct block_mgr_t
@@ -83,6 +103,9 @@ typedef struct block_mgr_t
 
     void (*set_oob)(struct block_mgr_t *bm, ppa_t grain, bm_oob_t *oob);
     bm_oob_t *(*get_oob)(struct block_mgr_t *bm, ppa_t grain);
+#ifdef DATA_SEGREGATION
+    bm_superblock_t *(*get_stream_superblock)(struct block_mgr_t *bm, lpa_t lpa);
+#endif
 } block_mgr_t;
 
 #endif // __BM_H__
