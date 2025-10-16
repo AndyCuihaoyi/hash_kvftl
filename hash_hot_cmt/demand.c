@@ -85,6 +85,9 @@ uint32_t demand_create(algorithm *palgo, lower_info *li)
     D_ENV(palgo)->num_rd_wb_hit = 0;
     D_ENV(palgo)->num_rd_data_rd = 0;
     D_ENV(palgo)->num_rd_data_miss_rd = 0;
+    D_ENV(palgo)->num_data_gc = 0;
+    D_ENV(palgo)->num_gc_flash_read = 0;
+    D_ENV(palgo)->num_gc_flash_write = 0;
 
     /* Init Write Buffer */
     key_max.len = MAXKEYSIZE;
@@ -338,20 +341,11 @@ cache_check_complete:
 data_read:
     /* 3. read actual data */
     D_ENV(palgo)->num_rd_data_rd++;
-#ifdef DATA_SEGREGATION
-    for (int i = 0; i < MAX_GC_STREAM; i++)
-    {
-        uint64_t real_ppa = G_IDX(pte.ppa);
-        if (real_ppa == pbm->env->stream[i].active_ppa)
-            goto read_ret;
-    }
-#endif
-    rc = read_actual_dpage(pte.ppa, req); // after async read, should check full key.
+    rc = read_actual_dpage(pbm, pte.ppa, req); // after async read, should check full key.
     if (rc == UINT32_MAX)
     {
         goto read_ret;
     }
-
     h_params = (struct hash_params *)req->h_params;
     KEYT *real_key = &real_keys[lpa];
     if (KEYCMP(req->key, *real_key) == 0)

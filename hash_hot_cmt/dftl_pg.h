@@ -32,7 +32,6 @@ ppa_t dp_alloc(block_mgr_t *bm, lpa_t lpa); // Allocate a data page. Note: the p
 ppa_t tp_alloc(block_mgr_t *bm);			// Allocate a translate page. Note: the page is not validated!!!
 int dpage_gc_dvalue(block_mgr_t *bm);
 int tpage_gc(block_mgr_t *bm);
-uint32_t read_actual_dpage(ppa_t ppa, request *const req);
-uint32_t read_for_data_check(ppa_t ppa, snode *wb_entry);
-
+uint32_t read_actual_dpage(block_mgr_t *bm, ppa_t ppa, request *const req);
+uint32_t read_for_data_check(block_mgr_t *bm, ppa_t ppa, snode *wb_entry);
 #endif // __DFTL_PG_H__

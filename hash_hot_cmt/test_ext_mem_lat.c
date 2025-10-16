@@ -41,7 +41,7 @@ static uint64_t wrong_value_cnt = 0;
 char *values[NUM_ITEMS] = {0};
 #endif
 #define BATCH_SIZE (200000)
-#define MAX_LATENCY_US 10000000 // 10s
+#define MAX_LATENCY_US 100000000 // 10s
 
 static uint64_t wlat_arr[MAX_LATENCY_US] = {0};
 static uint64_t rlat_arr[MAX_LATENCY_US] = {0};
@@ -744,6 +744,7 @@ void show_stats()
 #endif
     ftl_log("d_cache_hit: %lu, miss: %lu, hit_by_collision: %lu, miss_by_collision: %lu\n",
             d_cache.stat.cache_hit, d_cache.stat.cache_miss, d_cache.stat.cache_hit_by_collision, d_cache.stat.cache_miss_by_collision);
+
     // ftl_log("cmt_nr_cached_pages: %d, cmt_nr_cached_entries %d\n", d_cache.member.nr_cached_tpages, d_cache.member.nr_cached_tentries);
     // ftl_log("hash_sign_collision: %lu\n", d_env.num_rd_data_miss_rd);
     // for (int i = 0; i < 64; ++i) {
@@ -766,9 +767,9 @@ int main(int argc, char **argv)
     ftl_log("hello world\n");
     uint64_t nr_G_workload = 1048576;
     uint64_t pool_size = 8 * nr_G_workload;
-    uint64_t num_update = 0;
+    uint64_t num_update = 1 * nr_G_workload;
     uint64_t num_read = 8 * nr_G_workload / NUM_WORKERS;
-    float map_size_frac = 8.0 / 64;
+    float map_size_frac = 8.0 / 8;
 
     int seed = 1;
     uint64_t ext_mem_lat = 0;
@@ -841,11 +842,12 @@ int main(int argc, char **argv)
     ftl_log("start loading. iodepth: %d\n", iodepth);
     toggle_ssd_lat(true);
     test_load(palgo, pool_size);
-    // test_update(palgo, pool_size, num_update, false, seed, 1);
+    test_update(palgo, pool_size, num_update, false, seed, 1);
+    ftl_log("gc data: %d, gc mapping  read: %d, gc write: %d\n", D_ENV(palgo)->num_data_gc, D_ENV(palgo)->num_gc_flash_read, D_ENV(palgo)->num_gc_flash_write);
     ftl_log("load finished.\n");
     fflush(stdout);
     sleep(2);
-    clean_stats();
+    // clean_stats();
     /*random read*/
     ftl_log("start random reading. iodepth: %d\n", iodepth);
     toggle_ssd_lat(true);
@@ -861,5 +863,6 @@ int main(int argc, char **argv)
     // fflush(stdout);
     // sleep(2);
     show_stats();
+
     return 0;
 }

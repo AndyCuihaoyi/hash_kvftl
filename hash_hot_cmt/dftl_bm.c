@@ -48,6 +48,7 @@ void dftl_bm_init(block_mgr_t *self)
         *(uint32_t *)(&(env->sblk[i])) = i; // sblk->index = i
 #ifdef DATA_SEGREGATION
         env->sblk[i].is_flying = false;
+        env->sblk[i].stream_idx = -1;
 #endif
     }
     env->part_num = 2;
@@ -69,8 +70,14 @@ void dftl_bm_init(block_mgr_t *self)
     {
         env->stream[i].idx = i;
         env->stream[i].active_sblk = self->get_active_superblock(pbm, DATA_S, FALSE);
+        env->stream[i].active_sblk->stream_idx = i;
         env->stream[i].active_ppa = self->get_page_num(self, env->stream[i].active_sblk);
-        env->stream[i].page_remain = PAGESIZE / GRAINED_UNIT;
+        env->stream[i].flush_ppa = env->stream[i].active_ppa;
+        int page_remain = SBLK_OFFT2PPA(env->stream[i].active_sblk, SBLK_END) - env->stream[i].active_ppa;
+        env->stream[i].grain_remain = GRAIN_PER_PAGE;
+        env->stream[i].page_remain = page_remain >= 64 ? 64 : page_remain;
+        env->stream[i].flush_page = env->stream[i].page_remain;
+
         // printf("stream idx: %d , sblk idx: %d , sblk state: %d\n", env->stream[i].idx = i, env->stream[i].active_sblk->index, env->stream[i].active_sblk->is_flying);
     }
 #endif
@@ -271,6 +278,7 @@ bm_superblock_t *dftl_get_stream_sblk(block_mgr_t *self, lpa_t lpa)
         stream->active_sblk->is_flying = false;
         env->stream[idx].active_sblk = self->get_active_superblock(self, DATA_S, FALSE);
         stream = &env->stream[idx];
+        stream->active_sblk->stream_idx = idx;
     }
     return stream->active_sblk;
 }
@@ -281,6 +289,10 @@ bool dftl_isgc_needed(block_mgr_t *self, int pt_num)
     bm_env_t *env = self->env;
     ftl_assert(0 <= pt_num && pt_num < env->part_num);
     bm_part_ext_t *pt = &env->part[pt_num];
+    // #ifdef DATA_SEGREGATION
+    //     if (pt_num == DATA_S)
+    //         return (pt->free_sblk_cnt <= MAX_GC_STREAM) ? 1 : 0;
+    // #endif
     return (pt->free_sblk_cnt <= 1) ? 1 : 0; // reserved 1
 }
 
@@ -294,18 +306,51 @@ bm_superblock_t *dftl_get_gc_target(block_mgr_t *self, int pt_num)
     for (int i = pt->s_sblk; i <= pt->e_sblk; i++)
     {
 #ifdef DATA_SEGREGATION
-        if (i != pt->sblk_rsv && self->check_full(self, &env->sblk[i]) && env->sblk[i].valid_cnt < min_valid_cnt)
+        if (i != pt->sblk_rsv && env->sblk[i].valid_cnt < min_valid_cnt)
+        {
+            // if (env->sblk[i].is_flying == true && pt_num == DATA_S)
+            // {
+            //     env->sblk[i].is_flying = false;
+            //     env->stream[env->sblk[i].stream_idx].active_sblk = self->get_active_superblock(self, DATA_S, FALSE);
+            //     env->stream[env->sblk[i].stream_idx].active_sblk->stream_idx = env->sblk[i].stream_idx;
+            //     env->sblk[i].stream_idx = -1;
+            // }
+            if (self->check_full(self, &env->sblk[i]) && pt_num == MAP_S)
+            {
+                target = &env->sblk[i];
+                min_valid_cnt = env->sblk[i].valid_cnt;
+            }
+            else if (pt_num == DATA_S)
+            {
+                target = &env->sblk[i];
+                min_valid_cnt = env->sblk[i].valid_cnt;
+            }
+        }
 #else
         if (i != pt->sblk_rsv && self->check_full(self, &env->sblk[i]) && env->sblk[i].valid_cnt < min_valid_cnt)
-#endif
         {
             target = &env->sblk[i];
             min_valid_cnt = env->sblk[i].valid_cnt;
         }
+#endif
     }
     if (min_valid_cnt == UINT32_MAX)
     {
         ftl_err("No valid superblock for GC\n");
+#ifdef DATA_SEGREGATION
+        for (int i = pt->s_sblk; i <= pt->e_sblk; i++)
+        {
+
+            // 打印包含 is_flying 状态的完整信息
+            printf("sblk[%d]: is_rsv=%d, is_full=%d, valid_cnt=%u,sblk wp:%d, is_flying=%s\n",
+                   i,
+                   (i == pt->sblk_rsv), // 是否是预留块
+                   self->check_full(self, &env->sblk[i]),
+                   env->sblk[i].valid_cnt,
+                   env->sblk[i].wp_offt,
+                   env->sblk[i].is_flying ? "true" : "false"); // is_flying 状态
+        }
+#endif
         abort();
     }
     return target;

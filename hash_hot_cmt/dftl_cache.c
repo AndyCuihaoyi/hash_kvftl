@@ -530,14 +530,6 @@ int dftl_cache_update(demand_cache *self, lpa_t lpa, struct pt_struct pte)
 			pbm->invalidate_page(pbm, cmt->t_ppa);
 			cmt->t_ppa = UINT32_MAX;
 		}
-#ifdef HOT_CMT
-		else
-		{
-			cmt->valid_cnt++;
-			if (cmt->valid_cnt > EPP)
-				abort();
-		}
-#endif
 		cmt->state = DIRTY;
 		lru_update(self->member.lru, cmt->lru_ptr);
 	}

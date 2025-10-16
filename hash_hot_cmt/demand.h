@@ -100,6 +100,9 @@ typedef struct demand_env
     uint64_t num_rd_wb_hit;
     uint64_t num_rd_data_rd;
     uint64_t num_rd_data_miss_rd;
+    uint64_t num_data_gc;
+    uint64_t num_gc_flash_read;
+    uint64_t num_gc_flash_write;
     uint64_t r_hash_collision_cnt[MAX_HASH_COLLISION + 1];
     uint64_t w_hash_collision_cnt[MAX_HASH_COLLISION + 1];
 

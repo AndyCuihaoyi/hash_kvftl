@@ -17,7 +17,7 @@
                 "${workspaceFolder}/tools/rte_ring/*.c",
                 "-lm",
                 "-DHOT_CMT",
-                "-DDATA_SEGREGATION",
+                //"-DDATA_SEGREGATION",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
                 "-I/usr/include/glib-2.0",

@@ -10,7 +10,7 @@
 #define SBLK_END (_PPS)
 #define SBLK_OFFT2PPA(sblk, offt) (sblk->index * _PPS + offt)
 #ifdef DATA_SEGREGATION
-#define MAX_GC_STREAM (15)
+#define MAX_GC_STREAM (8)
 #define PPA2SBLK_IDX(ppa) ((ppa) / _PPS)
 #endif
 enum
@@ -40,6 +40,7 @@ typedef struct bm_superblock_t
     uint32_t wp_offt;
 #ifdef DATA_SEGREGATION
     bool is_flying;
+    uint32_t stream_idx;
 #endif
 } bm_superblock_t;
 
@@ -57,7 +58,10 @@ typedef struct bm_stream_manager_t
 {
     uint32_t idx;
     ppa_t active_ppa;
+    ppa_t flush_ppa;
+    uint32_t flush_page;
     uint32_t page_remain;
+    uint32_t grain_remain;
     bm_superblock_t *active_sblk;
 } bm_stream_manager_t;
 
