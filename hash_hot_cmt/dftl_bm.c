@@ -196,6 +196,10 @@ bm_superblock_t *dftl_get_active_sblk(block_mgr_t *self, int pt_num, bool isrese
                 break;
             }
         }
+        if (pt->active_sblk == -1)
+        {
+            self->show_sblk_state(self, DATA_S);
+        }
         return &env->sblk[pt->active_sblk];
     }
 #endif
@@ -296,10 +300,10 @@ bm_superblock_t *dftl_get_active_sblk(block_mgr_t *self, int pt_num, bool isrese
 }
 
 #ifdef DATA_SEGREGATION
-bm_superblock_t *dftl_get_stream_sblk(block_mgr_t *self, lpa_t lpa, bool is_reserve)
+bm_superblock_t *dftl_get_stream_sblk(block_mgr_t *self, lpa_t stream_idx, bool is_reserve)
 {
     bm_env_t *env = self->env;
-    int idx = lpa % MAX_GC_STREAM;
+    int idx = stream_idx;
     bm_stream_manager_t *stream = &env->stream[idx];
     bm_superblock_t *full_sblk = stream->active_sblk;
     if (self->check_full(self, stream->active_sblk))
@@ -312,7 +316,7 @@ bm_superblock_t *dftl_get_stream_sblk(block_mgr_t *self, lpa_t lpa, bool is_rese
         stream->active_sblk->is_flying = true;
         if (is_reserve)
         {
-            printf("stream[%d]:form sblk[%d] to rsv sblk[%d]\n", idx, full_sblk->index, stream->active_sblk->index);
+            // printf("stream[%d]:from sblk[%d] to rsv sblk[%d]\n", idx, full_sblk->index, stream->active_sblk->index);
             stream->active_sblk->is_rsv = false;
         }
     }

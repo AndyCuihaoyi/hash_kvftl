@@ -36,6 +36,6 @@ int tpage_gc(block_mgr_t *bm);
 uint32_t read_actual_dpage(block_mgr_t *bm, ppa_t ppa, request *const req);
 uint32_t read_for_data_check(block_mgr_t *bm, ppa_t ppa, snode *wb_entry);
 #ifdef DATA_SEGREGATION
-ppa_t gc_dp_alloc(block_mgr_t *bm, lpa_t lpa);
+ppa_t gc_dp_alloc(block_mgr_t *bm, uint32_t idx);
 #endif
 #endif // __DFTL_PG_H__

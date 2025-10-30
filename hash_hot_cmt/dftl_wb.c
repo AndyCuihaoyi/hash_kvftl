@@ -175,7 +175,7 @@ void _do_wb_assign_ppa(w_buffer_t *self, request *req)
         int val_len = val_len_in_bytes / GRAINED_UNIT + (val_len_in_bytes % GRAINED_UNIT != 0 ? 1 : 0);
         lpa_t lpa = get_lpa(((demand_env *)self->env->palgo->env)->pd_cache, wb_entry->key, wb_entry->hash_params);
         ppa_t ppa;
-        uint32_t stream_idx = lpa % MAX_GC_STREAM;
+        uint32_t stream_idx = D_IDX % MAX_GC_STREAM;
         bm_stream_manager_t *stream = &pbm->env->stream[stream_idx];
         if (stream->grain_remain == 0)
         {
@@ -185,13 +185,12 @@ void _do_wb_assign_ppa(w_buffer_t *self, request *req)
         }
         if (stream->page_remain == 0)
         {
-            // fl->list[fl->size].ppa = stream->flush_ppa;
-            // fl->list[fl->size].length = stream->flush_page;
-            // fl->list[fl->size].value = NULL;
-            // fl->size++;
-
             uint64_t maxlat = 0;
             uint64_t lat = __demand.li->write(stream->flush_ppa, stream->flush_page * PAGESIZE, 0);
+            if (lat == -1 || lat == -2)
+            {
+                abort();
+            }
             maxlat = lat > maxlat ? lat : maxlat;
             req->etime = clock_get_ns() + maxlat;
 

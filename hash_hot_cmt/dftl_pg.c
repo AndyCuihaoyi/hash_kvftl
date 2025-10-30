@@ -54,10 +54,10 @@ int dftl_page_init(block_mgr_t *bm)
 }
 
 #ifdef DATA_SEGREGATION
-ppa_t gc_dp_alloc(block_mgr_t *bm, lpa_t lpa)
+ppa_t gc_dp_alloc(block_mgr_t *bm, uint32_t idx)
 {
     ppa_t ppa;
-    bm_superblock_t *active = bm->get_stream_superblock(bm, lpa, true);
+    bm_superblock_t *active = bm->get_stream_superblock(bm, idx, true);
     ppa = bm->get_page_num(bm, active);
     return ppa;
 }
@@ -68,7 +68,7 @@ ppa_t dp_alloc(block_mgr_t *bm, lpa_t lpa)
     ppa_t ppa;
 #ifdef DATA_SEGREGATION
     bm_env_t *env = bm->env;
-    int idx = lpa % MAX_GC_STREAM;
+    int idx = D_IDX % MAX_GC_STREAM;
     bm_stream_manager_t *stream = &env->stream[idx];
     if (bm->check_full(bm, stream->active_sblk))
     {
@@ -77,7 +77,7 @@ ppa_t dp_alloc(block_mgr_t *bm, lpa_t lpa)
             int nr_valid_pages = dpage_gc_dvalue(bm, idx);
         }
     }
-    d_active = bm->get_stream_superblock(bm, lpa, false);
+    d_active = bm->get_stream_superblock(bm, idx, false);
 #else
     if (!d_active || bm->check_full(bm, d_active))
     {
@@ -187,14 +187,6 @@ static int _do_bulk_write_valid_items(block_mgr_t *bm,
     int copied_pages = 0;
 
 #ifdef DATA_SEGREGATION
-    // bm->show_sblk_state(bm, DATA_S);
-    //  assign new ppas to valid grains
-    // if (fl == NULL)
-    // {
-    //     fl = (struct flush_list *)malloc(sizeof(struct flush_list));
-    //     fl->size = 0;
-    //     fl->list = (struct flush_node *)calloc(2048, sizeof(struct flush_node));
-    // }
     for (int i = 0; i < nr_valid_items; i++)
     {
         struct gc_bucket_node *node = gcb_node_arr[i];
@@ -209,15 +201,11 @@ static int _do_bulk_write_valid_items(block_mgr_t *bm,
         }
         if (stream->page_remain == 0)
         {
-            // fl->list[fl->size].ppa = stream->flush_ppa;
-            // fl->list[fl->size].length = stream->flush_page;
-            // fl->list[fl->size].value = NULL;
-            // fl->size++;
             uint64_t lat = __demand.li->write(stream->flush_ppa, stream->flush_page * PAGESIZE, 0);
             if (lat == -1)
             {
                 printf("write PPA: %d SBLK(%d), write length:%d \n", stream->flush_ppa, PPA2SBLK_IDX(stream->flush_ppa), stream->flush_page);
-                bm->show_sblk_state(bm, DATA_S);
+                // bm->show_sblk_state(bm, DATA_S);
             }
             stream->flush_ppa = stream->active_ppa;
             int page_remain = SBLK_OFFT2PPA(stream->active_sblk, SBLK_END) - stream->active_ppa;
@@ -343,13 +331,20 @@ static int _do_bulk_mapping_update(block_mgr_t *bm, int nr_valid_grains,
           lpa_compare);
 
     bool *skip_update = (bool *)calloc(nr_valid_grains, sizeof(bool));
-
+    bool *cmt_cnt_array = (bool *)calloc(pd_cache->env.nr_valid_tpages, sizeof(bool));
+    int cmt_cnt = 0;
     /* read mapping table which needs update */
     volatile int nr_update_tpages = 0;
     for (int i = 0; i < nr_valid_grains; i++)
     {
         struct gc_bucket_node *gcb_node = gcb_node_arr[i];
         lpa_t lpa = gcb_node->lpa;
+        /*For Test*/
+        if (cmt_cnt_array[D_IDX] == false)
+        {
+            cmt_cnt_array[D_IDX] = true;
+            cmt_cnt++;
+        }
         if (pd_cache->is_hit(pd_cache, lpa))
         {
             struct pt_struct pte = pd_cache->get_pte(pd_cache, lpa);
@@ -371,11 +366,11 @@ static int _do_bulk_mapping_update(block_mgr_t *bm, int nr_valid_grains,
             nr_update_tpages++;
         }
     }
-
-    // /* wait */
-    // while (pd_cache->member.nr_tpages_read_done != nr_update_tpages) {
-    // }    // already sync, no need
-    // pd_cache->member.nr_tpages_read_done = 0;
+    // printf("cmt in target seg: %d\n", cmt_cnt);
+    //  /* wait */
+    //  while (pd_cache->member.nr_tpages_read_done != nr_update_tpages) {
+    //  }    // already sync, no need
+    //  pd_cache->member.nr_tpages_read_done = 0;
 
     /* write */
     for (int i = 0; i < nr_valid_grains; i++)
@@ -511,7 +506,7 @@ int dpage_gc_dvalue(block_mgr_t *bm, int stream_idx)
     bm->trim_segment(bm, target_seg, __demand.li);
 #ifdef DATA_SEGREGATION
     target_seg->stream_idx = -1;
-    printf("trim sblk[%d]\n", target_seg->index);
+    // printf("trim sblk[%d]\n", target_seg->index);
 #endif
 
     /* reserve -> active / target_seg -> reserve */

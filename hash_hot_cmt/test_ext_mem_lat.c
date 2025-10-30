@@ -788,7 +788,7 @@ int main(int argc, char **argv)
     ftl_log("hello world\n");
     uint64_t nr_G_workload = 1048576;
     int64_t pool_size = 7 * nr_G_workload;
-    uint64_t num_update = 3 * nr_G_workload;
+    uint64_t num_update = 2 * nr_G_workload;
     uint64_t num_read = 7 * nr_G_workload / NUM_WORKERS;
     float map_size_frac = 8.0 / 8;
 
@@ -864,7 +864,7 @@ int main(int argc, char **argv)
     toggle_ssd_lat(true);
     test_load(palgo, pool_size);
     sleep(2);
-    D_ENV(palgo)->pb_mgr->show_sblk_state(D_ENV(palgo)->pb_mgr, 1);
+    // D_ENV(palgo)->pb_mgr->show_sblk_state(D_ENV(palgo)->pb_mgr, 1);
     test_update(palgo, pool_size, num_update, false, seed, 1);
     uint32_t num_data = D_ENV(palgo)->num_data_gc;
     uint32_t num_reads = D_ENV(palgo)->num_gc_flash_read;

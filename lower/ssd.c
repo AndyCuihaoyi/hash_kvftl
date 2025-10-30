@@ -276,6 +276,7 @@ uint64_t ssd_write_ppa(uint32_t pgidx, uint64_t size, uint64_t stime)
         if (unlikely(ssd_lower.ppa_state[tmp_pgidx]))
         {
             ftl_err("Overwrite PPA: %d\n", tmp_pgidx);
+            return -1;
             // abort();
         }
         uint32_t line_idx = LINE_IDX(tmp_pgidx);
@@ -286,7 +287,7 @@ uint64_t ssd_write_ppa(uint32_t pgidx, uint64_t size, uint64_t stime)
             ftl_err("Write PPA out of order! PPA: %u, Line: %u\n", tmp_pgidx, line_idx);
             ftl_err(" -> Expected next offset (current WP): %u\n", current_line_wp);
             ftl_err(" -> Actual target offset: %u\n", target_offset_in_line);
-            return -1;
+            return -2;
         }
         ssd_lower.ppa_state[tmp_pgidx] = true;
         ssd_lower.line_wp[LINE_IDX(tmp_pgidx)]++;
