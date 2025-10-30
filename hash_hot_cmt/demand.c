@@ -125,7 +125,7 @@ uint32_t demand_create(algorithm *palgo, lower_info *li)
 
     /* bm init */
     pbm->create(pbm);
-
+    D_ENV(palgo)->pb_mgr = pbm;
     /* pg init */
     dftl_page_init(pbm);
 

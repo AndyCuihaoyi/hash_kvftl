@@ -43,6 +43,7 @@ demand_cache d_cache = {
 #ifdef HOT_CMT
 	.promote_hot = dftl_cache_promote_hot,
 	.hot_is_hit = dftl_cache_hot_is_hit,
+	.hot_cmt_reset = dftl_cache_hot_reset,
 #endif
 };
 
@@ -223,7 +224,7 @@ int dftl_cache_destroy(demand_cache *self)
 }
 
 #ifdef HOT_CMT
-int dftl_cache_reset(demand_cache *d_cache)
+int dftl_cache_hot_reset(demand_cache *d_cache)
 {
 	for (int i = 0; i < d_cache->env.max_cached_hot_tpages; i++)
 	{
@@ -358,7 +359,6 @@ int dftl_cache_load(demand_cache *self, lpa_t lpa, request *const req, snode *wb
 
 	i_params = get_iparams(req, wb_entry);
 	i_params->jump = GOTO_LIST;
-
 	self->stat.cache_load++;
 	uint64_t lat = __demand.li->read(cmt->t_ppa, PAGESIZE, 0);
 	if (req)

@@ -6,6 +6,7 @@
 #include "../tools/lru_list.h"
 #include "../tools/rte_ring/rte_ring.h"
 #include "cache.h"
+#include "bm.h"
 #include "write_buffer.h"
 #include <stdint.h>
 
@@ -109,6 +110,7 @@ typedef struct demand_env
     /* components */
     demand_cache *pd_cache;
     w_buffer_t *pw_buffer;
+    block_mgr_t *pb_mgr;
 } demand_env;
 
 /* extern variables */

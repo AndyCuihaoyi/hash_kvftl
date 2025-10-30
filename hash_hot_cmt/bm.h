@@ -10,7 +10,7 @@
 #define SBLK_END (_PPS)
 #define SBLK_OFFT2PPA(sblk, offt) (sblk->index * _PPS + offt)
 #ifdef DATA_SEGREGATION
-#define MAX_GC_STREAM (8)
+#define MAX_GC_STREAM (16)
 #define PPA2SBLK_IDX(ppa) ((ppa) / _PPS)
 #endif
 enum
@@ -41,6 +41,7 @@ typedef struct bm_superblock_t
 #ifdef DATA_SEGREGATION
     bool is_flying;
     uint32_t stream_idx;
+    bool is_rsv;
 #endif
 } bm_superblock_t;
 
@@ -101,14 +102,16 @@ typedef struct block_mgr_t
     void (*trim_segment)(struct block_mgr_t *bm, bm_superblock_t *sblk, lower_info *li);
 
     bm_superblock_t *(*change_reserve)(struct block_mgr_t *bm, int pt_num, bm_superblock_t *reserve);
-    bm_superblock_t *(*get_gc_target)(struct block_mgr_t *, int pt_num);
+    bm_superblock_t *(*get_gc_target)(struct block_mgr_t *, int pt_num, int stream_idx);
     bm_superblock_t *(*get_active_superblock)(struct block_mgr_t *bm, int pt_num, bool isreserve);
     ppa_t (*get_page_num)(struct block_mgr_t *bm, bm_superblock_t *sblk);
 
     void (*set_oob)(struct block_mgr_t *bm, ppa_t grain, bm_oob_t *oob);
     bm_oob_t *(*get_oob)(struct block_mgr_t *bm, ppa_t grain);
+    void (*show_sblk_state)(struct block_mgr_t *self, int pt_num);
 #ifdef DATA_SEGREGATION
-    bm_superblock_t *(*get_stream_superblock)(struct block_mgr_t *bm, lpa_t lpa);
+    bm_superblock_t *(*get_stream_superblock)(struct block_mgr_t *bm, lpa_t lpa, bool is_reserve);
+
 #endif
 } block_mgr_t;
 

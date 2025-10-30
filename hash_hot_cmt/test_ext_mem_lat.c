@@ -537,39 +537,57 @@ void *test_read_tr(void *args)
     static int worker_cnt = 0;
     int worker_id = g_atomic_int_add(&worker_cnt, 1);
     prctl(PR_SET_NAME, "read_worker");
+
+    // [MODIFIED] 扩展结构体定义以包含 is_seq
     struct
     {
         algorithm *palgo;
         uint64_t max;
         uint64_t num;
         bool is_zipf;
+        bool is_seq; // <-- 新增成员
         int seed;
         volatile bool *pstart;
     } *pargs = args;
+
+    // 解包参数
     algorithm *palgo = pargs->palgo;
     uint64_t max = pargs->max;
     uint64_t num = pargs->num;
     bool is_zipf = pargs->is_zipf;
+    bool is_seq = pargs->is_seq; // <-- 解包新成员
     uint32_t seed = pargs->seed + worker_id;
     volatile int tr_nr_ios = 0;
-
     struct zipf_state zs;
-    if (is_zipf)
+    // 如果是顺序读，则不需要初始化 zipf
+    if (is_zipf && !is_seq)
     {
         zipf_init(&zs, max - 1, 0.99, -1, seed);
         assert(shuffle_map);
         zipf_use_shuffle_map(&zs, shuffle_map);
     }
-    srand(seed);
+
+    srand(seed); //  rand_r 需要一个种子指针，这里保留 srand 以防万一
+
     while (!(*pargs->pstart))
         ;
     for (uint64_t i = 0; i < num; ++i)
     {
         uint64_t rndkey;
-        if (is_zipf)
+        if (is_seq)
+        {
+            rndkey = (uint64_t)worker_id * num + i + 1;
+        }
+        else if (is_zipf)
+        {
             rndkey = zipf_next(&zs) + 1;
+        }
         else
+        {
             rndkey = rand_r(&seed) % (max - 1) + 1;
+        }
+
+        // --- 请求创建和提交逻辑 (保持不变) ---
         value_set *r_value = inf_get_valueset(NULL, PAGESIZE);
         request *r_req = g_malloc0(sizeof(request));
         r_req->type = DATAR;
@@ -582,12 +600,13 @@ void *test_read_tr(void *args)
         r_req->ptr_nr_ios = &tr_nr_ios;
         submit_req(palgo, r_req);
     }
+
     thread_ended[worker_id] = true;
     usleep(2000000);
     return NULL;
 }
 
-void test_read(algorithm *palgo, uint64_t max, uint64_t num, bool is_zipf, int seed, int nr_workers)
+void test_read(algorithm *palgo, uint64_t max, uint64_t num, bool is_zipf, bool is_seq, int seed, int nr_workers)
 {
     // read
     ftl_log("read workload size: %.2f GB\n", (double)num * NUM_WORKERS * PIECE / G);
@@ -600,6 +619,7 @@ void test_read(algorithm *palgo, uint64_t max, uint64_t num, bool is_zipf, int s
         uint64_t max;
         uint64_t num;
         bool is_zipf;
+        bool is_seq;
         int seed;
         volatile bool *pstart;
     } args = {
@@ -607,6 +627,7 @@ void test_read(algorithm *palgo, uint64_t max, uint64_t num, bool is_zipf, int s
         .max = max,
         .num = num,
         .is_zipf = is_zipf,
+        .is_seq = is_seq,
         .seed = seed,
         .pstart = &start};
     for (int i = 0; i < nr_workers; ++i)
@@ -766,9 +787,9 @@ int main(int argc, char **argv)
     // for read test
     ftl_log("hello world\n");
     uint64_t nr_G_workload = 1048576;
-    uint64_t pool_size = 8 * nr_G_workload;
-    uint64_t num_update = 1 * nr_G_workload;
-    uint64_t num_read = 8 * nr_G_workload / NUM_WORKERS;
+    int64_t pool_size = 7 * nr_G_workload;
+    uint64_t num_update = 3 * nr_G_workload;
+    uint64_t num_read = 7 * nr_G_workload / NUM_WORKERS;
     float map_size_frac = 8.0 / 8;
 
     int seed = 1;
@@ -842,23 +863,42 @@ int main(int argc, char **argv)
     ftl_log("start loading. iodepth: %d\n", iodepth);
     toggle_ssd_lat(true);
     test_load(palgo, pool_size);
+    sleep(2);
+    D_ENV(palgo)->pb_mgr->show_sblk_state(D_ENV(palgo)->pb_mgr, 1);
     test_update(palgo, pool_size, num_update, false, seed, 1);
-    ftl_log("gc data: %d, gc mapping  read: %d, gc write: %d\n", D_ENV(palgo)->num_data_gc, D_ENV(palgo)->num_gc_flash_read, D_ENV(palgo)->num_gc_flash_write);
+    uint32_t num_data = D_ENV(palgo)->num_data_gc;
+    uint32_t num_reads = D_ENV(palgo)->num_gc_flash_read;
+    ftl_log("gc data: %u, gc mapping read: %u, avg read: %.2f\n",
+            num_data,
+            num_reads,
+            (float)num_reads / num_data);
     ftl_log("load finished.\n");
     fflush(stdout);
     sleep(2);
-    // clean_stats();
-    /*random read*/
-    ftl_log("start random reading. iodepth: %d\n", iodepth);
+
+    clean_stats();
+#ifdef HOT_CMT
+    d_cache.hot_cmt_reset(&d_cache);
+#endif
+    /*seq read*/
+    ftl_log("start seq reading. iodepth: %d\n", iodepth);
     toggle_ssd_lat(true);
-    test_read(palgo, pool_size, num_read, false, seed, NUM_WORKERS);
-    ftl_log("finish random reading.\n");
+    test_read(palgo, pool_size, num_read, false, true, seed, NUM_WORKERS);
+    ftl_log("finish seq reading.\n");
     fflush(stdout);
     sleep(2);
+
+    /*random read*/
+    // ftl_log("start random reading. iodepth: %d\n", iodepth);
+    // toggle_ssd_lat(true);
+    // test_read(palgo, pool_size, num_read, false, false, seed, NUM_WORKERS);
+    // ftl_log("finish random reading.\n");
+    // fflush(stdout);
+    // sleep(2);
     /*zipfan read*/
     // ftl_log("start zipfian reading. iodepth: %d\n", iodepth);
     // shuffle_map = create_shuffle_map(pool_size - 1);
-    // test_read(palgo, pool_size, num_read, true, seed, NUM_WORKERS);
+    // test_read(palgo, pool_size, num_read, true,false, seed, NUM_WORKERS);
     // ftl_log("finish zipfian reading.\n");
     // fflush(stdout);
     // sleep(2);

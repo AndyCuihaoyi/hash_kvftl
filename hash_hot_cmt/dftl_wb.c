@@ -87,7 +87,6 @@ void dftl_wb_init(w_buffer_t *self)
     env->flush_list->list = (struct flush_node *)calloc(
         self->env->max_wb_size, sizeof(struct flush_node));
 #endif
-
     env->wb_master_q = ring_create(RING_TYPE_MP_SC, self->env->max_wb_size * 2);
     env->wb_retry_q = algo_q_create();
     env->hash_table = d_htable_init(self->env->max_wb_size * 2);
@@ -178,40 +177,42 @@ void _do_wb_assign_ppa(w_buffer_t *self, request *req)
         ppa_t ppa;
         uint32_t stream_idx = lpa % MAX_GC_STREAM;
         bm_stream_manager_t *stream = &pbm->env->stream[stream_idx];
-        if (stream->page_remain <= 0)
+        if (stream->grain_remain == 0)
         {
-            // solution one
-            fl->list[fl->size].ppa = stream->flush_ppa;
+            stream->active_ppa = dp_alloc(pbm, lpa);
+            stream->grain_remain = GRAIN_PER_PAGE;
+            stream->page_remain--;
+        }
+        if (stream->page_remain == 0)
+        {
+            // fl->list[fl->size].ppa = stream->flush_ppa;
+            // fl->list[fl->size].length = stream->flush_page;
+            // fl->list[fl->size].value = NULL;
+            // fl->size++;
 
-            fl->list[fl->size].length = stream->flush_page;
-            fl->list[fl->size].value = NULL;
-            fl->size++;
+            uint64_t maxlat = 0;
+            uint64_t lat = __demand.li->write(stream->flush_ppa, stream->flush_page * PAGESIZE, 0);
+            maxlat = lat > maxlat ? lat : maxlat;
+            req->etime = clock_get_ns() + maxlat;
+
             stream->flush_ppa = stream->active_ppa;
             int page_remain = SBLK_OFFT2PPA(stream->active_sblk, SBLK_END) - stream->active_ppa;
             stream->page_remain = page_remain >= 64 ? 64 : page_remain;
             stream->flush_page = stream->page_remain;
             stream->grain_remain = GRAIN_PER_PAGE;
         }
-        if (stream->grain_remain <= 0)
-        {
-            // solution one
-            // fl->list[fl->size].ppa = stream->active_ppa;
-            // fl->list[fl->size].length += 1;
-            // fl->list[fl->size].value = NULL;
-            // fl->size++;
-            stream->active_ppa = dp_alloc(pbm, lpa);
-            stream->grain_remain = GRAIN_PER_PAGE;
-            stream->page_remain--;
-        }
         ppa = stream->active_ppa;
-
         uint32_t offset = GRAIN_PER_PAGE - stream->grain_remain;
         wb_entry->ppa = PPA_TO_PGA(ppa, offset);
         stream->grain_remain -= val_len;
 
         inf_free_valueset(&wb_entry->value);
         wb_entry->value = NULL;
-
+        // if (stream->active_sblk->wp_offt == _PPS)
+        // {
+        //     printf("stream idx:%d, valid cnt:%d, remain page: %d, remain grain:%d, sblk wp:%d\n",
+        //            stream_idx, stream->active_sblk->valid_cnt, stream->page_remain, stream->grain_remain, stream->active_sblk->wp_offt);
+        // }
         for (int i = 0; i < val_len; i++)
         {
             pbm->validate_grain(pbm, wb_entry->ppa + i);
@@ -562,7 +563,7 @@ void _do_wb_flush(w_buffer_t *self, request *req)
     skiplist **wb = &self->wb;
     flush_list *fl = env->flush_list;
     ftl_assert(fl->size > 0);
-
+#ifndef DATA_SEGREGATION
     uint64_t maxlat = 0;
     uint32_t tt_pgs = 0;
     for (int i = 0; i < fl->size; i++)
@@ -575,10 +576,7 @@ void _do_wb_flush(w_buffer_t *self, request *req)
         tt_pgs += fl->list[i].length;
     }
     req->etime = clock_get_ns() + maxlat;
-#ifdef DATA_SEGREGATION
-    fl->size = 0;
-    memset(fl->list, 0, env->max_wb_size * sizeof(struct flush_node));
-#else
+
     fl->size = 0;
     memset(fl->list, 0, env->max_wb_size * sizeof(struct flush_node));
 #endif

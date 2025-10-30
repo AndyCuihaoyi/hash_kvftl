@@ -7,10 +7,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+void dftl_show_sblk_state(block_mgr_t *self, int pt_num);
 bm_env_t bm_env = {
     .grain_cnt = GRAIN_PER_PAGE * _NOP, .valid_bitmap = NULL, .oob = NULL};
 #ifdef DATA_SEGREGATION
-bm_superblock_t *dftl_get_stream_sblk(block_mgr_t *self, lpa_t lpa);
+bm_superblock_t *dftl_get_stream_sblk(block_mgr_t *self, lpa_t lpa, bool is_reserve);
 #endif
 block_mgr_t bm = {
     .env = &bm_env,
@@ -31,8 +32,10 @@ block_mgr_t bm = {
     .change_reserve = dftl_change_reserve,
     .get_oob = dftl_bm_get_oob,
     .set_oob = dftl_bm_set_oob,
+    .show_sblk_state = dftl_show_sblk_state,
 #ifdef DATA_SEGREGATION
     .get_stream_superblock = dftl_get_stream_sblk,
+
 #endif
 };
 block_mgr_t *pbm = &bm;
@@ -49,6 +52,7 @@ void dftl_bm_init(block_mgr_t *self)
 #ifdef DATA_SEGREGATION
         env->sblk[i].is_flying = false;
         env->sblk[i].stream_idx = -1;
+        env->sblk[i].is_rsv = false;
 #endif
     }
     env->part_num = 2;
@@ -65,21 +69,26 @@ void dftl_bm_init(block_mgr_t *self)
     env->part[1].sblk_rsv = _NOS / 20 + 1;
     env->part[1].active_sblk = -1;
 #ifdef DATA_SEGREGATION
+    for (int i = env->part[1].s_sblk; i < env->part[1].s_sblk + MAX_GC_STREAM; i++)
+    {
+        env->sblk[i].is_rsv = true;
+    }
     env->stream = (bm_stream_manager_t *)g_malloc0(sizeof(bm_stream_manager_t) * MAX_GC_STREAM);
     for (int i = 0; i < MAX_GC_STREAM; i++)
     {
         env->stream[i].idx = i;
         env->stream[i].active_sblk = self->get_active_superblock(pbm, DATA_S, FALSE);
         env->stream[i].active_sblk->stream_idx = i;
+        env->stream[i].active_sblk->is_flying = true;
+        env->stream[i].active_sblk->is_rsv = false;
         env->stream[i].active_ppa = self->get_page_num(self, env->stream[i].active_sblk);
         env->stream[i].flush_ppa = env->stream[i].active_ppa;
         int page_remain = SBLK_OFFT2PPA(env->stream[i].active_sblk, SBLK_END) - env->stream[i].active_ppa;
         env->stream[i].grain_remain = GRAIN_PER_PAGE;
         env->stream[i].page_remain = page_remain >= 64 ? 64 : page_remain;
         env->stream[i].flush_page = env->stream[i].page_remain;
-
-        // printf("stream idx: %d , sblk idx: %d , sblk state: %d\n", env->stream[i].idx = i, env->stream[i].active_sblk->index, env->stream[i].active_sblk->is_flying);
     }
+    // self->show_sblk_state(self, DATA_S);
 #endif
 }
 
@@ -135,6 +144,8 @@ void dftl_validate_grain(block_mgr_t *self, ppa_t grain)
     ftl_assert(env->valid_bitmap[grain] == false);
     env->valid_bitmap[grain] = true;
     env->sblk[SBLK_IDX(grain / GRAIN_PER_PAGE)].valid_cnt++;
+    if (env->sblk[SBLK_IDX(grain / GRAIN_PER_PAGE)].valid_cnt > 131072)
+        abort();
 }
 
 void dftl_invalidate_grain(block_mgr_t *self, ppa_t grain)
@@ -174,12 +185,27 @@ bm_superblock_t *dftl_get_active_sblk(block_mgr_t *self, int pt_num, bool isrese
     bm_env_t *env = self->env;
     ftl_assert(0 <= pt_num && pt_num < env->part_num);
     bm_part_ext_t *pt = &env->part[pt_num];
+#ifdef DATA_SEGREGATION
+    if (isreserve && pt_num == DATA_S)
+    {
+        for (int i = pt->s_sblk; i < pt->e_sblk; i++)
+        {
+            if (env->sblk[i].is_rsv == true && !self->check_full(self, &env->sblk[i]) && env->sblk[i].is_flying == false)
+            {
+                pt->active_sblk = i;
+                break;
+            }
+        }
+        return &env->sblk[pt->active_sblk];
+    }
+#endif
     if (isreserve)
     {
         ftl_assert(env->sblk[pt->sblk_rsv].wp_offt == 0 &&
                    env->sblk[pt->sblk_rsv].valid_cnt == 0);
         return &env->sblk[pt->sblk_rsv];
     }
+
     if (pt->active_sblk == -1)
     {
         for (int i = pt->s_sblk; i <= pt->e_sblk; i++)
@@ -199,7 +225,7 @@ bm_superblock_t *dftl_get_active_sblk(block_mgr_t *self, int pt_num, bool isrese
         for (int i = start_sblk + 1; i <= pt->e_sblk; i++)
         {
 #ifdef DATA_SEGREGATION
-            if (i != pt->sblk_rsv && !self->check_full(self, &env->sblk[i]) && env->sblk[i].is_flying == false)
+            if (env->sblk[i].is_rsv == false && !self->check_full(self, &env->sblk[i]) && env->sblk[i].is_flying == false)
 #else
 
             if (i != pt->sblk_rsv && !self->check_full(self, &env->sblk[i]))
@@ -215,7 +241,7 @@ bm_superblock_t *dftl_get_active_sblk(block_mgr_t *self, int pt_num, bool isrese
             for (int i = pt->s_sblk; i < start_sblk; i++)
             {
 #ifdef DATA_SEGREGATION
-                if (i != pt->sblk_rsv && !self->check_full(self, &env->sblk[i]) && env->sblk[i].is_flying == false)
+                if (env->sblk[i].is_rsv == false && !self->check_full(self, &env->sblk[i]) && env->sblk[i].is_flying == false)
 #else
                 if (i != pt->sblk_rsv && !self->check_full(self, &env->sblk[i]))
 #endif
@@ -226,7 +252,10 @@ bm_superblock_t *dftl_get_active_sblk(block_mgr_t *self, int pt_num, bool isrese
             }
         }
 #ifdef DATA_SEGREGATION
-        env->sblk[pt->active_sblk].is_flying = true;
+        if (pt->active_sblk == -1)
+        {
+            self->show_sblk_state(self, pt_num);
+        }
 #endif
     }
     else
@@ -263,94 +292,142 @@ bm_superblock_t *dftl_get_active_sblk(block_mgr_t *self, int pt_num, bool isrese
     {
         pt->free_sblk_cnt--;
     }
-
     return &env->sblk[pt->active_sblk];
 }
 
 #ifdef DATA_SEGREGATION
-bm_superblock_t *dftl_get_stream_sblk(block_mgr_t *self, lpa_t lpa)
+bm_superblock_t *dftl_get_stream_sblk(block_mgr_t *self, lpa_t lpa, bool is_reserve)
 {
     bm_env_t *env = self->env;
     int idx = lpa % MAX_GC_STREAM;
     bm_stream_manager_t *stream = &env->stream[idx];
+    bm_superblock_t *full_sblk = stream->active_sblk;
     if (self->check_full(self, stream->active_sblk))
     {
-        stream->active_sblk->is_flying = false;
-        env->stream[idx].active_sblk = self->get_active_superblock(self, DATA_S, FALSE);
-        stream = &env->stream[idx];
+        stream->active_sblk = self->get_active_superblock(self, DATA_S, is_reserve);
+        full_sblk->is_rsv = false;
+        full_sblk->is_flying = false;
+
         stream->active_sblk->stream_idx = idx;
+        stream->active_sblk->is_flying = true;
+        if (is_reserve)
+        {
+            printf("stream[%d]:form sblk[%d] to rsv sblk[%d]\n", idx, full_sblk->index, stream->active_sblk->index);
+            stream->active_sblk->is_rsv = false;
+        }
     }
     return stream->active_sblk;
 }
 #endif
-
-bool dftl_isgc_needed(block_mgr_t *self, int pt_num)
-{
-    bm_env_t *env = self->env;
-    ftl_assert(0 <= pt_num && pt_num < env->part_num);
-    bm_part_ext_t *pt = &env->part[pt_num];
-    // #ifdef DATA_SEGREGATION
-    //     if (pt_num == DATA_S)
-    //         return (pt->free_sblk_cnt <= MAX_GC_STREAM) ? 1 : 0;
-    // #endif
-    return (pt->free_sblk_cnt <= 1) ? 1 : 0; // reserved 1
-}
-
-bm_superblock_t *dftl_get_gc_target(block_mgr_t *self, int pt_num)
+void dftl_show_sblk_state(block_mgr_t *self, int pt_num)
 {
     bm_env_t *env = self->env;
     ftl_assert(0 <= pt_num && pt_num < env->part_num);
     bm_part_ext_t *pt = &env->part[pt_num];
     bm_superblock_t *target = NULL;
     uint32_t min_valid_cnt = UINT32_MAX;
+#ifdef DATA_SEGREGATION
+    printf("------------sblk state-------------\n");
     for (int i = pt->s_sblk; i <= pt->e_sblk; i++)
     {
+        // 打印包含 is_flying 状态的完整信息
+        printf("sblk[%d]:stream idx:%d, start ppa:%d, is_rsv=%d, is_full=%d, valid_cnt=%u,sblk wp:%d, is_flying=%s\n",
+               i,
+               env->sblk[i].stream_idx,
+               env->sblk[i].index * _PPS,
+               (env->sblk[i].is_rsv == true), // 是否是预留块
+               self->check_full(self, &env->sblk[i]),
+               env->sblk[i].valid_cnt,
+               env->sblk[i].wp_offt,
+               env->sblk[i].is_flying ? "true" : "false"); // is_flying 状态
+    }
+    printf("------------stream state-------------\n");
+    for (int i = 0; i < MAX_GC_STREAM; i++)
+    {
+        bm_env_t *env = self->env;
+        bm_stream_manager_t *stream = &env->stream[i];
+        printf("stream[%d] (sblk[%d]): page remain:%d, grain remain:%d, active PPA: %d, flush PPA: %d, flush page:%d, sblk wp: %d  \n",
+               stream->idx,
+               stream->active_sblk->index,
+               stream->page_remain,
+               stream->grain_remain,
+               stream->active_ppa,
+               stream->flush_ppa,
+               stream->flush_page,
+               stream->active_sblk->wp_offt);
+    }
+
+#else
+    for (int i = pt->s_sblk; i <= pt->e_sblk; i++)
+    {
+        // 打印包含 is_flying 状态的完整信息
+        printf("sblk[%d]: is_rsv=%d, is_full=%d, valid_cnt=%u,sblk wp:%d \n",
+               i,
+               (i == pt->sblk_rsv), // 是否是预留块
+               self->check_full(self, &env->sblk[i]),
+               env->sblk[i].valid_cnt,
+               env->sblk[i].wp_offt);
+    }
+#endif
+}
+bool dftl_isgc_needed(block_mgr_t *self, int pt_num)
+{
+    bm_env_t *env = self->env;
+    ftl_assert(0 <= pt_num && pt_num < env->part_num);
+    bm_part_ext_t *pt = &env->part[pt_num];
 #ifdef DATA_SEGREGATION
-        if (i != pt->sblk_rsv && env->sblk[i].valid_cnt < min_valid_cnt)
+    if (pt_num == DATA_S)
+        return (pt->free_sblk_cnt <= MAX_GC_STREAM) ? 1 : 0;
+#endif
+    return (pt->free_sblk_cnt <= 1) ? 1 : 0; // reserved 1
+}
+
+bm_superblock_t *dftl_get_gc_target(block_mgr_t *self, int pt_num, int stream_idx)
+{
+    bm_env_t *env = self->env;
+    ftl_assert(0 <= pt_num && pt_num < env->part_num);
+    bm_part_ext_t *pt = &env->part[pt_num];
+    bm_superblock_t *target = NULL;
+    uint32_t min_valid_cnt = UINT32_MAX;
+#ifdef DATA_SEGREGATION
+    if (pt_num == DATA_S)
+    {
+        for (int i = pt->s_sblk; i <= pt->e_sblk; i++)
         {
-            // if (env->sblk[i].is_flying == true && pt_num == DATA_S)
-            // {
-            //     env->sblk[i].is_flying = false;
-            //     env->stream[env->sblk[i].stream_idx].active_sblk = self->get_active_superblock(self, DATA_S, FALSE);
-            //     env->stream[env->sblk[i].stream_idx].active_sblk->stream_idx = env->sblk[i].stream_idx;
-            //     env->sblk[i].stream_idx = -1;
-            // }
-            if (self->check_full(self, &env->sblk[i]) && pt_num == MAP_S)
-            {
-                target = &env->sblk[i];
-                min_valid_cnt = env->sblk[i].valid_cnt;
-            }
-            else if (pt_num == DATA_S)
+            if (env->sblk[i].is_flying == true)
+                continue;
+            if (env->sblk[i].is_rsv == false && env->sblk[i].stream_idx == stream_idx && self->check_full(self, &env->sblk[i]) && env->sblk[i].valid_cnt < min_valid_cnt)
             {
                 target = &env->sblk[i];
                 min_valid_cnt = env->sblk[i].valid_cnt;
             }
         }
+    }
+    else
+    {
+        for (int i = pt->s_sblk; i <= pt->e_sblk; i++)
+        {
+            if (i != pt->sblk_rsv && self->check_full(self, &env->sblk[i]) && env->sblk[i].valid_cnt < min_valid_cnt)
+            {
+                target = &env->sblk[i];
+                min_valid_cnt = env->sblk[i].valid_cnt;
+            }
+        }
+    }
 #else
+    for (int i = pt->s_sblk; i <= pt->e_sblk; i++)
+    {
         if (i != pt->sblk_rsv && self->check_full(self, &env->sblk[i]) && env->sblk[i].valid_cnt < min_valid_cnt)
         {
             target = &env->sblk[i];
             min_valid_cnt = env->sblk[i].valid_cnt;
         }
-#endif
     }
-    if (min_valid_cnt == UINT32_MAX)
+#endif
+    if (min_valid_cnt == UINT32_MAX || target->valid_cnt >= target->wp_offt * GRAIN_PER_PAGE)
     {
         ftl_err("No valid superblock for GC\n");
-#ifdef DATA_SEGREGATION
-        for (int i = pt->s_sblk; i <= pt->e_sblk; i++)
-        {
 
-            // 打印包含 is_flying 状态的完整信息
-            printf("sblk[%d]: is_rsv=%d, is_full=%d, valid_cnt=%u,sblk wp:%d, is_flying=%s\n",
-                   i,
-                   (i == pt->sblk_rsv), // 是否是预留块
-                   self->check_full(self, &env->sblk[i]),
-                   env->sblk[i].valid_cnt,
-                   env->sblk[i].wp_offt,
-                   env->sblk[i].is_flying ? "true" : "false"); // is_flying 状态
-        }
-#endif
         abort();
     }
     return target;

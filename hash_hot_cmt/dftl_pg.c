@@ -18,11 +18,13 @@ extern demand_cache *pd_cache;
 extern w_buffer_t *pw_buffer;
 bm_superblock_t *d_active = NULL, *d_reserve = NULL;
 bm_superblock_t *t_active = NULL, *t_reserve = NULL;
-
+#ifdef DATA_SEGREGATION
+struct flush_list *fl = NULL;
+#endif
 static bool contains_valid_grain(block_mgr_t *bm, ppa_t ppa);
 static int _do_bulk_write_valid_items(block_mgr_t *bm,
                                       gc_table_struct **bulk_table,
-                                      int nr_read_pages, page_t type);
+                                      int nr_read_pages, page_t type, bm_superblock_t *target_seg);
 static int _do_bulk_mapping_update(block_mgr_t *bm, int nr_valid_items,
                                    page_t type);
 static void _do_wait_until_read_all(int nr_valid_pages);
@@ -51,21 +53,37 @@ int dftl_page_init(block_mgr_t *bm)
     return 0;
 }
 
+#ifdef DATA_SEGREGATION
+ppa_t gc_dp_alloc(block_mgr_t *bm, lpa_t lpa)
+{
+    ppa_t ppa;
+    bm_superblock_t *active = bm->get_stream_superblock(bm, lpa, true);
+    ppa = bm->get_page_num(bm, active);
+    return ppa;
+}
+#endif
+
 ppa_t dp_alloc(block_mgr_t *bm, lpa_t lpa)
 {
     ppa_t ppa;
 #ifdef DATA_SEGREGATION
-    if (bm->isgc_needed(bm, DATA_S))
+    bm_env_t *env = bm->env;
+    int idx = lpa % MAX_GC_STREAM;
+    bm_stream_manager_t *stream = &env->stream[idx];
+    if (bm->check_full(bm, stream->active_sblk))
     {
-        int nr_valid_pages = dpage_gc_dvalue(bm);
+        if (bm->isgc_needed(bm, DATA_S))
+        {
+            int nr_valid_pages = dpage_gc_dvalue(bm, idx);
+        }
     }
-    d_active = bm->get_stream_superblock(bm, lpa);
+    d_active = bm->get_stream_superblock(bm, lpa, false);
 #else
     if (!d_active || bm->check_full(bm, d_active))
     {
         if (bm->isgc_needed(bm, DATA_S))
         {
-            int nr_valid_pages = dpage_gc_dvalue(bm);
+            int nr_valid_pages = dpage_gc_dvalue(bm, -1);
 
 #ifdef PRINT_GC_STATUS
             printf("DATA GC - (valid/total: %d/%d)\n", nr_valid_pages, _PPS);
@@ -118,7 +136,7 @@ struct gc_bucket *gc_bucket;
 struct gc_bucket_node *gcb_node_arr[_PPS * GRAIN_PER_PAGE];
 static int _do_bulk_write_valid_items(block_mgr_t *bm,
                                       gc_table_struct **bulk_table,
-                                      int nr_read_pages, page_t type)
+                                      int nr_read_pages, page_t type, bm_superblock_t *target_seg)
 {
     if (!nr_read_pages)
         return 0;
@@ -143,6 +161,7 @@ static int _do_bulk_write_valid_items(block_mgr_t *bm,
                 // here we do not assign gcb_node->ptr since no memcpy is needed
                 // gcb_node->ptr = bulk_table[i]->origin->value + j * GRAINED_UNIT;
                 gcb_node->lpa = oob->lpa;
+                gcb_node->len = oob->length;
                 if (unlikely(oob->length == 0))
                 {
                     ftl_err("pga: %d has no corresponding oob data!\n", pga);
@@ -166,47 +185,65 @@ static int _do_bulk_write_valid_items(block_mgr_t *bm,
             abort();
     }
     int copied_pages = 0;
+
 #ifdef DATA_SEGREGATION
-    // assign new ppas to valid grains
-
-    for (int len = 1; len <= PAGESIZE / GRAINED_UNIT; len++)
+    // bm->show_sblk_state(bm, DATA_S);
+    //  assign new ppas to valid grains
+    // if (fl == NULL)
+    // {
+    //     fl = (struct flush_list *)malloc(sizeof(struct flush_list));
+    //     fl->size = 0;
+    //     fl->list = (struct flush_node *)calloc(2048, sizeof(struct flush_node));
+    // }
+    for (int i = 0; i < nr_valid_items; i++)
     {
-        int num_items_in_bucket = gc_bucket->idx[len];
-
-        if (num_items_in_bucket > 0)
+        struct gc_bucket_node *node = gcb_node_arr[i];
+        uint32_t stream_idx = target_seg->stream_idx;
+        bm_stream_manager_t *stream = &bm->env->stream[stream_idx];
+        if (stream->grain_remain == 0)
         {
-            for (int i = 0; i < num_items_in_bucket; i++)
-            {
-                struct gc_bucket_node *node = &gc_bucket->bucket[len][i];
-                uint32_t stream_idx = G_IDX(node->lpa) % MAX_GC_STREAM;
-                bm_stream_manager_t *stream = &bm->env->stream[stream_idx];
-
-                if (stream->page_remain <= 0)
-                {
-                    __demand.li->write(stream->active_ppa, PAGESIZE, 0);
-                    copied_pages++;
-                    stream->active_ppa = dp_alloc(bm, node->lpa);
-                    stream->page_remain = GRAIN_PER_PAGE;
-                }
-                ppa_t ppa = stream->active_ppa;
-                uint32_t offset = GRAIN_PER_PAGE - stream->page_remain;
-                node->ppa = PPA_TO_PGA(ppa, offset);
-                bm_oob_t new_oob = {
-                    .is_tpage = false,
-                    .lpa = node->lpa,
-                    .length = len,
-                };
-                bm->set_oob(bm, node->ppa, &new_oob); // here ppa = pga
-                for (int i = 0; i < len; i++)
-                {
-                    bm->validate_grain(bm, node->ppa + i);
-                }
-            }
+            copied_pages++;
+            stream->active_ppa = gc_dp_alloc(bm, stream_idx);
+            stream->grain_remain = GRAIN_PER_PAGE;
+            stream->page_remain--;
         }
+        if (stream->page_remain == 0)
+        {
+            // fl->list[fl->size].ppa = stream->flush_ppa;
+            // fl->list[fl->size].length = stream->flush_page;
+            // fl->list[fl->size].value = NULL;
+            // fl->size++;
+            uint64_t lat = __demand.li->write(stream->flush_ppa, stream->flush_page * PAGESIZE, 0);
+            if (lat == -1)
+            {
+                printf("write PPA: %d SBLK(%d), write length:%d \n", stream->flush_ppa, PPA2SBLK_IDX(stream->flush_ppa), stream->flush_page);
+                bm->show_sblk_state(bm, DATA_S);
+            }
+            stream->flush_ppa = stream->active_ppa;
+            int page_remain = SBLK_OFFT2PPA(stream->active_sblk, SBLK_END) - stream->active_ppa;
+            stream->page_remain = page_remain >= 64 ? 64 : page_remain;
+            stream->flush_page = stream->page_remain;
+            stream->grain_remain = GRAIN_PER_PAGE;
+        }
+        ppa_t ppa = stream->active_ppa;
+        uint32_t offset = GRAIN_PER_PAGE - stream->grain_remain;
+        int len = 1;
+        stream->grain_remain -= len;
+        node->ppa = PPA_TO_PGA(ppa, offset);
+        for (int i = 0; i < len; i++)
+        {
+            bm->validate_grain(bm, node->ppa + i);
+        }
+        bm_oob_t new_oob = {
+            .is_tpage = false,
+            .lpa = node->lpa,
+            .length = len,
+        };
+        bm->set_oob(bm, node->ppa, &new_oob); // here ppa = pga
     }
+
 #else
     /*origin gc write*/
-
     uint64_t tt_pg_offset = 0;
     ppa_t sppa = -2;
     ppa_t last_ppa = -2;
@@ -263,11 +300,11 @@ static int _do_bulk_write_valid_items(block_mgr_t *bm,
         tt_pg_offset++;
     }
     __demand.li->write(sppa, (uint64_t)copied_pages * PAGESIZE, 0);
+
 #endif
     ((demand_env *)__demand.env)->num_gc_flash_write++;
     ftl_log("dGC: [valid grains: %d -> packed grains: %d], reclaimed: %d\n", nr_valid_grains,
             copied_pages * GRAIN_PER_PAGE, _PPS * GRAIN_PER_PAGE - copied_pages * GRAIN_PER_PAGE);
-
     return nr_valid_items;
 }
 
@@ -313,13 +350,11 @@ static int _do_bulk_mapping_update(block_mgr_t *bm, int nr_valid_grains,
     {
         struct gc_bucket_node *gcb_node = gcb_node_arr[i];
         lpa_t lpa = gcb_node->lpa;
-
         if (pd_cache->is_hit(pd_cache, lpa))
         {
             struct pt_struct pte = pd_cache->get_pte(pd_cache, lpa);
             pte.ppa = gcb_node->ppa;
             pd_cache->update(pd_cache, lpa, pte);
-
             skip_update[i] = true;
         }
         else
@@ -333,7 +368,6 @@ static int _do_bulk_mapping_update(block_mgr_t *bm, int nr_valid_grains,
             ((demand_env *)__demand.env)->num_gc_flash_read++;
             bm->invalidate_page(bm, cmt->t_ppa);
             cmt->t_ppa = UINT32_MAX;
-
             nr_update_tpages++;
         }
     }
@@ -393,7 +427,11 @@ static int _do_bulk_read_valid_tpages(block_mgr_t *bm,
         ppa_t ppa = SBLK_OFFT2PPA(target_seg, ppa_offt);
         if (bm->isvalid_page(bm, ppa))
         {
-            __demand.li->read(ppa, PAGESIZE, 0);
+            int res = __demand.li->read(ppa, PAGESIZE, 0);
+            if (res == -1)
+            {
+                abort();
+            }
             bm->invalidate_page(bm, ppa);
 
             bulk_table[i] = (struct gc_table_struct *)malloc(
@@ -447,12 +485,12 @@ static void _do_wait_until_read_all(int nr_valid_pages)
     pd_cache->member.nr_valid_read_done = 0;
 }
 
-int dpage_gc_dvalue(block_mgr_t *bm)
+int dpage_gc_dvalue(block_mgr_t *bm, int stream_idx)
 {
     ((demand_env *)__demand.env)->num_data_gc++;
     gc_table_struct **bulk_table =
         (struct gc_table_struct **)calloc(_PPS, sizeof(gc_table_struct *));
-    bm_superblock_t *target_seg = bm->get_gc_target(bm, DATA_S);
+    bm_superblock_t *target_seg = bm->get_gc_target(bm, DATA_S, stream_idx);
     if (target_seg->valid_cnt >= target_seg->wp_offt * GRAIN_PER_PAGE)
     {
         ftl_err("no invalid grain left!\n");
@@ -465,18 +503,26 @@ int dpage_gc_dvalue(block_mgr_t *bm)
     // _do_wait_until_read_all(nr_read_pages); // already sync, no need
 
     int nr_valid_items =
-        _do_bulk_write_valid_items(bm, bulk_table, nr_read_pages, DATA);
+        _do_bulk_write_valid_items(bm, bulk_table, nr_read_pages, DATA, target_seg);
 
     _do_bulk_mapping_update(bm, nr_valid_items, DATA);
 
     /* trim blocks on the gsegemnt */
     bm->trim_segment(bm, target_seg, __demand.li);
+#ifdef DATA_SEGREGATION
+    target_seg->stream_idx = -1;
+    printf("trim sblk[%d]\n", target_seg->index);
+#endif
 
     /* reserve -> active / target_seg -> reserve */
+#ifdef DATA_SEGREGATION
+    target_seg->is_rsv = true;
+    target_seg->is_flying = false;
+#else
     bm_superblock_t *tobe_reserve = target_seg;
     d_active = d_reserve;
     d_reserve = bm->change_reserve(bm, DATA_S, tobe_reserve);
-
+#endif
     for (int i = 0; i < nr_read_pages; i++)
     {
         free(bulk_table[i]);
@@ -494,7 +540,7 @@ int tpage_gc(block_mgr_t *bm)
         sizeof(struct gc_table_struct *), _PPS);
 
     /* get the target gsegment */
-    bm_superblock_t *target_seg = bm->get_gc_target(bm, MAP_S);
+    bm_superblock_t *target_seg = bm->get_gc_target(bm, MAP_S, -1);
 
     int nr_valid_pages = _do_bulk_read_valid_tpages(bm, bulk_table, target_seg);
 
@@ -529,7 +575,7 @@ uint32_t read_actual_dpage(block_mgr_t *bm, ppa_t ppa, request *const req)
 #ifdef DATA_SEGREGATION
     for (int i = 0; i < MAX_GC_STREAM; i++)
     {
-        if (real_ppa >= bm->env->stream[i].flush_ppa && real_ppa <= bm->env->stream[i].active_ppa)
+        if (real_ppa >= bm->env->stream[i].flush_ppa && real_ppa <= bm->env->stream[i].flush_ppa + bm->env->stream[i].flush_page)
         {
             return 0;
         }
@@ -546,13 +592,34 @@ uint32_t read_for_data_check(block_mgr_t *bm, ppa_t ppa, snode *wb_entry)
 #ifdef DATA_SEGREGATION
     for (int i = 0; i < MAX_GC_STREAM; i++)
     {
-        if (real_ppa >= bm->env->stream[i].flush_ppa && real_ppa <= bm->env->stream[i].active_ppa)
+        if (real_ppa >= bm->env->stream[i].flush_ppa - 64 && real_ppa <= bm->env->stream[i].flush_ppa + bm->env->stream[i].flush_page)
         {
             return 0;
         }
     }
 #endif
     uint64_t lat = __demand.li->read(real_ppa, PAGESIZE, 0);
-    wb_entry->etime = clock_get_ns() + lat;
-    return 0;
+#ifdef DATA_SEGREGATION
+    if (lat == -1)
+    {
+
+        printf("FATAL: Physical read failed for PPA: %u, SBLK(%d)\n", real_ppa, PPA2SBLK_IDX(real_ppa));
+        bm->show_sblk_state(bm, DATA_S);
+        printf("--- System State Dump for Debugging ---\n");
+        printf("The PPA was NOT in any pending flush stream. Current stream states:\n");
+        for (int i = 0; i < MAX_GC_STREAM; i++)
+        {
+            printf("  Stream[%d]: flush_ppa range [%u, %u) with %u pages.\n",
+                   i, bm->env->stream[i].flush_ppa,
+                   bm->env->stream[i].flush_ppa + bm->env->stream[i].flush_page,
+                   bm->env->stream[i].flush_page);
+        }
+        printf("---------------------------------------\n");
+
+        abort();
+
+        wb_entry->etime = clock_get_ns() + lat;
+        return 0;
+    }
+#endif
 }

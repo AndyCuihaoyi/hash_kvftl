@@ -276,13 +276,17 @@ uint64_t ssd_write_ppa(uint32_t pgidx, uint64_t size, uint64_t stime)
         if (unlikely(ssd_lower.ppa_state[tmp_pgidx]))
         {
             ftl_err("Overwrite PPA: %d\n", tmp_pgidx);
-            abort();
+            // abort();
         }
-        // printf("temp_id: %d, line_idx: %d, line_wp: %d, res: %d\n", tmp_pgidx, LINE_IDX(tmp_pgidx), ssd_lower.line_wp[LINE_IDX(tmp_pgidx)], tmp_pgidx - LINE_IDX(tmp_pgidx) * ssd_lower.sp.pgs_per_line);
-        if (unlikely(ssd_lower.line_wp[LINE_IDX(tmp_pgidx)] != tmp_pgidx - LINE_IDX(tmp_pgidx) * ssd_lower.sp.pgs_per_line))
-        { // tmp_pgidx % ssd_lower.sp.pgs_per_line != 0 && !ssd_lower.ppa_state[tmp_pgidx-1]
-            ftl_err("Write PPA out of line wp: %d\n", tmp_pgidx);
-            abort();
+        uint32_t line_idx = LINE_IDX(tmp_pgidx);
+        uint32_t current_line_wp = ssd_lower.line_wp[line_idx];
+        uint32_t target_offset_in_line = tmp_pgidx - line_idx * ssd_lower.sp.pgs_per_line;
+        if (unlikely(current_line_wp != target_offset_in_line))
+        {
+            ftl_err("Write PPA out of order! PPA: %u, Line: %u\n", tmp_pgidx, line_idx);
+            ftl_err(" -> Expected next offset (current WP): %u\n", current_line_wp);
+            ftl_err(" -> Actual target offset: %u\n", target_offset_in_line);
+            return -1;
         }
         ssd_lower.ppa_state[tmp_pgidx] = true;
         ssd_lower.line_wp[LINE_IDX(tmp_pgidx)]++;
@@ -309,6 +313,7 @@ uint64_t ssd_read_ppa(uint32_t pgidx, uint64_t size, uint64_t stime)
         if (unlikely(!ssd_lower.ppa_state[tmp_pgidx]))
         {
             ftl_err("PPA not written: %d\n", tmp_pgidx);
+            return -1;
             // abort();
         }
         struct ppa ppa = pgidx2ppa(&ssd_lower, tmp_pgidx);

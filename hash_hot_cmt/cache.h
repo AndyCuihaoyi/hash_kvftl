@@ -96,6 +96,7 @@ typedef struct demand_cache
 #ifdef HOT_CMT
 	int (*promote_hot)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry, struct cmt_struct *victim);
 	bool (*hot_is_hit)(struct demand_cache *self, lpa_t lpa, struct pt_struct *pte);
+	int (*hot_cmt_reset)(struct demand_cache *self);
 #endif
 	struct cache_env env;
 	struct cache_member member;
