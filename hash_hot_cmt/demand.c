@@ -210,6 +210,9 @@ uint32_t __demand_get(algorithm *palgo, request *const req)
     hash_params *h_params = req->h_params;
     lpa_t lpa;
     pte_t pte;
+#ifdef HOT_CMT
+    h_pte_t *hot_pte;
+#endif
 
 read_retry:
     lpa = get_lpa(D_ENV(palgo)->pd_cache, req->key, req->h_params);
@@ -220,6 +223,8 @@ read_retry:
 
     if (h_params->cnt > D_ENV(palgo)->max_try)
     {
+        if (req->type == PREFILL_DATAR)
+            return -1;
         rc = UINT32_MAX;
         warn_notfound(__FILE__, __LINE__);
         goto read_ret;
@@ -251,7 +256,7 @@ read_retry:
     }
 
     /* 1. check write buffer first */
-    if (h_params->cnt == 0)
+    if (h_params->cnt == 0 && req->type != PREFILL_DATAR)
     {
         rc = wb->do_check(wb, req);
         if (rc)
@@ -265,11 +270,13 @@ read_retry:
 
 /* 2. check cache */
 #ifdef HOT_CMT
-    if (h_params->cnt == 0 && pd_cache->hot_is_hit(pd_cache, lpa, &pte) == true)
+    if (h_params->cnt == 0 && pd_cache->hot_is_hit(pd_cache, lpa, &hot_pte) == true)
     {
-        if (h_params->key_fp == pte.key_fp)
+        if (h_params->key_fp == hot_pte->key_fp)
         {
             pd_cache->stat.hot_cmt_hit++;
+            pte.ppa = hot_pte->ppa;
+            pte.key_fp = hot_pte->key_fp;
             goto data_read;
         }
     }
@@ -302,12 +309,20 @@ read_retry:
         {
             goto read_ret;
         }
+        if (req->type == PREFILL_DATAR)
+        {
+            struct cmt_struct *cmt = pd_cache->member.cmt[D_IDX];
+            if (IS_INITIAL_PPA(cmt->t_ppa))
+                return -1;
+        }
         rc = pd_cache->load(pd_cache, lpa, req, NULL);
         if (!rc)
         {
+
             rc = UINT32_MAX;
             warn_notfound(__FILE__, __LINE__);
             req->state = ALGO_REQ_NOT_FOUND;
+
             while (!ring_enqueue(__demand.finish_q, (void *)&req, 1))
                 ;
         }
@@ -324,8 +339,13 @@ read_retry:
 
 cache_check_complete:
     // free_iparams(req, NULL);
-
     pte = pd_cache->get_pte(pd_cache, lpa);
+#ifdef PREFILL_CACHE
+    if (IS_INITIAL_PPA(pte.ppa))
+    {
+        return -1;
+    }
+#endif
 #ifdef STORE_KEY_FP
     /* fast fingerprint compare */
     if (h_params->key_fp != pte.key_fp)
@@ -348,12 +368,14 @@ data_read:
     }
     h_params = (struct hash_params *)req->h_params;
     KEYT *real_key = &real_keys[lpa];
+
     if (KEYCMP(req->key, *real_key) == 0)
     {
         hash_collision_logging(h_params->cnt, READ);
         free(h_params);
-        while (!ring_enqueue(__demand.finish_q, (void *)&req, 1))
-            ;
+        if (req->type != PREFILL_DATAR)
+            while (!ring_enqueue(__demand.finish_q, (void *)&req, 1))
+                ;
     }
     else
     {
@@ -364,6 +386,10 @@ data_read:
     }
 
 read_ret:
+    if (req->type == PREFILL_DATAR && rc != INT32_MAX)
+    {
+        return lpa;
+    }
     return rc;
 }
 
@@ -374,13 +400,16 @@ uint32_t demand_get(algorithm *palgo, request *const req)
         req->h_params = make_hash_params(req);
     }
     uint32_t rc = __demand_get(palgo, req);
+#ifdef PREFILL_CACHE
+    if (req->type == PREFILL_DATAR)
+        return rc;
+#endif
     if (rc == UINT32_MAX)
     {
         req->state = ALGO_REQ_NOT_FOUND;
         while (!ring_enqueue(__demand.finish_q, (void *)&req, 1))
             ;
     }
-
     return 0;
 }
 

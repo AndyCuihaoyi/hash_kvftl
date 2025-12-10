@@ -5,6 +5,7 @@
 #include "dftl_utils.h"
 #include "../tools/lru_list.h"
 #include "../tools/rte_ring/rte_ring.h"
+#include "../tools/bloomfilter.h"
 #include "cache.h"
 #include "bm.h"
 #include "write_buffer.h"
@@ -47,6 +48,9 @@ typedef struct __attribute__((packed)) hot_pt_struct
 {
     lpa_t lpa;
     ppa_t ppa; // Index = lpa
+#ifdef VERIFY_CACHE
+    KEYT real_key;
+#endif
 #ifdef STORE_KEY_FP
     fp_t key_fp;
 #endif
@@ -67,7 +71,6 @@ typedef struct cmt_struct
     struct rte_ring *retry_q;
     struct rte_ring *wait_q;
     NODE *lru_ptr;
-
     bool *is_cached;
     uint32_t cached_cnt;
     uint32_t dirty_cnt;

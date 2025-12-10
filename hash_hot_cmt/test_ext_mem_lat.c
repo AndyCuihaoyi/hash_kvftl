@@ -787,10 +787,10 @@ int main(int argc, char **argv)
     // for read test
     ftl_log("hello world\n");
     uint64_t nr_G_workload = 1048576;
-    int64_t pool_size = 7 * nr_G_workload;
-    uint64_t num_update = 2 * nr_G_workload;
-    uint64_t num_read = 7 * nr_G_workload / NUM_WORKERS;
-    float map_size_frac = 8.0 / 8;
+    int64_t pool_size = 6 * nr_G_workload;
+    uint64_t num_update = 4 * nr_G_workload;
+    uint64_t num_read = 6 * nr_G_workload / NUM_WORKERS;
+    float map_size_frac = 8.0 / 64;
 
     int seed = 1;
     uint64_t ext_mem_lat = 0;
@@ -865,13 +865,15 @@ int main(int argc, char **argv)
     test_load(palgo, pool_size);
     sleep(2);
     // D_ENV(palgo)->pb_mgr->show_sblk_state(D_ENV(palgo)->pb_mgr, 1);
-    test_update(palgo, pool_size, num_update, false, seed, 1);
+    test_update(palgo, pool_size, num_update, true, seed, 1);
     uint32_t num_data = D_ENV(palgo)->num_data_gc;
     uint32_t num_reads = D_ENV(palgo)->num_gc_flash_read;
+    uint32_t read_for_data_check = D_ENV(palgo)->num_rd_data_rd;
     ftl_log("gc data: %u, gc mapping read: %u, avg read: %.2f\n",
             num_data,
             num_reads,
             (float)num_reads / num_data);
+    ftl_log("read for data check: %u, update: %u\n", read_for_data_check, num_update);
     ftl_log("load finished.\n");
     fflush(stdout);
     sleep(2);

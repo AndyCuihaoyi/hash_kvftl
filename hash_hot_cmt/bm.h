@@ -10,7 +10,7 @@
 #define SBLK_END (_PPS)
 #define SBLK_OFFT2PPA(sblk, offt) (sblk->index * _PPS + offt)
 #ifdef DATA_SEGREGATION
-#define MAX_GC_STREAM (16)
+#define MAX_GC_STREAM (8)
 #define PPA2SBLK_IDX(ppa) ((ppa) / _PPS)
 #endif
 enum

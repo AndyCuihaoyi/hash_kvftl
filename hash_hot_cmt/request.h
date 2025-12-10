@@ -5,7 +5,7 @@
 #include "../tools/skiplist.h"
 #include <stdint.h>
 
-#define LREQ_TYPE_NUM 11
+#define LREQ_TYPE_NUM 12
 // algo_req types
 #define TRIM 0
 #define MAPPINGR 1
@@ -18,6 +18,7 @@
 #define GCDW 8
 #define GCMR_DGC 9
 #define GCMW_DGC 10
+#define PREFILL_DATAR 11
 // end algo_req types
 
 uint32_t hashing_key(char *key, uint8_t len);

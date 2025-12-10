@@ -7,6 +7,7 @@
 #include "../lower/lower.h"
 #include "dftl_pg.h"
 #include "../tools/valueset.h"
+#include "../tools/bloomfilter.h"
 #include "glib-2.0/glib.h"
 #include "write_buffer.h"
 #include <pthread.h>
@@ -62,7 +63,7 @@ static void cache_member_init(struct cache_member *member)
 		cmt[i]->is_cached = NULL;
 		cmt[i]->cached_cnt = 0;
 		cmt[i]->dirty_cnt = 0;
-
+		cmt[i]->bf = bf_init(EPP, bf_fpr_from_memory(EPP, 8));
 		cmt[i]->retry_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
 		cmt[i]->wait_q = ring_create(RING_TYPE_MP_SC, MAX_WRITE_BUF);
 	}

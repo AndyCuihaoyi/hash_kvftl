@@ -9,6 +9,7 @@
 #include "dftl_utils.h"
 #include "../tools/lru_list.h"
 #include "../tools/skiplist.h"
+#include "../tools/fifo_queue.h"
 
 /* Structures */
 struct cache_env
@@ -44,6 +45,9 @@ struct cache_member
 #ifdef HOT_CMT
 	int nr_cached_hot_tpages;
 	int nr_cached_hot_tentries;
+#endif
+#ifdef PREFILL_CACHE
+	Queue prefill_q;
 #endif
 
 	/* add attributes here */
@@ -95,7 +99,7 @@ typedef struct demand_cache
 	bool (*is_full)(struct demand_cache *self);
 #ifdef HOT_CMT
 	int (*promote_hot)(struct demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry, struct cmt_struct *victim);
-	bool (*hot_is_hit)(struct demand_cache *self, lpa_t lpa, struct pt_struct *pte);
+	bool (*hot_is_hit)(struct demand_cache *self, lpa_t lpa, struct hot_pt_struct **hot_pte);
 	int (*hot_cmt_reset)(struct demand_cache *self);
 #endif
 	struct cache_env env;

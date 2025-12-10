@@ -5,8 +5,10 @@
 #include "demand.h"
 #include "request.h"
 #include "../lower/lower.h"
+#include "../tools/bloomfilter.h"
 #include "dftl_pg.h"
 #include "../tools/valueset.h"
+#include "../tools/fifo_queue.h"
 #include "glib-2.0/glib.h"
 #include "write_buffer.h"
 #include <pthread.h>
@@ -25,7 +27,7 @@ extern block_mgr_t bm;
 extern block_mgr_t *pbm;
 #ifdef HOT_CMT
 int dftl_cache_promote_hot(demand_cache *self, lpa_t lpa, request *const req, snode *wb_entry, struct cmt_struct *victim);
-bool dftl_cache_hot_is_hit(demand_cache *self, lpa_t lpa, pte_t *pte);
+bool dftl_cache_hot_is_hit(demand_cache *self, lpa_t lpa, h_pte_t **hot_pte);
 #endif
 
 demand_cache d_cache = {
@@ -153,6 +155,9 @@ static void cache_member_init(struct cache_member *member)
 	member->nr_cached_hot_tpages = 0;
 	member->nr_cached_hot_tentries = 0;
 #endif
+#ifdef PREFILL_CACHE
+	QInit(&(member->prefill_q), MAX_WRITE_BUF);
+#endif
 }
 
 static void cache_stat_init(struct cache_stat *stat)
@@ -235,6 +240,10 @@ int dftl_cache_hot_reset(demand_cache *d_cache)
 #ifdef STORE_KEY_FP
 			d_cache->member.hot_mem_table[i][j].key_fp = 0;
 #endif
+#ifdef VERIFY_CACHE
+			d_cache->member.hot_mem_table[i][j].real_key.len = 0;
+			d_cache->member.hot_mem_table[i][j].real_key.key[0] = 0;
+#endif
 		}
 	}
 	return 0;
@@ -285,6 +294,11 @@ int dftl_cache_promote_hot(demand_cache *self, lpa_t lpa, request *const req, sn
 			self->member.hot_mem_table[d_idx][p_idx].lpa = lpa;
 			self->member.hot_mem_table[d_idx][p_idx].ppa = victim->pt[i].ppa;
 			self->member.hot_mem_table[d_idx][p_idx].key_fp = victim->pt[i].key_fp;
+// reset real key
+#ifdef VERIFY_CACHE
+			self->member.hot_mem_table[d_idx][p_idx].real_key.len = 0;
+			self->member.hot_mem_table[d_idx][p_idx].real_key.key[0] = 0;
+#endif
 		}
 		self->stat.grain_heat_distribute[victim->cnt_map[i]]++;
 	}
@@ -292,7 +306,7 @@ int dftl_cache_promote_hot(demand_cache *self, lpa_t lpa, request *const req, sn
 	return 1;
 }
 
-bool dftl_cache_hot_is_hit(demand_cache *self, lpa_t lpa, pte_t *pte)
+bool dftl_cache_hot_is_hit(demand_cache *self, lpa_t lpa, h_pte_t **hot_pte)
 {
 	lpa_t new_lpa = lpa % (self->env.max_cached_hot_entries);
 	int d_idx = D_IDX_HOT;
@@ -302,8 +316,7 @@ bool dftl_cache_hot_is_hit(demand_cache *self, lpa_t lpa, pte_t *pte)
 	{
 		if (self->member.hot_mem_table[d_idx][p_idx].lpa == lpa)
 		{
-			pte->ppa = self->member.hot_mem_table[d_idx][p_idx].ppa;
-			pte->key_fp = self->member.hot_mem_table[d_idx][p_idx].key_fp;
+			*hot_pte = &self->member.hot_mem_table[d_idx][p_idx];
 			return true;
 		}
 		else if (self->member.hot_mem_table[d_idx][p_idx].lpa == UINT32_MAX)

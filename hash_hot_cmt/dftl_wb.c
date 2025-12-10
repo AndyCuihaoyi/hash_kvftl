@@ -149,6 +149,20 @@ uint32_t _do_wb_insert(w_buffer_t *self, request *const req)
 
     // snode *wb_entry = skiplist_insert(wb, req->key, req->value, true);
     snode *wb_entry = skiplist_insert(wb, req->key, req->value, true);
+#ifdef PREFILL_CACHE
+    value_set *r_value = inf_get_valueset(NULL, PAGESIZE);
+    request *r_req = g_malloc0(sizeof(request));
+    r_req->type = PREFILL_DATAR;
+    r_req->key.len = req->key.len;
+    memcpy(r_req->key.key, req->key.key, req->key.len);
+    r_req->h_params = NULL;
+    r_req->params = NULL;
+    r_req->state = ALGO_REQ_PENDING;
+    r_req->value = r_value;
+    r_req->end_req = NULL;
+    r_req->ptr_nr_ios = NULL;
+    // demand_get(self->env->palgo, r_req);
+#endif
     wb_entry->hash_params = (void *)req->h_params;
     ftl_assert(wb_entry->value->value);
     req->value = NULL;
@@ -331,6 +345,9 @@ void _do_wb_mapping_update(w_buffer_t *self, request *req)
 
     lpa_t lpa;
     pte_t pte, new_pte;
+#ifdef HOT_CMT
+    h_pte_t *hot_pte;
+#endif
 
     /* push all the wb_entries to queue */
     sk_iter *iter = skiplist_get_iterator(wb);
@@ -402,6 +419,17 @@ void _do_wb_mapping_update(w_buffer_t *self, request *req)
                 abort();
             }
         }
+#ifdef HOT_CMT
+        bool hot_hit = false;
+        KEYT hot_key;
+        if (h_params->cnt == 0 && pd_cache->hot_is_hit(pd_cache, lpa, &hot_pte) == true)
+        {
+            if (h_params->key_fp == hot_pte->key_fp)
+            {
+                hot_hit = true;
+            }
+        }
+#endif
         if (pd_cache->is_hit(pd_cache, lpa))
         {
             pd_cache->touch(pd_cache, lpa);
@@ -479,9 +507,31 @@ void _do_wb_mapping_update(w_buffer_t *self, request *req)
 
 #ifdef UPDATE_DATA_CHECK
         /* data check is necessary before update */
-        D_ENV(palgo)->num_rd_data_rd++;
-        read_for_data_check(pbm, pte.ppa, wb_entry);
+        int read_skip = false;
+#ifdef VERIFY_CACHE
+        if (hot_hit)
+        {
+            if (KEYCMP(wb_entry->key, hot_pte->real_key))
+            {
+                read_skip = true;
+                D_ENV(palgo)->num_rd_data_rd++;
+            }
+        }
+#endif
         KEYT *real_key = &real_keys[lpa];
+#ifdef VERIFY_CACHE
+        if (!read_skip)
+        {
+            // read_for_data_check(pbm, pte.ppa, wb_entry);
+            if (hot_hit && hot_pte->real_key.key == NULL)
+            {
+                hot_pte->real_key = *real_key;
+            }
+            // D_ENV(palgo)->num_rd_data_rd++;
+        }
+#else
+        read_for_data_check(pbm, pte.ppa, wb_entry);
+#endif
         if (KEYCMP(wb_entry->key, *real_key) == 0)
         {
             h_params->find = HASH_KEY_SAME;

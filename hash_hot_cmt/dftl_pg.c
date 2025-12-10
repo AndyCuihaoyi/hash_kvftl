@@ -291,8 +291,8 @@ static int _do_bulk_write_valid_items(block_mgr_t *bm,
 
 #endif
     ((demand_env *)__demand.env)->num_gc_flash_write++;
-    ftl_log("dGC: [valid grains: %d -> packed grains: %d], reclaimed: %d\n", nr_valid_grains,
-            copied_pages * GRAIN_PER_PAGE, _PPS * GRAIN_PER_PAGE - copied_pages * GRAIN_PER_PAGE);
+    // ftl_log("dGC: [valid grains: %d -> packed grains: %d], reclaimed: %d\n", nr_valid_grains,
+    //        copied_pages * GRAIN_PER_PAGE, _PPS * GRAIN_PER_PAGE - copied_pages * GRAIN_PER_PAGE);
     return nr_valid_items;
 }
 
@@ -345,6 +345,7 @@ static int _do_bulk_mapping_update(block_mgr_t *bm, int nr_valid_grains,
             cmt_cnt_array[D_IDX] = true;
             cmt_cnt++;
         }
+
         if (pd_cache->is_hit(pd_cache, lpa))
         {
             struct pt_struct pte = pd_cache->get_pte(pd_cache, lpa);
@@ -594,27 +595,4 @@ uint32_t read_for_data_check(block_mgr_t *bm, ppa_t ppa, snode *wb_entry)
     }
 #endif
     uint64_t lat = __demand.li->read(real_ppa, PAGESIZE, 0);
-#ifdef DATA_SEGREGATION
-    if (lat == -1)
-    {
-
-        printf("FATAL: Physical read failed for PPA: %u, SBLK(%d)\n", real_ppa, PPA2SBLK_IDX(real_ppa));
-        bm->show_sblk_state(bm, DATA_S);
-        printf("--- System State Dump for Debugging ---\n");
-        printf("The PPA was NOT in any pending flush stream. Current stream states:\n");
-        for (int i = 0; i < MAX_GC_STREAM; i++)
-        {
-            printf("  Stream[%d]: flush_ppa range [%u, %u) with %u pages.\n",
-                   i, bm->env->stream[i].flush_ppa,
-                   bm->env->stream[i].flush_ppa + bm->env->stream[i].flush_page,
-                   bm->env->stream[i].flush_page);
-        }
-        printf("---------------------------------------\n");
-
-        abort();
-
-        wb_entry->etime = clock_get_ns() + lat;
-        return 0;
-    }
-#endif
 }
