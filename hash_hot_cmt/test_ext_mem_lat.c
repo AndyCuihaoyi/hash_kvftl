@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <ctype.h>
 #include <sys/prctl.h>
 #include "algo_queue.h"
 #include "cache.h"
@@ -787,10 +788,10 @@ int main(int argc, char **argv)
     // for read test
     ftl_log("hello world\n");
     uint64_t nr_G_workload = 1048576;
-    int64_t pool_size = 6 * nr_G_workload;
-    uint64_t num_update = 4 * nr_G_workload;
-    uint64_t num_read = 6 * nr_G_workload / NUM_WORKERS;
-    float map_size_frac = 8.0 / 64;
+    int64_t pool_size = 1 * nr_G_workload;
+    uint64_t num_update = 0 * nr_G_workload;
+    uint64_t num_read = 1 * nr_G_workload / NUM_WORKERS;
+    float map_size_frac = 1.0 / 64;
 
     int seed = 1;
     uint64_t ext_mem_lat = 0;
@@ -883,20 +884,20 @@ int main(int argc, char **argv)
     d_cache.hot_cmt_reset(&d_cache);
 #endif
     /*seq read*/
-    ftl_log("start seq reading. iodepth: %d\n", iodepth);
-    toggle_ssd_lat(true);
-    test_read(palgo, pool_size, num_read, false, true, seed, NUM_WORKERS);
-    ftl_log("finish seq reading.\n");
-    fflush(stdout);
-    sleep(2);
-
-    /*random read*/
-    // ftl_log("start random reading. iodepth: %d\n", iodepth);
+    // ftl_log("start seq reading. iodepth: %d\n", iodepth);
     // toggle_ssd_lat(true);
-    // test_read(palgo, pool_size, num_read, false, false, seed, NUM_WORKERS);
-    // ftl_log("finish random reading.\n");
+    // test_read(palgo, pool_size, num_read, false, true, seed, NUM_WORKERS);
+    // ftl_log("finish seq reading.\n");
     // fflush(stdout);
     // sleep(2);
+
+    /*random read*/
+    ftl_log("start random reading. iodepth: %d\n", iodepth);
+    toggle_ssd_lat(true);
+    test_read(palgo, pool_size, num_read, false, false, seed, NUM_WORKERS);
+    ftl_log("finish random reading.\n");
+    fflush(stdout);
+    sleep(2);
     /*zipfan read*/
     // ftl_log("start zipfian reading. iodepth: %d\n", iodepth);
     // shuffle_map = create_shuffle_map(pool_size - 1);
@@ -905,6 +906,543 @@ int main(int argc, char **argv)
     // fflush(stdout);
     // sleep(2);
     show_stats();
-
     return 0;
+}
+
+//---------------ycsb test functions---------------------//
+
+// YCSB E workload - 扫描线程实现
+static void *test_scan_tr(void *args)
+{
+    static int worker_cnt = 0;
+    int worker_id = g_atomic_int_add(&worker_cnt, 1);
+    prctl(PR_SET_NAME, "scan_worker");
+
+    typedef struct
+    {
+        algorithm *palgo;
+        uint64_t max;
+        uint64_t num;
+        uint64_t scan_len;
+        bool is_zipf;
+        int seed;
+        volatile bool *pstart;
+    } ScanArgs;
+    ScanArgs *pargs = (ScanArgs *)args;
+
+    algorithm *palgo = pargs->palgo;
+    uint64_t max = pargs->max;
+    uint64_t num = pargs->num;
+    uint64_t scan_len = pargs->scan_len;
+    bool is_zipf = pargs->is_zipf;
+    uint32_t seed = pargs->seed + worker_id;
+    volatile int tr_nr_ios = 0;
+    struct zipf_state zs;
+
+    if (is_zipf)
+    {
+        zipf_init(&zs, max - 1, 0.99, -1, seed);
+        assert(shuffle_map != NULL);
+        zipf_use_shuffle_map(&zs, shuffle_map);
+    }
+    srand(seed);
+
+    while (!(*pargs->pstart))
+        ;
+
+    for (uint64_t i = 0; i < num; ++i)
+    {
+        uint64_t start_key;
+        if (is_zipf)
+        {
+            start_key = zipf_next(&zs) + 1;
+        }
+        else
+        {
+            start_key = rand_r(&seed) % (max - scan_len) + 1;
+        }
+
+        for (uint64_t s = 0; s < scan_len; ++s)
+        {
+            uint64_t cur_key = start_key + s;
+            if (cur_key > max)
+                break;
+
+            value_set *r_value = inf_get_valueset(NULL, PAGESIZE);
+            request *r_req = g_malloc0(sizeof(request));
+            r_req->type = DATAR;
+            r_req->key.len = sprintf(r_req->key.key, "%lu", cur_key);
+            r_req->h_params = NULL;
+            r_req->params = NULL;
+            r_req->state = ALGO_REQ_PENDING;
+            r_req->value = r_value;
+            r_req->end_req = end_request;
+            r_req->ptr_nr_ios = &tr_nr_ios;
+            submit_req(palgo, r_req);
+        }
+    }
+
+    if (worker_id < NUM_WORKERS)
+    {
+        thread_ended[worker_id] = true;
+    }
+    usleep(2000000);
+    return NULL;
+}
+
+// YCSB F workload - RMW（读-修改-写）线程实现
+static void *test_rmw_tr(void *args)
+{
+    static int worker_cnt = 0;
+    int worker_id = g_atomic_int_add(&worker_cnt, 1);
+    prctl(PR_SET_NAME, "rmw_worker");
+
+    typedef struct
+    {
+        algorithm *palgo;
+        uint64_t max;
+        uint64_t num;
+        bool is_zipf;
+        int seed;
+        volatile bool *pstart;
+    } RmwArgs;
+    RmwArgs *pargs = (RmwArgs *)args;
+
+    algorithm *palgo = pargs->palgo;
+    uint64_t max = pargs->max;
+    uint64_t num = pargs->num;
+    bool is_zipf = pargs->is_zipf;
+    uint32_t seed = pargs->seed + worker_id;
+    volatile int tr_nr_ios = 0;
+    struct zipf_state zs;
+
+    if (is_zipf)
+    {
+        zipf_init(&zs, max - 1, 0.99, -1, seed);
+        assert(shuffle_map != NULL);
+        zipf_use_shuffle_map(&zs, shuffle_map);
+    }
+    srand(seed);
+
+    while (!(*pargs->pstart))
+        ;
+
+    for (uint64_t i = 0; i < num; ++i)
+    {
+        uint64_t rndkey;
+        if (is_zipf)
+        {
+            rndkey = zipf_next(&zs) + 1;
+        }
+        else
+        {
+            rndkey = rand_r(&seed) % (max - 1) + 1;
+        }
+
+        // 读操作
+        value_set *r_value = inf_get_valueset(NULL, PAGESIZE);
+        request *r_req = g_malloc0(sizeof(request));
+        r_req->type = DATAR;
+        r_req->key.len = sprintf(r_req->key.key, "%lu", rndkey);
+        r_req->h_params = NULL;
+        r_req->params = NULL;
+        r_req->state = ALGO_REQ_PENDING;
+        r_req->value = r_value;
+        r_req->end_req = end_request;
+        r_req->ptr_nr_ios = &tr_nr_ios;
+        submit_req(palgo, r_req);
+
+        // 写操作（修改后写回）
+        int len = 512;
+        char value_str[len];
+        memset(value_str, 0, len);
+        sprintf(value_str, "%0*d", len - 1, rand_r(&seed));
+        value_set *w_value = inf_get_valueset(value_str, len);
+
+        request *w_req = g_malloc0(sizeof(request));
+        w_req->type = DATAW;
+        w_req->key.len = sprintf(w_req->key.key, "%lu", rndkey);
+        w_req->h_params = NULL;
+        w_req->params = NULL;
+        w_req->value = w_value;
+        w_req->state = ALGO_REQ_PENDING;
+        w_req->end_req = end_request;
+        w_req->ptr_nr_ios = &tr_nr_ios;
+        submit_req(palgo, w_req);
+    }
+
+    if (worker_id < NUM_WORKERS)
+    {
+        thread_ended[worker_id] = true;
+    }
+    usleep(2000000);
+    return NULL;
+}
+
+// YCSB D workload - Latest插入线程实现
+static void *test_insert_latest_tr(void *args)
+{
+    static int worker_cnt = 0;
+    int worker_id = g_atomic_int_add(&worker_cnt, 1);
+    prctl(PR_SET_NAME, "insert_latest_worker");
+
+    typedef struct
+    {
+        algorithm *palgo;
+        uint64_t base_size;
+        uint64_t num;
+        int seed;
+        volatile bool *pstart;
+        uint64_t *insert_cnt;
+    } InsertLatestArgs;
+    InsertLatestArgs *pargs = (InsertLatestArgs *)args;
+
+    algorithm *palgo = pargs->palgo;
+    uint64_t base_size = pargs->base_size;
+    uint64_t num = pargs->num;
+    int seed = pargs->seed + worker_id;
+    volatile bool *pstart = pargs->pstart;
+    uint64_t *insert_cnt = pargs->insert_cnt;
+    volatile int tr_nr_ios = 0;
+
+    srand(seed);
+    while (!(*pstart))
+        ;
+
+    for (uint64_t i = 0; i < num; ++i)
+    {
+        uint64_t new_key = base_size + __atomic_add_fetch(insert_cnt, 1, __ATOMIC_RELAXED);
+        int len = 512;
+        char value_str[len];
+        memset(value_str, 0, len);
+        sprintf(value_str, "%0*d", len - 1, rand_r(&seed));
+        value_set *value = inf_get_valueset(value_str, len);
+
+        request *w_req = g_malloc0(sizeof(request));
+        w_req->type = DATAW;
+        w_req->key.len = sprintf(w_req->key.key, "%lu", new_key);
+        w_req->h_params = NULL;
+        w_req->params = NULL;
+        w_req->value = value;
+        w_req->state = ALGO_REQ_PENDING;
+        w_req->end_req = end_request;
+        w_req->ptr_nr_ios = &tr_nr_ios;
+        submit_req(palgo, w_req);
+    }
+
+    usleep(2000000);
+    return NULL;
+}
+
+// YCSB负载调度核心函数（支持a-f所有workload）
+void ycsb_run_workload(char workload, algorithm *palgo, uint64_t pool_size,
+                       uint64_t num_ops, int nr_workers, int seed)
+{
+    ftl_log("========== Start YCSB Workload %c ==========\n", workload);
+    volatile bool start = false;
+    pthread_t workers[nr_workers];
+    uint64_t insert_cnt = 0;
+    uint64_t ycsb_start_ns = clock_get_ns();
+    double ycsb_read_iops = 0, ycsb_write_iops = 0;
+    uint64_t ycsb_read_cnt = 0, ycsb_write_cnt = 0;
+
+    // 重置统计量
+    uint64_t prev_finished_r = finished_r;
+    uint64_t prev_finished_w = finished_w;
+
+    clean_stats(); // 清理原有统计
+
+    switch (tolower(workload))
+    {
+    case 'a':
+    { // 50%读 + 50%更新（Zipfian）
+        uint64_t num_read = num_ops * 0.5;
+        uint64_t num_update = num_ops * 0.5;
+
+        typedef struct
+        {
+            algorithm *palgo;
+            uint64_t max;
+            uint64_t num;
+            bool is_zipf;
+            int seed;
+            volatile bool *pstart;
+        } UpdateArgs;
+        UpdateArgs update_args = {
+            .palgo = palgo, .max = pool_size, .num = num_update / nr_workers, .is_zipf = true, .seed = seed, .pstart = &start};
+
+        // 启动更新线程
+        for (int i = 0; i < nr_workers / 2; ++i)
+        {
+            pthread_create(&workers[i], NULL, test_update_tr, &update_args);
+        }
+
+        typedef struct
+        {
+            algorithm *palgo;
+            uint64_t max;
+            uint64_t num;
+            bool is_zipf;
+            bool is_seq;
+            int seed;
+            volatile bool *pstart;
+        } ReadArgs;
+        ReadArgs read_args = {
+            .palgo = palgo, .max = pool_size, .num = num_read / nr_workers, .is_zipf = true, .is_seq = false, .seed = seed, .pstart = &start};
+
+        // 启动读线程
+        for (int i = nr_workers / 2; i < nr_workers; ++i)
+        {
+            pthread_create(&workers[i], NULL, test_read_tr, &read_args);
+        }
+        break;
+    }
+
+    case 'b':
+    { // 95%读 + 5%更新（Zipfian）
+        uint64_t num_read = num_ops * 0.95;
+        uint64_t num_update = num_ops * 0.05;
+
+        typedef struct
+        {
+            algorithm *palgo;
+            uint64_t max;
+            uint64_t num;
+            bool is_zipf;
+            int seed;
+            volatile bool *pstart;
+        } UpdateArgs;
+        UpdateArgs update_args = {
+            .palgo = palgo, .max = pool_size, .num = num_update / nr_workers, .is_zipf = true, .seed = seed, .pstart = &start};
+
+        int update_threads = nr_workers / 20;
+        for (int i = 0; i < update_threads; ++i)
+        {
+            pthread_create(&workers[i], NULL, test_update_tr, &update_args);
+        }
+
+        typedef struct
+        {
+            algorithm *palgo;
+            uint64_t max;
+            uint64_t num;
+            bool is_zipf;
+            bool is_seq;
+            int seed;
+            volatile bool *pstart;
+        } ReadArgs;
+        ReadArgs read_args = {
+            .palgo = palgo, .max = pool_size, .num = num_read / nr_workers, .is_zipf = true, .is_seq = false, .seed = seed, .pstart = &start};
+
+        for (int i = update_threads; i < nr_workers; ++i)
+        {
+            pthread_create(&workers[i], NULL, test_read_tr, &read_args);
+        }
+        break;
+    }
+
+    case 'c':
+    { // 100%读（Zipfian）
+        typedef struct
+        {
+            algorithm *palgo;
+            uint64_t max;
+            uint64_t num;
+            bool is_zipf;
+            bool is_seq;
+            int seed;
+            volatile bool *pstart;
+        } ReadArgs;
+        ReadArgs read_args = {
+            .palgo = palgo, .max = pool_size, .num = num_ops / nr_workers, .is_zipf = true, .is_seq = false, .seed = seed, .pstart = &start};
+
+        for (int i = 0; i < nr_workers; ++i)
+        {
+            pthread_create(&workers[i], NULL, test_read_tr, &read_args);
+        }
+        break;
+    }
+
+    case 'd':
+    { // 95%读（Latest） + 5%插入（Latest）
+        uint64_t num_read = num_ops * 0.95;
+        uint64_t num_insert = num_ops * 0.05;
+
+        typedef struct
+        {
+            algorithm *palgo;
+            uint64_t base_size;
+            uint64_t num;
+            int seed;
+            volatile bool *pstart;
+            uint64_t *insert_cnt;
+        } InsertLatestArgs;
+        InsertLatestArgs insert_args = {
+            .palgo = palgo, .base_size = pool_size, .num = num_insert / nr_workers, .seed = seed, .pstart = &start, .insert_cnt = &insert_cnt};
+
+        int insert_threads = nr_workers / 20;
+        for (int i = 0; i < insert_threads; ++i)
+        {
+            pthread_create(&workers[i], NULL, test_insert_latest_tr, &insert_args);
+        }
+
+        typedef struct
+        {
+            algorithm *palgo;
+            uint64_t max;
+            uint64_t num;
+            bool is_zipf;
+            bool is_seq;
+            int seed;
+            volatile bool *pstart;
+        } ReadArgs;
+        ReadArgs read_args = {
+            .palgo = palgo, .max = pool_size, .num = num_read / nr_workers, .is_zipf = false, .is_seq = false, .seed = seed, .pstart = &start};
+
+        for (int i = insert_threads; i < nr_workers; ++i)
+        {
+            pthread_create(&workers[i], NULL, test_read_tr, &read_args);
+        }
+        break;
+    }
+
+    case 'e':
+    { // 95%扫描 + 5%插入（Zipfian）
+        uint64_t num_scan = num_ops * 0.95;
+        uint64_t num_insert = num_ops * 0.05;
+        uint64_t scan_len = 100; // 默认扫描长度
+
+        typedef struct
+        {
+            algorithm *palgo;
+            uint64_t base_size;
+            uint64_t num;
+            int seed;
+            volatile bool *pstart;
+            uint64_t *insert_cnt;
+        } InsertLatestArgs;
+        InsertLatestArgs insert_args = {
+            .palgo = palgo, .base_size = pool_size, .num = num_insert / nr_workers, .seed = seed, .pstart = &start, .insert_cnt = &insert_cnt};
+
+        int insert_threads = nr_workers / 20;
+        for (int i = 0; i < insert_threads; ++i)
+        {
+            pthread_create(&workers[i], NULL, test_insert_latest_tr, &insert_args);
+        }
+
+        typedef struct
+        {
+            algorithm *palgo;
+            uint64_t max;
+            uint64_t num;
+            uint64_t scan_len;
+            bool is_zipf;
+            int seed;
+            volatile bool *pstart;
+        } ScanArgs;
+        ScanArgs scan_args = {
+            .palgo = palgo, .max = pool_size, .num = num_scan / nr_workers, .scan_len = scan_len, .is_zipf = true, .seed = seed, .pstart = &start};
+
+        for (int i = insert_threads; i < nr_workers; ++i)
+        {
+            pthread_create(&workers[i], NULL, test_scan_tr, &scan_args);
+        }
+        break;
+    }
+
+    case 'f':
+    { // 50%读 + 50%RMW（Zipfian）
+        uint64_t num_read = num_ops * 0.5;
+        uint64_t num_rmw = num_ops * 0.5;
+
+        typedef struct
+        {
+            algorithm *palgo;
+            uint64_t max;
+            uint64_t num;
+            bool is_zipf;
+            int seed;
+            volatile bool *pstart;
+        } RmwArgs;
+        RmwArgs rmw_args = {
+            .palgo = palgo, .max = pool_size, .num = num_rmw / nr_workers, .is_zipf = true, .seed = seed, .pstart = &start};
+
+        for (int i = 0; i < nr_workers / 2; ++i)
+        {
+            pthread_create(&workers[i], NULL, test_rmw_tr, &rmw_args);
+        }
+
+        typedef struct
+        {
+            algorithm *palgo;
+            uint64_t max;
+            uint64_t num;
+            bool is_zipf;
+            bool is_seq;
+            int seed;
+            volatile bool *pstart;
+        } ReadArgs;
+        ReadArgs read_args = {
+            .palgo = palgo, .max = pool_size, .num = num_read / nr_workers, .is_zipf = true, .is_seq = false, .seed = seed, .pstart = &start};
+
+        for (int i = nr_workers / 2; i < nr_workers; ++i)
+        {
+            pthread_create(&workers[i], NULL, test_read_tr, &read_args);
+        }
+        break;
+    }
+
+    default:
+        ftl_err("Unsupported YCSB workload: %c (only a-f are supported)\n", workload);
+        abort();
+    }
+
+    // 启动所有线程
+    sleep(5);
+    start = true;
+    for (int i = 0; i < nr_workers; ++i)
+    {
+        pthread_join(workers[i], NULL);
+    }
+
+    // 计算YCSB专属IOPS
+    uint64_t ycsb_elapsed_ns = clock_get_ns() - ycsb_start_ns;
+    double ycsb_elapsed_s = ycsb_elapsed_ns / 1e9;
+    ycsb_read_cnt = finished_r - prev_finished_r;
+    ycsb_write_cnt = finished_w - prev_finished_w;
+    ycsb_read_iops = ycsb_read_cnt / ycsb_elapsed_s;
+    ycsb_write_iops = ycsb_write_cnt / ycsb_elapsed_s;
+
+    // 打印YCSB统计结果
+    ftl_log("========== YCSB Workload %c Stats ==========\n", workload);
+    ftl_log("Total elapsed time: %.2f s\n", ycsb_elapsed_s);
+    ftl_log("Total read ops: %lu, Read IOPS: %.2f\n", ycsb_read_cnt, ycsb_read_iops);
+    ftl_log("Total write ops: %lu, Write IOPS: %.2f\n", ycsb_write_cnt, ycsb_write_iops);
+    ftl_log("Total ops: %lu, Mixed IOPS: %.2f\n",
+            ycsb_read_cnt + ycsb_write_cnt,
+            (ycsb_read_cnt + ycsb_write_cnt) / ycsb_elapsed_s);
+    show_stats(); // 打印详细的延迟/缓存命中统计
+    ftl_log("========== Finish YCSB Workload %c ==========\n", workload);
+}
+
+// YCSB资源初始化（创建Zipf shuffle_map）
+void ycsb_init(uint64_t pool_size, int seed)
+{
+    if (pool_size > 0)
+    {
+        shuffle_map = create_shuffle_map(pool_size - 1);
+        ftl_log("YCSB init: shuffle_map created (size: %lu)\n", pool_size);
+    }
+    srand(seed);
+}
+
+// YCSB资源清理
+void ycsb_cleanup(void)
+{
+    if (shuffle_map != NULL)
+    {
+        free(shuffle_map);
+        shuffle_map = NULL;
+        ftl_log("YCSB cleanup: shuffle_map freed\n");
+    }
 }

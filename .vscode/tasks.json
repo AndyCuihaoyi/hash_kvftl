@@ -7,24 +7,31 @@
             "command": "/usr/bin/gcc",
             "args": [
                 "-fcommon",
-                "-g",
-                //"${workspaceFolder}/hash_baseline/*.c",
+                "-g", // 单独拆分每个编译选项
+                // "-Wall",
+                // "-Wextra",
+                // "-v",
+                // 启用项目所需的宏定义
+                // "-DHOT_CMT",
+                // "-DPREFILL_CACHE",
+                // "-DDATA_SEGREGATION",
+                // "-DVERIFY_CACHE",
+                // 所有源码文件（保持原目录）
                 "${workspaceFolder}/hash_hot_cmt/*.c",
                 "${workspaceFolder}/lower/*.c",
                 "${workspaceFolder}/tools/*.c",
                 "${workspaceFolder}/tools/random/*.c",
                 "${workspaceFolder}/tools/rte_ring/*.c",
+                // 链接库（放在源码文件之后）
                 "-lm",
-                "-DHOT_CMT",
-                "-DPREFILL_CACHE",
-                //"-DDATA_SEGREGATION",
-                "-DVERIFY_CACHE",
+                "-lglib-2.0",
+                // 输出项目可执行文件（固定名称，避免冲突）
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}",
+                "${workspaceFolder}/hash_hot_cmt/test_ext_mem_lat",
+                // 头文件路径
                 "-I/usr/include/glib-2.0",
                 "-I/usr/include/glib-2.0/glib",
-                "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",
-                "-lglib-2.0"
+                "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include"
             ],
             "options": {
                 "cwd": "${fileDirname}"
