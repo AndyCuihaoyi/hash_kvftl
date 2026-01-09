@@ -5,16 +5,18 @@
 #ifndef __DEMAND_HASH_TABLE_H__
 #define __DEMAND_HASH_TABLE_H__
 
-#include "../hash_baseline/dftl_utils.h"
+#include "../hash_hot_cmt/dftl_utils.h"
 
 typedef uint32_t ppa_t;
 typedef uint32_t lpa_t;
 
-struct d_hnode {
+struct d_hnode
+{
 	lpa_t item;
 	struct d_hnode *next;
 };
-typedef struct d_htable {
+typedef struct d_htable
+{
 	struct d_hnode *bucket;
 	int max;
 } d_htable;

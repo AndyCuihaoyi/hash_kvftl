@@ -530,6 +530,7 @@ void _do_wb_mapping_update(w_buffer_t *self, request *req)
             // D_ENV(palgo)->num_rd_data_rd++;
         }
 #else
+        D_ENV(palgo)->num_rd_data_rd++;
         read_for_data_check(pbm, pte.ppa, wb_entry);
 #endif
         if (KEYCMP(wb_entry->key, *real_key) == 0)
