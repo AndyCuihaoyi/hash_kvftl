@@ -291,8 +291,8 @@ static int _do_bulk_write_valid_items(block_mgr_t *bm,
 
 #endif
     ((demand_env *)__demand.env)->num_gc_flash_write++;
-    // ftl_log("dGC: [valid grains: %d -> packed grains: %d], reclaimed: %d\n", nr_valid_grains,
-    //        copied_pages * GRAIN_PER_PAGE, _PPS * GRAIN_PER_PAGE - copied_pages * GRAIN_PER_PAGE);
+    ftl_log("dGC: [valid grains: %d -> packed grains: %d], reclaimed: %d\n", nr_valid_grains,
+            copied_pages * GRAIN_PER_PAGE, _PPS * GRAIN_PER_PAGE - copied_pages * GRAIN_PER_PAGE);
     return nr_valid_items;
 }
 

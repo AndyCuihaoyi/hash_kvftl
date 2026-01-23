@@ -18,13 +18,12 @@
 #define GRAIN_PER_PAGE (PAGESIZE / GRAINED_UNIT) // 4
 #define NPCINPAGE (PAGESIZE / PIECE)             // 4
 
-#define _NOP (18481152) // 70.5GB 4KB page (10% OP for 64GB logical space)
-#define _PPS (1 << 15)  // 128MB
+#define _NOP_NO_OP ((1 << 25))  //((1 << 25)) // 128GB
+#define _NOP (_NOP_NO_OP * 1.1) // (10% OP for 64GB logical space)
+#define _PPS (1 << 15)          // 128MB
 #define _NOS (_NOP / _PPS)
 
-#define _NOP_NO_OP ((1 << 24)) // 64GB
-
 #define STORE_KEY_FP
-#define UPDATE_DATA_CHECK
+// #define UPDATE_DATA_CHECK
 
 // #define CMT_USE_NUMA

@@ -360,7 +360,6 @@ cache_check_complete:
 
 data_read:
     /* 3. read actual data */
-    D_ENV(palgo)->num_rd_data_rd++;
     rc = read_actual_dpage(pbm, pte.ppa, req); // after async read, should check full key.
     if (rc == UINT32_MAX)
     {

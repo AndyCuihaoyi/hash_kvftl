@@ -514,7 +514,6 @@ void _do_wb_mapping_update(w_buffer_t *self, request *req)
             if (KEYCMP(wb_entry->key, hot_pte->real_key))
             {
                 read_skip = true;
-                D_ENV(palgo)->num_rd_data_rd++;
             }
         }
 #endif
@@ -527,7 +526,7 @@ void _do_wb_mapping_update(w_buffer_t *self, request *req)
             {
                 hot_pte->real_key = *real_key;
             }
-            // D_ENV(palgo)->num_rd_data_rd++;
+            D_ENV(palgo)->num_rd_data_rd++;
         }
 #else
         D_ENV(palgo)->num_rd_data_rd++;

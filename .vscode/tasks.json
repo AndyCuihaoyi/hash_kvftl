@@ -8,6 +8,10 @@
             "args": [
                 "-fcommon",
                 "-g",
+                //"-DHOT_CMT",
+                //"-DPREFILL_CACHE",
+                //"-DDATA_SEGREGATION",
+                //"-DVERIFY_CACHE",
                 "${workspaceFolder}/hash_hot_cmt/*.c",
                 "${workspaceFolder}/lower/*.c",
                 "${workspaceFolder}/tools/*.c",

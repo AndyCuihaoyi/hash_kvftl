@@ -172,3 +172,4979 @@ p99_rlat/us: 24568
 p99.9_rlat/us: 29726
 --------------------------------------------------
 
+===== Test Time: 2026-01-15 04:48:41 =====
+average read latency: 3075 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4195941, mapping_rd: 3445617, mapping_wr: 31031
+nand_r: 7641558, nand_w: 31031, nand_e: 32768
+r_hash_collision[0]: 2620318
+r_hash_collision[1]: 695030
+r_hash_collision[2]: 333956
+r_hash_collision[3]: 185634
+r_hash_collision[4]: 118859
+r_hash_collision[5]: 74021
+r_hash_collision[6]: 49394
+r_hash_collision[7]: 34677
+r_hash_collision[8]: 23595
+r_hash_collision[9]: 16434
+r_hash_collision[10]: 11731
+r_hash_collision[11]: 8436
+r_hash_collision[12]: 6061
+r_hash_collision[13]: 4390
+r_hash_collision[14]: 3229
+r_hash_collision[15]: 2264
+r_hash_collision[16]: 1714
+r_hash_collision[17]: 1163
+r_hash_collision[18]: 920
+r_hash_collision[19]: 661
+r_hash_collision[20]: 462
+r_hash_collision[21]: 360
+r_hash_collision[22]: 282
+r_hash_collision[23]: 179
+r_hash_collision[24]: 130
+r_hash_collision[25]: 102
+r_hash_collision[26]: 73
+r_hash_collision[27]: 52
+r_hash_collision[28]: 41
+r_hash_collision[29]: 31
+r_hash_collision[30]: 22
+r_hash_collision[31]: 16
+r_hash_collision[32]: 21
+r_hash_collision[33]: 3
+r_hash_collision[34]: 9
+r_hash_collision[35]: 3
+r_hash_collision[36]: 5
+r_hash_collision[37]: 0
+r_hash_collision[38]: 2
+r_hash_collision[39]: 1
+r_hash_collision[40]: 2
+r_hash_collision[41]: 1
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+r_hash_collision[45]: 0
+r_hash_collision[46]: 0
+r_hash_collision[47]: 0
+r_hash_collision[48]: 0
+r_hash_collision[49]: 0
+r_hash_collision[50]: 0
+r_hash_collision[51]: 0
+r_hash_collision[52]: 0
+r_hash_collision[53]: 0
+r_hash_collision[54]: 0
+r_hash_collision[55]: 0
+r_hash_collision[56]: 0
+r_hash_collision[57]: 0
+read iops: 174518.62,write iops: 26159.96, hit rt:18.80%
+d_cache_hit: 788395, miss: 3405889, hit_by_collision: 4137708, miss_by_collision: 39728
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 7960
+p95_rlat/us: 20682
+p99_rlat/us: 25097
+p99.9_rlat/us: 31677
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 04:54:18 =====
+average read latency: 3204 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194157, mapping_rd: 3769431, mapping_wr: 32750
+nand_r: 7963701, nand_w: 32863, nand_e: 32768
+r_hash_collision[0]: 4145079
+r_hash_collision[1]: 47770
+r_hash_collision[2]: 1164
+r_hash_collision[3]: 15
+read iops: 167520.10,write iops: 24755.93, hit rt:10.13%
+d_cache_hit: 424775, miss: 3769253, hit_by_collision: 49965, miss_by_collision: 178
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 8345
+p95_rlat/us: 22280
+p99_rlat/us: 26066
+p99.9_rlat/us: 31796
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 05:02:56 =====
+average read latency: 1590 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194178, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194178, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2698670
+r_hash_collision[1]: 651514
+r_hash_collision[2]: 317053
+r_hash_collision[3]: 173356
+r_hash_collision[4]: 112266
+r_hash_collision[5]: 86104
+r_hash_collision[6]: 46326
+r_hash_collision[7]: 29470
+r_hash_collision[8]: 19872
+r_hash_collision[9]: 20382
+r_hash_collision[10]: 11656
+r_hash_collision[11]: 7643
+r_hash_collision[12]: 6624
+r_hash_collision[13]: 4257
+r_hash_collision[14]: 2603
+r_hash_collision[15]: 1438
+r_hash_collision[16]: 1053
+r_hash_collision[17]: 1135
+r_hash_collision[18]: 544
+r_hash_collision[19]: 502
+r_hash_collision[20]: 307
+r_hash_collision[21]: 269
+r_hash_collision[22]: 148
+r_hash_collision[23]: 490
+r_hash_collision[24]: 173
+r_hash_collision[25]: 86
+r_hash_collision[26]: 48
+r_hash_collision[27]: 16
+r_hash_collision[28]: 41
+r_hash_collision[29]: 21
+r_hash_collision[30]: 8
+r_hash_collision[31]: 12
+r_hash_collision[32]: 16
+r_hash_collision[33]: 3
+r_hash_collision[34]: 2
+r_hash_collision[35]: 1
+r_hash_collision[36]: 3
+r_hash_collision[37]: 0
+r_hash_collision[38]: 2
+r_hash_collision[39]: 0
+r_hash_collision[40]: 3
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+read iops: 282744.06,write iops: 128553.84, hit rt:100.00%
+d_cache_hit: 4194117, miss: 0, hit_by_collision: 3998563, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 415
+p95_rlat/us: 2308
+p99_rlat/us: 2738
+p99.9_rlat/us: 3539
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 05:08:05 =====
+average read latency: 1259 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4193797, mapping_rd: 0, mapping_wr: 0
+nand_r: 4193797, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2653076
+r_hash_collision[1]: 671963
+r_hash_collision[2]: 320566
+r_hash_collision[3]: 214755
+r_hash_collision[4]: 107393
+r_hash_collision[5]: 87628
+r_hash_collision[6]: 40437
+r_hash_collision[7]: 25044
+r_hash_collision[8]: 21318
+r_hash_collision[9]: 12929
+r_hash_collision[10]: 11967
+r_hash_collision[11]: 8947
+r_hash_collision[12]: 5274
+r_hash_collision[13]: 3200
+r_hash_collision[14]: 2544
+r_hash_collision[15]: 1994
+r_hash_collision[16]: 1497
+r_hash_collision[17]: 792
+r_hash_collision[18]: 576
+r_hash_collision[19]: 398
+r_hash_collision[20]: 278
+r_hash_collision[21]: 153
+r_hash_collision[22]: 177
+r_hash_collision[23]: 108
+r_hash_collision[24]: 95
+r_hash_collision[25]: 70
+r_hash_collision[26]: 96
+r_hash_collision[27]: 21
+r_hash_collision[28]: 36
+r_hash_collision[29]: 28
+r_hash_collision[30]: 21
+r_hash_collision[31]: 12
+r_hash_collision[32]: 2
+r_hash_collision[33]: 4
+r_hash_collision[34]: 2
+r_hash_collision[35]: 2
+r_hash_collision[36]: 4
+r_hash_collision[37]: 0
+r_hash_collision[38]: 1
+r_hash_collision[39]: 1
+r_hash_collision[40]: 3
+r_hash_collision[41]: 1
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 240626.80,write iops: 128268.29, hit rt:100.00%
+d_cache_hit: 4193413, miss: 0, hit_by_collision: 3999536, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 455
+p95_rlat/us: 2764
+p99_rlat/us: 5441
+p99.9_rlat/us: 5748
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 05:17:24 =====
+average read latency: 1802 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4193797, mapping_rd: 656725, mapping_wr: 32601
+nand_r: 4850522, nand_w: 32601, nand_e: 32768
+r_hash_collision[0]: 3419854
+r_hash_collision[1]: 541208
+r_hash_collision[2]: 152426
+r_hash_collision[3]: 54605
+r_hash_collision[4]: 16083
+r_hash_collision[5]: 6283
+r_hash_collision[6]: 1856
+r_hash_collision[7]: 685
+r_hash_collision[8]: 240
+r_hash_collision[9]: 112
+r_hash_collision[10]: 31
+r_hash_collision[11]: 27
+r_hash_collision[12]: 1
+r_hash_collision[13]: 2
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 223572.60,write iops: 55942.32, hit rt:84.37%
+d_cache_hit: 3537803, miss: 655610, hit_by_collision: 1124011, miss_by_collision: 1115
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 639
+p95_rlat/us: 2838
+p99_rlat/us: 3503
+p99.9_rlat/us: 5639
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 05:46:32 =====
+average read latency: 1809 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194480, mapping_rd: 1740959, mapping_wr: 32616
+nand_r: 5935439, nand_w: 32616, nand_e: 32768
+r_hash_collision[0]: 3452568
+r_hash_collision[1]: 517372
+r_hash_collision[2]: 144248
+r_hash_collision[3]: 43991
+r_hash_collision[4]: 26021
+r_hash_collision[5]: 5653
+r_hash_collision[6]: 3110
+r_hash_collision[7]: 970
+r_hash_collision[8]: 221
+r_hash_collision[9]: 80
+r_hash_collision[10]: 20
+r_hash_collision[11]: 8
+r_hash_collision[12]: 2
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+read iops: 178655.78,write iops: 32076.97, hit rt:58.56%
+d_cache_hit: 2456098, miss: 1738166, hit_by_collision: 1095647, miss_by_collision: 2793
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 942
+p95_rlat/us: 3370
+p99_rlat/us: 4610
+p99.9_rlat/us: 7352
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 06:25:39 =====
+average read latency: 2090 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194480, mapping_rd: 2283388, mapping_wr: 32717
+nand_r: 6477868, nand_w: 32717, nand_e: 32768
+r_hash_collision[0]: 3829921
+r_hash_collision[1]: 308045
+r_hash_collision[2]: 45688
+r_hash_collision[3]: 8814
+r_hash_collision[4]: 1536
+r_hash_collision[5]: 219
+r_hash_collision[6]: 28
+r_hash_collision[7]: 10
+r_hash_collision[8]: 2
+r_hash_collision[9]: 1
+read iops: 191332.69,write iops: 26534.62, hit rt:45.59%
+d_cache_hit: 1912108, miss: 2282156, hit_by_collision: 432133, miss_by_collision: 1232
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 1034
+p95_rlat/us: 4319
+p99_rlat/us: 5340
+p99.9_rlat/us: 8848
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 06:45:41 =====
+average read latency: 1985 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194480, mapping_rd: 2535681, mapping_wr: 32743
+nand_r: 6730291, nand_w: 32873, nand_e: 32768
+r_hash_collision[0]: 4017292
+r_hash_collision[1]: 161804
+r_hash_collision[2]: 13913
+r_hash_collision[3]: 1137
+r_hash_collision[4]: 99
+r_hash_collision[5]: 19
+r_hash_collision[6]: 0
+read iops: 168231.06,write iops: 24380.35, hit rt:39.56%
+d_cache_hit: 1659126, miss: 2535138, hit_by_collision: 192989, miss_by_collision: 543
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 1058
+p95_rlat/us: 4826
+p99_rlat/us: 5724
+p99.9_rlat/us: 9983
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 06:51:01 =====
+average read latency: 1618 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194157, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194157, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2621527
+r_hash_collision[1]: 696119
+r_hash_collision[2]: 333682
+r_hash_collision[3]: 184231
+r_hash_collision[4]: 118086
+r_hash_collision[5]: 74131
+r_hash_collision[6]: 49584
+r_hash_collision[7]: 34190
+r_hash_collision[8]: 23765
+r_hash_collision[9]: 16475
+r_hash_collision[10]: 11656
+r_hash_collision[11]: 8538
+r_hash_collision[12]: 6124
+r_hash_collision[13]: 4431
+r_hash_collision[14]: 3203
+r_hash_collision[15]: 2273
+r_hash_collision[16]: 1597
+r_hash_collision[17]: 1158
+r_hash_collision[18]: 914
+r_hash_collision[19]: 633
+r_hash_collision[20]: 439
+r_hash_collision[21]: 340
+r_hash_collision[22]: 228
+r_hash_collision[23]: 194
+r_hash_collision[24]: 136
+r_hash_collision[25]: 103
+r_hash_collision[26]: 75
+r_hash_collision[27]: 58
+r_hash_collision[28]: 32
+r_hash_collision[29]: 31
+r_hash_collision[30]: 10
+r_hash_collision[31]: 23
+r_hash_collision[32]: 12
+r_hash_collision[33]: 4
+r_hash_collision[34]: 6
+r_hash_collision[35]: 7
+r_hash_collision[36]: 4
+r_hash_collision[37]: 0
+r_hash_collision[38]: 2
+r_hash_collision[39]: 0
+r_hash_collision[40]: 3
+r_hash_collision[41]: 0
+r_hash_collision[42]: 3
+r_hash_collision[43]: 1
+read iops: 317264.70,  write iops: 128553.99, hit rt:100.00%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 1967
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 4194028, miss: 0, hit_by_collision: 4167662, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 1607
+p95_rlat/us: 4466
+p99_rlat/us: 7170
+p99.9_rlat/us: 8107
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 06:57:26 =====
+average read latency: 1619 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194426, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194426, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2622867
+r_hash_collision[1]: 693788
+r_hash_collision[2]: 332325
+r_hash_collision[3]: 185713
+r_hash_collision[4]: 119291
+r_hash_collision[5]: 74017
+r_hash_collision[6]: 49218
+r_hash_collision[7]: 34896
+r_hash_collision[8]: 23398
+r_hash_collision[9]: 16809
+r_hash_collision[10]: 11718
+r_hash_collision[11]: 8348
+r_hash_collision[12]: 6087
+r_hash_collision[13]: 4361
+r_hash_collision[14]: 3118
+r_hash_collision[15]: 2224
+r_hash_collision[16]: 1646
+r_hash_collision[17]: 1204
+r_hash_collision[18]: 797
+r_hash_collision[19]: 624
+r_hash_collision[20]: 495
+r_hash_collision[21]: 324
+r_hash_collision[22]: 240
+r_hash_collision[23]: 154
+r_hash_collision[24]: 146
+r_hash_collision[25]: 101
+r_hash_collision[26]: 47
+r_hash_collision[27]: 51
+r_hash_collision[28]: 45
+r_hash_collision[29]: 30
+r_hash_collision[30]: 23
+r_hash_collision[31]: 15
+r_hash_collision[32]: 11
+r_hash_collision[33]: 5
+r_hash_collision[34]: 10
+r_hash_collision[35]: 2
+r_hash_collision[36]: 1
+r_hash_collision[37]: 1
+r_hash_collision[38]: 3
+r_hash_collision[39]: 3
+r_hash_collision[40]: 3
+r_hash_collision[41]: 3
+r_hash_collision[42]: 4
+r_hash_collision[43]: 0
+r_hash_collision[44]: 1
+read iops: 316908.25,  write iops: 128268.47, hit rt:100.00%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 1639
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 4194167, miss: 0, hit_by_collision: 4168759, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 1602
+p95_rlat/us: 3861
+p99_rlat/us: 5344
+p99.9_rlat/us: 6015
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 07:01:37 =====
+average read latency: 2216 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194426, mapping_rd: 1222355, mapping_wr: 30983
+nand_r: 5416781, nand_w: 30983, nand_e: 32768
+r_hash_collision[0]: 3410389
+r_hash_collision[1]: 537333
+r_hash_collision[2]: 161647
+r_hash_collision[3]: 54034
+r_hash_collision[4]: 19893
+r_hash_collision[5]: 7017
+r_hash_collision[6]: 2409
+r_hash_collision[7]: 903
+r_hash_collision[8]: 367
+r_hash_collision[9]: 112
+r_hash_collision[10]: 35
+r_hash_collision[11]: 22
+r_hash_collision[12]: 4
+r_hash_collision[13]: 2
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 244282.18,  write iops: 51988.54, hit rt:70.90%
+hot valid entries: 75957, hot valid pages: 148, max hot pages: 1639
+avg_grain_per_page: 0.11, avg_grain_hit: 2.02
+hot_hit: 13515, hot_rewrite_entries: 0, up_page_cnt:711315, up_grain_cnt:75957, equal_up_page:148 
+grain_heat_distribute[0]: 98.936672%
+grain_heat_distribute[1]: 1.042472%
+grain_heat_distribute[2]: 0.020366%
+grain_heat_distribute[3]: 0.000479%
+grain_heat_distribute[4]: 0.000010%
+grain_heat_distribute[5]: 0.000001%
+d_cache_hit: 2960253, miss: 1220399, hit_by_collision: 1160815, miss_by_collision: 1956
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 5757
+p95_rlat/us: 14545
+p99_rlat/us: 17952
+p99.9_rlat/us: 22509
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 07:09:09 =====
+average read latency: 2169 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194426, mapping_rd: 1083400, mapping_wr: 32468
+nand_r: 5277826, nand_w: 32468, nand_e: 32768
+r_hash_collision[0]: 3410389
+r_hash_collision[1]: 537333
+r_hash_collision[2]: 161647
+r_hash_collision[3]: 54034
+r_hash_collision[4]: 19893
+r_hash_collision[5]: 7017
+r_hash_collision[6]: 2409
+r_hash_collision[7]: 903
+r_hash_collision[8]: 367
+r_hash_collision[9]: 112
+r_hash_collision[10]: 35
+r_hash_collision[11]: 22
+r_hash_collision[12]: 4
+r_hash_collision[13]: 2
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 249666.73,  write iops: 55467.30, hit rt:74.21%
+hot valid entries: 83943, hot valid pages: 163, max hot pages: 164
+avg_grain_per_page: 0.14, avg_grain_hit: 2.03
+hot_hit: 16198, hot_rewrite_entries: 7841, up_page_cnt:673572, up_grain_cnt:91784, equal_up_page:179 
+grain_heat_distribute[0]: 98.828644%
+grain_heat_distribute[1]: 1.144741%
+grain_heat_distribute[2]: 0.025883%
+grain_heat_distribute[3]: 0.000708%
+grain_heat_distribute[4]: 0.000023%
+grain_heat_distribute[5]: 0.000001%
+d_cache_hit: 3096295, miss: 1081674, hit_by_collision: 1161045, miss_by_collision: 1726
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 5489
+p95_rlat/us: 13787
+p99_rlat/us: 16715
+p99.9_rlat/us: 19938
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 07:13:04 =====
+average read latency: 2164 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194426, mapping_rd: 1072839, mapping_wr: 32599
+nand_r: 5267265, nand_w: 32599, nand_e: 32768
+r_hash_collision[0]: 3410389
+r_hash_collision[1]: 537333
+r_hash_collision[2]: 161647
+r_hash_collision[3]: 54034
+r_hash_collision[4]: 19893
+r_hash_collision[5]: 7017
+r_hash_collision[6]: 2409
+r_hash_collision[7]: 903
+r_hash_collision[8]: 367
+r_hash_collision[9]: 112
+r_hash_collision[10]: 35
+r_hash_collision[11]: 22
+r_hash_collision[12]: 4
+r_hash_collision[13]: 2
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 250488.52,  write iops: 55834.79, hit rt:74.46%
+hot valid entries: 16896, hot valid pages: 33, max hot pages: 33
+avg_grain_per_page: 0.14, avg_grain_hit: 2.03
+hot_hit: 5572, hot_rewrite_entries: 76703, up_page_cnt:671090, up_grain_cnt:93599, equal_up_page:182 
+grain_heat_distribute[0]: 98.817636%
+grain_heat_distribute[1]: 1.155123%
+grain_heat_distribute[2]: 0.026483%
+grain_heat_distribute[3]: 0.000731%
+grain_heat_distribute[4]: 0.000025%
+grain_heat_distribute[5]: 0.000002%
+d_cache_hit: 3117466, miss: 1071129, hit_by_collision: 1161061, miss_by_collision: 1710
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 5437
+p95_rlat/us: 13820
+p99_rlat/us: 17312
+p99.9_rlat/us: 21499
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 07:20:17 =====
+average read latency: 2175 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194426, mapping_rd: 1098476, mapping_wr: 32299
+nand_r: 5292902, nand_w: 32299, nand_e: 32768
+r_hash_collision[0]: 3410389
+r_hash_collision[1]: 537333
+r_hash_collision[2]: 161647
+r_hash_collision[3]: 54034
+r_hash_collision[4]: 19893
+r_hash_collision[5]: 7017
+r_hash_collision[6]: 2409
+r_hash_collision[7]: 903
+r_hash_collision[8]: 367
+r_hash_collision[9]: 112
+r_hash_collision[10]: 35
+r_hash_collision[11]: 22
+r_hash_collision[12]: 4
+r_hash_collision[13]: 2
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 248842.18,  write iops: 55019.58, hit rt:73.85%
+hot valid entries: 89670, hot valid pages: 175, max hot pages: 328
+avg_grain_per_page: 0.13, avg_grain_hit: 2.03
+hot_hit: 16053, hot_rewrite_entries: 0, up_page_cnt:678066, up_grain_cnt:89670, equal_up_page:175 
+grain_heat_distribute[0]: 98.841657%
+grain_heat_distribute[1]: 1.132514%
+grain_heat_distribute[2]: 0.025123%
+grain_heat_distribute[3]: 0.000684%
+grain_heat_distribute[4]: 0.000020%
+grain_heat_distribute[5]: 0.000002%
+d_cache_hit: 3081408, miss: 1096706, hit_by_collision: 1161001, miss_by_collision: 1770
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 5520
+p95_rlat/us: 13940
+p99_rlat/us: 16864
+p99.9_rlat/us: 19954
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 07:26:26 =====
+average read latency: 2764 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194426, mapping_rd: 2629789, mapping_wr: 32371
+nand_r: 6824215, nand_w: 32371, nand_e: 32768
+r_hash_collision[0]: 3801293
+r_hash_collision[1]: 325814
+r_hash_collision[2]: 55021
+r_hash_collision[3]: 9671
+r_hash_collision[4]: 1938
+r_hash_collision[5]: 351
+r_hash_collision[6]: 69
+r_hash_collision[7]: 7
+r_hash_collision[8]: 3
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+read iops: 195085.28,  write iops: 32110.16, hit rt:37.33%
+hot valid entries: 14638, hot valid pages: 28, max hot pages: 328
+avg_grain_per_page: 0.03, avg_grain_hit: 2.01
+hot_hit: 2677, hot_rewrite_entries: 0, up_page_cnt:500517, up_grain_cnt:14638, equal_up_page:28 
+grain_heat_distribute[0]: 99.454423%
+grain_heat_distribute[1]: 0.539865%
+grain_heat_distribute[2]: 0.005662%
+grain_heat_distribute[3]: 0.000050%
+d_cache_hit: 1563094, miss: 2628396, hit_by_collision: 473470, miss_by_collision: 1393
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 7729
+p95_rlat/us: 18755
+p99_rlat/us: 20965
+p99.9_rlat/us: 23756
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 07:38:05 =====
+average read latency: 2750 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194426, mapping_rd: 2592005, mapping_wr: 32371
+nand_r: 6786431, nand_w: 32371, nand_e: 32768
+r_hash_collision[0]: 3801292
+r_hash_collision[1]: 325815
+r_hash_collision[2]: 55022
+r_hash_collision[3]: 9670
+r_hash_collision[4]: 1938
+r_hash_collision[5]: 351
+r_hash_collision[6]: 69
+r_hash_collision[7]: 7
+r_hash_collision[8]: 3
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+read iops: 196085.36,  write iops: 32099.73, hit rt:38.23%
+hot valid entries: 167936, hot valid pages: 328, max hot pages: 328
+avg_grain_per_page: 1.80, avg_grain_hit: 1.01
+hot_hit: 61453, hot_rewrite_entries: 1838805, up_page_cnt:1116122, up_grain_cnt:2006741, equal_up_page:3919 
+grain_heat_distribute[0]: 99.648836%
+grain_heat_distribute[1]: 0.348602%
+grain_heat_distribute[2]: 0.002538%
+grain_heat_distribute[3]: 0.000023%
+d_cache_hit: 1542128, miss: 2590586, hit_by_collision: 473444, miss_by_collision: 1419
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 7722
+p95_rlat/us: 19419
+p99_rlat/us: 22511
+p99.9_rlat/us: 25668
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 07:44:44 =====
+average read latency: 3043 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194426, mapping_rd: 3355260, mapping_wr: 32397
+nand_r: 7549686, nand_w: 32397, nand_e: 32768
+r_hash_collision[0]: 3998405
+r_hash_collision[1]: 178071
+r_hash_collision[2]: 16064
+r_hash_collision[3]: 1459
+r_hash_collision[4]: 144
+r_hash_collision[5]: 22
+r_hash_collision[6]: 2
+read iops: 176625.82,  write iops: 26588.85, hit rt:20.02%
+hot valid entries: 167936, hot valid pages: 328, max hot pages: 328
+avg_grain_per_page: 1.31, avg_grain_hit: 1.00
+hot_hit: 59639, hot_rewrite_entries: 823439, up_page_cnt:758409, up_grain_cnt:991375, equal_up_page:1936 
+grain_heat_distribute[0]: 99.744692%
+grain_heat_distribute[1]: 0.254044%
+grain_heat_distribute[2]: 0.001259%
+grain_heat_distribute[3]: 0.000006%
+d_cache_hit: 780021, miss: 3354507, hit_by_collision: 214521, miss_by_collision: 753
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 8115
+p95_rlat/us: 20926
+p99_rlat/us: 23841
+p99.9_rlat/us: 27576
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 08:02:28 =====
+average read latency: 3023 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194426, mapping_rd: 3303525, mapping_wr: 31742
+nand_r: 7497951, nand_w: 31742, nand_e: 32768
+r_hash_collision[0]: 3998405
+r_hash_collision[1]: 178071
+r_hash_collision[2]: 16064
+r_hash_collision[3]: 1459
+r_hash_collision[4]: 144
+r_hash_collision[5]: 22
+r_hash_collision[6]: 2
+read iops: 177775.02,  write iops: 26494.60, hit rt:21.25%
+hot valid entries: 503808, hot valid pages: 984, max hot pages: 984
+avg_grain_per_page: 1.30, avg_grain_hit: 1.00
+hot_hit: 142470, hot_rewrite_entries: 456615, up_page_cnt:737400, up_grain_cnt:960423, equal_up_page:1875 
+grain_heat_distribute[0]: 99.745616%
+grain_heat_distribute[1]: 0.253132%
+grain_heat_distribute[2]: 0.001246%
+grain_heat_distribute[3]: 0.000006%
+d_cache_hit: 748942, miss: 3302755, hit_by_collision: 214504, miss_by_collision: 770
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 8027
+p95_rlat/us: 20968
+p99_rlat/us: 24203
+p99.9_rlat/us: 28349
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 08:37:12 =====
+average read latency: 3182 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194426, mapping_rd: 3714423, mapping_wr: 31771
+nand_r: 7908964, nand_w: 31886, nand_e: 32768
+r_hash_collision[0]: 4095873
+r_hash_collision[1]: 93843
+r_hash_collision[2]: 4262
+r_hash_collision[3]: 180
+r_hash_collision[4]: 9
+r_hash_collision[5]: 0
+read iops: 168569.29,  write iops: 24435.33, hit rt:11.45%
+hot valid entries: 485840, hot valid pages: 948, max hot pages: 984
+avg_grain_per_page: 1.14, avg_grain_hit: 1.00
+hot_hit: 93411, hot_rewrite_entries: 2016, up_page_cnt:429424, up_grain_cnt:487856, equal_up_page:952 
+grain_heat_distribute[0]: 99.778111%
+grain_heat_distribute[1]: 0.220976%
+grain_heat_distribute[2]: 0.000910%
+grain_heat_distribute[3]: 0.000003%
+d_cache_hit: 386751, miss: 3714005, hit_by_collision: 102525, miss_by_collision: 418
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 8199
+p95_rlat/us: 21750
+p99_rlat/us: 24788
+p99.9_rlat/us: 31393
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 08:40:20 =====
+average read latency: 1619 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194157, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194157, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2621527
+r_hash_collision[1]: 696119
+r_hash_collision[2]: 333682
+r_hash_collision[3]: 184231
+r_hash_collision[4]: 118086
+r_hash_collision[5]: 74131
+r_hash_collision[6]: 49584
+r_hash_collision[7]: 34190
+r_hash_collision[8]: 23765
+r_hash_collision[9]: 16475
+r_hash_collision[10]: 11656
+r_hash_collision[11]: 8538
+r_hash_collision[12]: 6124
+r_hash_collision[13]: 4431
+r_hash_collision[14]: 3203
+r_hash_collision[15]: 2273
+r_hash_collision[16]: 1597
+r_hash_collision[17]: 1158
+r_hash_collision[18]: 914
+r_hash_collision[19]: 633
+r_hash_collision[20]: 439
+r_hash_collision[21]: 340
+r_hash_collision[22]: 228
+r_hash_collision[23]: 194
+r_hash_collision[24]: 136
+r_hash_collision[25]: 103
+r_hash_collision[26]: 75
+r_hash_collision[27]: 58
+r_hash_collision[28]: 32
+r_hash_collision[29]: 31
+r_hash_collision[30]: 10
+r_hash_collision[31]: 23
+r_hash_collision[32]: 12
+r_hash_collision[33]: 4
+r_hash_collision[34]: 6
+r_hash_collision[35]: 7
+r_hash_collision[36]: 4
+r_hash_collision[37]: 0
+r_hash_collision[38]: 2
+r_hash_collision[39]: 0
+r_hash_collision[40]: 3
+r_hash_collision[41]: 0
+r_hash_collision[42]: 3
+r_hash_collision[43]: 1
+read iops: 317270.98,  write iops: 128553.05, hit rt:100.00%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 984
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 4194028, miss: 0, hit_by_collision: 4167662, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 1623
+p95_rlat/us: 4374
+p99_rlat/us: 6645
+p99.9_rlat/us: 7449
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 08:42:39 =====
+average read latency: 1622 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194426, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194426, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2622867
+r_hash_collision[1]: 693788
+r_hash_collision[2]: 332325
+r_hash_collision[3]: 185713
+r_hash_collision[4]: 119291
+r_hash_collision[5]: 74017
+r_hash_collision[6]: 49218
+r_hash_collision[7]: 34896
+r_hash_collision[8]: 23398
+r_hash_collision[9]: 16809
+r_hash_collision[10]: 11718
+r_hash_collision[11]: 8348
+r_hash_collision[12]: 6087
+r_hash_collision[13]: 4361
+r_hash_collision[14]: 3118
+r_hash_collision[15]: 2224
+r_hash_collision[16]: 1646
+r_hash_collision[17]: 1204
+r_hash_collision[18]: 797
+r_hash_collision[19]: 624
+r_hash_collision[20]: 495
+r_hash_collision[21]: 324
+r_hash_collision[22]: 240
+r_hash_collision[23]: 154
+r_hash_collision[24]: 146
+r_hash_collision[25]: 101
+r_hash_collision[26]: 47
+r_hash_collision[27]: 51
+r_hash_collision[28]: 45
+r_hash_collision[29]: 30
+r_hash_collision[30]: 23
+r_hash_collision[31]: 15
+r_hash_collision[32]: 11
+r_hash_collision[33]: 5
+r_hash_collision[34]: 10
+r_hash_collision[35]: 2
+r_hash_collision[36]: 1
+r_hash_collision[37]: 1
+r_hash_collision[38]: 3
+r_hash_collision[39]: 3
+r_hash_collision[40]: 3
+r_hash_collision[41]: 3
+r_hash_collision[42]: 4
+r_hash_collision[43]: 0
+r_hash_collision[44]: 1
+read iops: 316897.12,  write iops: 128267.76, hit rt:100.00%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 984
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 4194167, miss: 0, hit_by_collision: 4168759, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 1689
+p95_rlat/us: 4200
+p99_rlat/us: 5709
+p99.9_rlat/us: 6227
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 08:45:06 =====
+average read latency: 1254 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194210, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194210, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2727997
+r_hash_collision[1]: 634300
+r_hash_collision[2]: 311998
+r_hash_collision[3]: 168231
+r_hash_collision[4]: 110264
+r_hash_collision[5]: 90285
+r_hash_collision[6]: 44574
+r_hash_collision[7]: 27993
+r_hash_collision[8]: 18646
+r_hash_collision[9]: 21654
+r_hash_collision[10]: 11929
+r_hash_collision[11]: 7367
+r_hash_collision[12]: 6679
+r_hash_collision[13]: 4041
+r_hash_collision[14]: 2401
+r_hash_collision[15]: 1215
+r_hash_collision[16]: 998
+r_hash_collision[17]: 985
+r_hash_collision[18]: 510
+r_hash_collision[19]: 477
+r_hash_collision[20]: 294
+r_hash_collision[21]: 205
+r_hash_collision[22]: 110
+r_hash_collision[23]: 605
+r_hash_collision[24]: 149
+r_hash_collision[25]: 77
+r_hash_collision[26]: 52
+r_hash_collision[27]: 23
+r_hash_collision[28]: 36
+r_hash_collision[29]: 12
+r_hash_collision[30]: 2
+r_hash_collision[31]: 9
+r_hash_collision[32]: 12
+r_hash_collision[33]: 1
+r_hash_collision[34]: 1
+r_hash_collision[35]: 1
+r_hash_collision[36]: 1
+r_hash_collision[37]: 0
+r_hash_collision[38]: 1
+r_hash_collision[39]: 0
+r_hash_collision[40]: 0
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+read iops: 205979.12,  write iops: 128553.71, hit rt:100.00%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 984
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 4194135, miss: 0, hit_by_collision: 3934971, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 387
+p95_rlat/us: 2643
+p99_rlat/us: 2814
+p99.9_rlat/us: 2936
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 08:46:59 =====
+average read latency: 1569 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194210, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194210, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2727997
+r_hash_collision[1]: 634300
+r_hash_collision[2]: 311998
+r_hash_collision[3]: 168231
+r_hash_collision[4]: 110264
+r_hash_collision[5]: 90285
+r_hash_collision[6]: 44574
+r_hash_collision[7]: 27993
+r_hash_collision[8]: 18646
+r_hash_collision[9]: 21654
+r_hash_collision[10]: 11929
+r_hash_collision[11]: 7367
+r_hash_collision[12]: 6679
+r_hash_collision[13]: 4041
+r_hash_collision[14]: 2401
+r_hash_collision[15]: 1215
+r_hash_collision[16]: 998
+r_hash_collision[17]: 985
+r_hash_collision[18]: 510
+r_hash_collision[19]: 477
+r_hash_collision[20]: 294
+r_hash_collision[21]: 205
+r_hash_collision[22]: 110
+r_hash_collision[23]: 605
+r_hash_collision[24]: 149
+r_hash_collision[25]: 77
+r_hash_collision[26]: 52
+r_hash_collision[27]: 23
+r_hash_collision[28]: 36
+r_hash_collision[29]: 12
+r_hash_collision[30]: 2
+r_hash_collision[31]: 9
+r_hash_collision[32]: 12
+r_hash_collision[33]: 1
+r_hash_collision[34]: 1
+r_hash_collision[35]: 1
+r_hash_collision[36]: 1
+r_hash_collision[37]: 0
+r_hash_collision[38]: 1
+r_hash_collision[39]: 0
+r_hash_collision[40]: 0
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+read iops: 271407.79,  write iops: 128554.40, hit rt:100.00%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 33
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 4194135, miss: 0, hit_by_collision: 3934971, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 370
+p95_rlat/us: 2609
+p99_rlat/us: 2790
+p99.9_rlat/us: 2930
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 08:50:37 =====
+average read latency: 1225 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4193643, mapping_rd: 0, mapping_wr: 0
+nand_r: 4193643, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2668463
+r_hash_collision[1]: 661295
+r_hash_collision[2]: 313969
+r_hash_collision[3]: 226739
+r_hash_collision[4]: 102575
+r_hash_collision[5]: 90816
+r_hash_collision[6]: 37403
+r_hash_collision[7]: 23007
+r_hash_collision[8]: 20635
+r_hash_collision[9]: 11814
+r_hash_collision[10]: 11655
+r_hash_collision[11]: 8974
+r_hash_collision[12]: 4928
+r_hash_collision[13]: 2896
+r_hash_collision[14]: 2260
+r_hash_collision[15]: 1824
+r_hash_collision[16]: 1423
+r_hash_collision[17]: 761
+r_hash_collision[18]: 542
+r_hash_collision[19]: 353
+r_hash_collision[20]: 217
+r_hash_collision[21]: 120
+r_hash_collision[22]: 144
+r_hash_collision[23]: 105
+r_hash_collision[24]: 64
+r_hash_collision[25]: 43
+r_hash_collision[26]: 78
+r_hash_collision[27]: 33
+r_hash_collision[28]: 43
+r_hash_collision[29]: 17
+r_hash_collision[30]: 28
+r_hash_collision[31]: 6
+r_hash_collision[32]: 6
+r_hash_collision[33]: 2
+r_hash_collision[34]: 1
+r_hash_collision[35]: 1
+r_hash_collision[36]: 3
+r_hash_collision[37]: 0
+r_hash_collision[38]: 1
+r_hash_collision[39]: 1
+r_hash_collision[40]: 2
+r_hash_collision[41]: 0
+r_hash_collision[42]: 1
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 171576.12,  write iops: 128268.02, hit rt:100.00%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 33
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 4193248, miss: 0, hit_by_collision: 3935249, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 400
+p95_rlat/us: 2641
+p99_rlat/us: 2824
+p99.9_rlat/us: 2948
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 09:14:16 =====
+average read latency: 1834 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387321, mapping_rd: 1070829, mapping_wr: 32581
+nand_r: 9458150, nand_w: 32581, nand_e: 32768
+r_hash_collision[0]: 6849422
+r_hash_collision[1]: 1084750
+r_hash_collision[2]: 294726
+r_hash_collision[3]: 111424
+r_hash_collision[4]: 29344
+r_hash_collision[5]: 11576
+r_hash_collision[6]: 3347
+r_hash_collision[7]: 1262
+r_hash_collision[8]: 409
+r_hash_collision[9]: 173
+r_hash_collision[10]: 63
+r_hash_collision[11]: 32
+r_hash_collision[12]: 2
+r_hash_collision[13]: 1
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 227065.52,  write iops: 55815.25, hit rt:87.25%
+hot valid entries: 16896, hot valid pages: 33, max hot pages: 33
+avg_grain_per_page: 4.86, avg_grain_hit: 1.48
+hot_hit: 112190, hot_rewrite_entries: 3998852, up_page_cnt:825858, up_grain_cnt:4015748, equal_up_page:7843 
+grain_heat_distribute[0]: 99.050290%
+grain_heat_distribute[1]: 0.835650%
+grain_heat_distribute[2]: 0.066738%
+grain_heat_distribute[3]: 0.018563%
+grain_heat_distribute[4]: 0.008466%
+grain_heat_distribute[5]: 0.004719%
+grain_heat_distribute[6]: 0.003010%
+grain_heat_distribute[7]: 0.002023%
+grain_heat_distribute[8]: 0.001465%
+grain_heat_distribute[9]: 0.001132%
+d_cache_hit: 7205246, miss: 1069095, hit_by_collision: 2216760, miss_by_collision: 1734
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 658
+p95_rlat/us: 3016
+p99_rlat/us: 3535
+p99.9_rlat/us: 5598
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 09:19:08 =====
+average read latency: 2021 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387321, mapping_rd: 991964, mapping_wr: 32017
+nand_r: 9379285, nand_w: 32017, nand_e: 32768
+r_hash_collision[0]: 6849422
+r_hash_collision[1]: 1084750
+r_hash_collision[2]: 294726
+r_hash_collision[3]: 111424
+r_hash_collision[4]: 29344
+r_hash_collision[5]: 11576
+r_hash_collision[6]: 3347
+r_hash_collision[7]: 1262
+r_hash_collision[8]: 409
+r_hash_collision[9]: 173
+r_hash_collision[10]: 63
+r_hash_collision[11]: 32
+r_hash_collision[12]: 2
+r_hash_collision[13]: 1
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 234569.89,  write iops: 55068.68, hit rt:88.19%
+hot valid entries: 167936, hot valid pages: 328, max hot pages: 328
+avg_grain_per_page: 0.58, avg_grain_hit: 4.42
+hot_hit: 1205453, hot_rewrite_entries: 185489, up_page_cnt:605345, up_grain_cnt:353425, equal_up_page:690 
+grain_heat_distribute[0]: 98.847194%
+grain_heat_distribute[1]: 1.038775%
+grain_heat_distribute[2]: 0.074545%
+grain_heat_distribute[3]: 0.017462%
+grain_heat_distribute[4]: 0.007121%
+grain_heat_distribute[5]: 0.003737%
+grain_heat_distribute[6]: 0.002244%
+grain_heat_distribute[7]: 0.001487%
+grain_heat_distribute[8]: 0.001090%
+grain_heat_distribute[9]: 0.000779%
+d_cache_hit: 6190979, miss: 990099, hit_by_collision: 2216629, miss_by_collision: 1865
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 2473
+p95_rlat/us: 11386
+p99_rlat/us: 30700
+p99.9_rlat/us: 37729
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 09:24:41 =====
+average read latency: 1859 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387321, mapping_rd: 991527, mapping_wr: 31926
+nand_r: 9378848, nand_w: 31926, nand_e: 32768
+r_hash_collision[0]: 6849423
+r_hash_collision[1]: 1084749
+r_hash_collision[2]: 294726
+r_hash_collision[3]: 111424
+r_hash_collision[4]: 29344
+r_hash_collision[5]: 11576
+r_hash_collision[6]: 3347
+r_hash_collision[7]: 1262
+r_hash_collision[8]: 409
+r_hash_collision[9]: 173
+r_hash_collision[10]: 63
+r_hash_collision[11]: 32
+r_hash_collision[12]: 2
+r_hash_collision[13]: 1
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 231580.07,  write iops: 54236.34, hit rt:88.20%
+hot valid entries: 332757, hot valid pages: 649, max hot pages: 656
+avg_grain_per_page: 0.57, avg_grain_hit: 4.64
+hot_hit: 1413113, hot_rewrite_entries: 10270, up_page_cnt:600033, up_grain_cnt:343027, equal_up_page:669 
+grain_heat_distribute[0]: 98.865304%
+grain_heat_distribute[1]: 1.023040%
+grain_heat_distribute[2]: 0.072348%
+grain_heat_distribute[3]: 0.016955%
+grain_heat_distribute[4]: 0.006976%
+grain_heat_distribute[5]: 0.003644%
+grain_heat_distribute[6]: 0.002270%
+grain_heat_distribute[7]: 0.001513%
+grain_heat_distribute[8]: 0.001068%
+grain_heat_distribute[9]: 0.000819%
+d_cache_hit: 5983765, miss: 989653, hit_by_collision: 2216619, miss_by_collision: 1874
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 617
+p95_rlat/us: 2557
+p99_rlat/us: 3257
+p99.9_rlat/us: 5361
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 09:29:05 =====
+average read latency: 1802 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387321, mapping_rd: 997426, mapping_wr: 32097
+nand_r: 9384747, nand_w: 32097, nand_e: 32768
+r_hash_collision[0]: 6849423
+r_hash_collision[1]: 1084749
+r_hash_collision[2]: 294726
+r_hash_collision[3]: 111424
+r_hash_collision[4]: 29344
+r_hash_collision[5]: 11576
+r_hash_collision[6]: 3347
+r_hash_collision[7]: 1262
+r_hash_collision[8]: 409
+r_hash_collision[9]: 173
+r_hash_collision[10]: 63
+r_hash_collision[11]: 32
+r_hash_collision[12]: 2
+r_hash_collision[13]: 1
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 225628.31,  write iops: 54639.64, hit rt:88.13%
+hot valid entries: 251904, hot valid pages: 492, max hot pages: 492
+avg_grain_per_page: 0.59, avg_grain_hit: 4.61
+hot_hit: 1298670, hot_rewrite_entries: 103201, up_page_cnt:600105, up_grain_cnt:355105, equal_up_page:693 
+grain_heat_distribute[0]: 98.867139%
+grain_heat_distribute[1]: 1.017287%
+grain_heat_distribute[2]: 0.073232%
+grain_heat_distribute[3]: 0.017706%
+grain_heat_distribute[4]: 0.007385%
+grain_heat_distribute[5]: 0.003951%
+grain_heat_distribute[6]: 0.002416%
+grain_heat_distribute[7]: 0.001725%
+grain_heat_distribute[8]: 0.001204%
+grain_heat_distribute[9]: 0.000946%
+d_cache_hit: 6092294, miss: 995567, hit_by_collision: 2216634, miss_by_collision: 1859
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 649
+p95_rlat/us: 2799
+p99_rlat/us: 3414
+p99.9_rlat/us: 5775
+--------------------------------------------------
+
+===== Test Time: 2026-01-15 09:35:56 =====
+average read latency: 2270 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387321, mapping_rd: 2528856, mapping_wr: 32181
+nand_r: 10916177, nand_w: 32181, nand_e: 32768
+r_hash_collision[0]: 7616263
+r_hash_collision[1]: 657922
+r_hash_collision[2]: 84493
+r_hash_collision[3]: 15802
+r_hash_collision[4]: 11592
+r_hash_collision[5]: 408
+r_hash_collision[6]: 42
+r_hash_collision[7]: 6
+r_hash_collision[8]: 2
+r_hash_collision[9]: 0
+r_hash_collision[10]: 1
+read iops: 207452.52,  write iops: 32041.41, hit rt:69.86%
+hot valid entries: 134876, hot valid pages: 263, max hot pages: 492
+avg_grain_per_page: 0.27, avg_grain_hit: 4.62
+hot_hit: 2060392, hot_rewrite_entries: 3028, up_page_cnt:514084, up_grain_cnt:137904, equal_up_page:269 
+grain_heat_distribute[0]: 99.453470%
+grain_heat_distribute[1]: 0.494137%
+grain_heat_distribute[2]: 0.034441%
+grain_heat_distribute[3]: 0.007754%
+grain_heat_distribute[4]: 0.003194%
+grain_heat_distribute[5]: 0.001730%
+grain_heat_distribute[6]: 0.001019%
+grain_heat_distribute[7]: 0.000683%
+grain_heat_distribute[8]: 0.000512%
+grain_heat_distribute[9]: 0.000367%
+d_cache_hit: 3798805, miss: 2527334, hit_by_collision: 921520, miss_by_collision: 1522
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 2205
+p95_rlat/us: 7956
+p99_rlat/us: 11658
+p99.9_rlat/us: 16872
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 03:41:27 =====
+average read latency: 2029 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8388967, mapping_rd: 3498355, mapping_wr: 32226
+nand_r: 11887322, nand_w: 32226, nand_e: 32768
+r_hash_collision[0]: 7680619
+r_hash_collision[1]: 602440
+r_hash_collision[2]: 85191
+r_hash_collision[3]: 17197
+r_hash_collision[4]: 2621
+r_hash_collision[5]: 406
+r_hash_collision[6]: 58
+r_hash_collision[7]: 22
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+read iops: 204315.57,  write iops: 26467.73, hit rt:58.32%
+hot valid entries: 101626, hot valid pages: 198, max hot pages: 492
+avg_grain_per_page: 0.31, avg_grain_hit: 5.67
+hot_hit: 2043588, hot_rewrite_entries: 160, up_page_cnt:323799, up_grain_cnt:101786, equal_up_page:198 
+grain_heat_distribute[0]: 99.535927%
+grain_heat_distribute[1]: 0.402677%
+grain_heat_distribute[2]: 0.037644%
+grain_heat_distribute[3]: 0.009609%
+grain_heat_distribute[4]: 0.004157%
+grain_heat_distribute[5]: 0.002272%
+grain_heat_distribute[6]: 0.001404%
+grain_heat_distribute[7]: 0.000954%
+grain_heat_distribute[8]: 0.000686%
+grain_heat_distribute[9]: 0.000516%
+d_cache_hit: 2848725, miss: 3496241, hit_by_collision: 835315, miss_by_collision: 2114
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 1635
+p95_rlat/us: 7101
+p99_rlat/us: 10930
+p99.9_rlat/us: 17056
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 04:03:41 =====
+average read latency: 2394 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387321, mapping_rd: 3341678, mapping_wr: 32395
+nand_r: 11728999, nand_w: 32395, nand_e: 32768
+r_hash_collision[0]: 8016410
+r_hash_collision[1]: 335761
+r_hash_collision[2]: 23039
+r_hash_collision[3]: 10189
+r_hash_collision[4]: 1122
+r_hash_collision[5]: 10
+r_hash_collision[6]: 0
+read iops: 195091.15,  write iops: 26588.29, hit rt:60.16%
+hot valid entries: 75663, hot valid pages: 147, max hot pages: 328
+avg_grain_per_page: 0.33, avg_grain_hit: 5.02
+hot_hit: 2198796, hot_rewrite_entries: 156, up_page_cnt:229644, up_grain_cnt:75819, equal_up_page:148 
+grain_heat_distribute[0]: 99.566521%
+grain_heat_distribute[1]: 0.368995%
+grain_heat_distribute[2]: 0.042922%
+grain_heat_distribute[3]: 0.009623%
+grain_heat_distribute[4]: 0.003723%
+grain_heat_distribute[5]: 0.001909%
+grain_heat_distribute[6]: 0.001125%
+grain_heat_distribute[7]: 0.000757%
+grain_heat_distribute[8]: 0.000565%
+grain_heat_distribute[9]: 0.000379%
+d_cache_hit: 2846871, miss: 3340864, hit_by_collision: 416130, miss_by_collision: 814
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 1986
+p95_rlat/us: 9163
+p99_rlat/us: 16111
+p99.9_rlat/us: 20847
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 04:18:41 =====
+average read latency: 2129 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8388967, mapping_rd: 3921777, mapping_wr: 32416
+nand_r: 12310871, nand_w: 32543, nand_e: 32768
+r_hash_collision[0]: 8048743
+r_hash_collision[1]: 311308
+r_hash_collision[2]: 26209
+r_hash_collision[3]: 2127
+r_hash_collision[4]: 135
+r_hash_collision[5]: 30
+r_hash_collision[6]: 2
+read iops: 195339.20,  write iops: 24358.55, hit rt:53.26%
+hot valid entries: 63102, hot valid pages: 123, max hot pages: 328
+avg_grain_per_page: 0.46, avg_grain_hit: 6.35
+hot_hit: 2185901, hot_rewrite_entries: 99, up_page_cnt:136781, up_grain_cnt:63201, equal_up_page:123 
+grain_heat_distribute[0]: 99.609678%
+grain_heat_distribute[1]: 0.300076%
+grain_heat_distribute[2]: 0.054168%
+grain_heat_distribute[3]: 0.013875%
+grain_heat_distribute[4]: 0.006160%
+grain_heat_distribute[5]: 0.003280%
+grain_heat_distribute[6]: 0.002090%
+grain_heat_distribute[7]: 0.001411%
+grain_heat_distribute[8]: 0.000922%
+grain_heat_distribute[9]: 0.000738%
+d_cache_hit: 2281846, miss: 3920807, hit_by_collision: 369839, miss_by_collision: 970
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 1059
+p95_rlat/us: 4710
+p99_rlat/us: 5540
+p99.9_rlat/us: 9690
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 04:38:34 =====
+average read latency: 1666 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387321, mapping_rd: 0, mapping_wr: 0
+nand_r: 8387321, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 5334718
+r_hash_collision[1]: 1324222
+r_hash_collision[2]: 628684
+r_hash_collision[3]: 452892
+r_hash_collision[4]: 205368
+r_hash_collision[5]: 181754
+r_hash_collision[6]: 75370
+r_hash_collision[7]: 45717
+r_hash_collision[8]: 40948
+r_hash_collision[9]: 23842
+r_hash_collision[10]: 23366
+r_hash_collision[11]: 17958
+r_hash_collision[12]: 9827
+r_hash_collision[13]: 5736
+r_hash_collision[14]: 4532
+r_hash_collision[15]: 3644
+r_hash_collision[16]: 2774
+r_hash_collision[17]: 1512
+r_hash_collision[18]: 1096
+r_hash_collision[19]: 705
+r_hash_collision[20]: 461
+r_hash_collision[21]: 247
+r_hash_collision[22]: 281
+r_hash_collision[23]: 210
+r_hash_collision[24]: 135
+r_hash_collision[25]: 108
+r_hash_collision[26]: 152
+r_hash_collision[27]: 59
+r_hash_collision[28]: 80
+r_hash_collision[29]: 37
+r_hash_collision[30]: 47
+r_hash_collision[31]: 9
+r_hash_collision[32]: 10
+r_hash_collision[33]: 3
+r_hash_collision[34]: 7
+r_hash_collision[35]: 3
+r_hash_collision[36]: 5
+r_hash_collision[37]: 0
+r_hash_collision[38]: 4
+r_hash_collision[39]: 1
+r_hash_collision[40]: 3
+r_hash_collision[41]: 2
+r_hash_collision[42]: 1
+r_hash_collision[43]: 0
+r_hash_collision[44]: 1
+read iops: 261524.02,  write iops: 128268.50, hit rt:100.00%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 328
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 8386531, miss: 0, hit_by_collision: 7873245, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 438
+p95_rlat/us: 2556
+p99_rlat/us: 3023
+p99.9_rlat/us: 3397
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 04:46:41 =====
+average read latency: 2217 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387321, mapping_rd: 3775139, mapping_wr: 32723
+nand_r: 12162460, nand_w: 32723, nand_e: 32768
+r_hash_collision[0]: 8016410
+r_hash_collision[1]: 335761
+r_hash_collision[2]: 23039
+r_hash_collision[3]: 10189
+r_hash_collision[4]: 1122
+r_hash_collision[5]: 10
+r_hash_collision[6]: 0
+read iops: 183719.26,write iops: 26633.65, hit rt:55.00%
+d_cache_hit: 4612219, miss: 3774312, hit_by_collision: 416117, miss_by_collision: 827
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 1062
+p95_rlat/us: 4439
+p99_rlat/us: 5257
+p99.9_rlat/us: 8991
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 04:54:19 =====
+average read latency: 2717 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 4517273, mapping_wr: 32722
+nand_r: 12904886, nand_w: 32722, nand_e: 32768
+r_hash_collision[0]: 8011781
+r_hash_collision[1]: 340458
+r_hash_collision[2]: 25091
+r_hash_collision[3]: 8515
+r_hash_collision[4]: 1000
+r_hash_collision[5]: 8
+r_hash_collision[6]: 1
+read iops: 177252.16,write iops: 26660.73, hit rt:46.15%
+d_cache_hit: 3870588, miss: 4516266, hit_by_collision: 419224, miss_by_collision: 1007
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 3862
+p95_rlat/us: 16939
+p99_rlat/us: 23897
+p99.9_rlat/us: 38188
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 05:01:53 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194157, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194157, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2621527
+r_hash_collision[1]: 696119
+r_hash_collision[2]: 333682
+r_hash_collision[3]: 184231
+r_hash_collision[4]: 118086
+r_hash_collision[5]: 74131
+r_hash_collision[6]: 49584
+r_hash_collision[7]: 34190
+r_hash_collision[8]: 23765
+r_hash_collision[9]: 16475
+r_hash_collision[10]: 11656
+r_hash_collision[11]: 8538
+r_hash_collision[12]: 6124
+r_hash_collision[13]: 4431
+r_hash_collision[14]: 3203
+r_hash_collision[15]: 2273
+r_hash_collision[16]: 1597
+r_hash_collision[17]: 1158
+r_hash_collision[18]: 914
+r_hash_collision[19]: 633
+r_hash_collision[20]: 439
+r_hash_collision[21]: 340
+r_hash_collision[22]: 228
+r_hash_collision[23]: 194
+r_hash_collision[24]: 136
+r_hash_collision[25]: 103
+r_hash_collision[26]: 75
+r_hash_collision[27]: 58
+r_hash_collision[28]: 32
+r_hash_collision[29]: 31
+r_hash_collision[30]: 10
+r_hash_collision[31]: 23
+r_hash_collision[32]: 12
+r_hash_collision[33]: 4
+r_hash_collision[34]: 6
+r_hash_collision[35]: 7
+r_hash_collision[36]: 4
+r_hash_collision[37]: 0
+r_hash_collision[38]: 2
+r_hash_collision[39]: 0
+r_hash_collision[40]: 3
+r_hash_collision[41]: 0
+r_hash_collision[42]: 3
+r_hash_collision[43]: 1
+read iops: 123171.02,write iops: 83565.29, hit rt:100.00%
+d_cache_hit: 4194028, miss: 0, hit_by_collision: 4167662, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 65
+p95_rlat/us: 110
+p99_rlat/us: 150
+p99.9_rlat/us: 198
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 05:05:17 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194157, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194157, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2621527
+r_hash_collision[1]: 696119
+r_hash_collision[2]: 333682
+r_hash_collision[3]: 184231
+r_hash_collision[4]: 118086
+r_hash_collision[5]: 74131
+r_hash_collision[6]: 49584
+r_hash_collision[7]: 34190
+r_hash_collision[8]: 23765
+r_hash_collision[9]: 16475
+r_hash_collision[10]: 11656
+r_hash_collision[11]: 8538
+r_hash_collision[12]: 6124
+r_hash_collision[13]: 4431
+r_hash_collision[14]: 3203
+r_hash_collision[15]: 2273
+r_hash_collision[16]: 1597
+r_hash_collision[17]: 1158
+r_hash_collision[18]: 914
+r_hash_collision[19]: 633
+r_hash_collision[20]: 439
+r_hash_collision[21]: 340
+r_hash_collision[22]: 228
+r_hash_collision[23]: 194
+r_hash_collision[24]: 136
+r_hash_collision[25]: 103
+r_hash_collision[26]: 75
+r_hash_collision[27]: 58
+r_hash_collision[28]: 32
+r_hash_collision[29]: 31
+r_hash_collision[30]: 10
+r_hash_collision[31]: 23
+r_hash_collision[32]: 12
+r_hash_collision[33]: 4
+r_hash_collision[34]: 6
+r_hash_collision[35]: 7
+r_hash_collision[36]: 4
+r_hash_collision[37]: 0
+r_hash_collision[38]: 2
+r_hash_collision[39]: 0
+r_hash_collision[40]: 3
+r_hash_collision[41]: 0
+r_hash_collision[42]: 3
+r_hash_collision[43]: 1
+read iops: 123482.39,write iops: 90886.88, hit rt:100.00%
+d_cache_hit: 4194028, miss: 0, hit_by_collision: 4167662, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 64
+p95_rlat/us: 104
+p99_rlat/us: 148
+p99.9_rlat/us: 198
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 05:11:28 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8388858, mapping_rd: 0, mapping_wr: 0
+nand_r: 8388858, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 5245063
+r_hash_collision[1]: 1388033
+r_hash_collision[2]: 665132
+r_hash_collision[3]: 370902
+r_hash_collision[4]: 238147
+r_hash_collision[5]: 148377
+r_hash_collision[6]: 98873
+r_hash_collision[7]: 69659
+r_hash_collision[8]: 47123
+r_hash_collision[9]: 33184
+r_hash_collision[10]: 23642
+r_hash_collision[11]: 16624
+r_hash_collision[12]: 11986
+r_hash_collision[13]: 8772
+r_hash_collision[14]: 6243
+r_hash_collision[15]: 4519
+r_hash_collision[16]: 3273
+r_hash_collision[17]: 2399
+r_hash_collision[18]: 1626
+r_hash_collision[19]: 1303
+r_hash_collision[20]: 983
+r_hash_collision[21]: 659
+r_hash_collision[22]: 467
+r_hash_collision[23]: 346
+r_hash_collision[24]: 267
+r_hash_collision[25]: 206
+r_hash_collision[26]: 129
+r_hash_collision[27]: 91
+r_hash_collision[28]: 89
+r_hash_collision[29]: 52
+r_hash_collision[30]: 46
+r_hash_collision[31]: 35
+r_hash_collision[32]: 19
+r_hash_collision[33]: 14
+r_hash_collision[34]: 17
+r_hash_collision[35]: 6
+r_hash_collision[36]: 4
+r_hash_collision[37]: 2
+r_hash_collision[38]: 5
+r_hash_collision[39]: 3
+r_hash_collision[40]: 4
+r_hash_collision[41]: 6
+r_hash_collision[42]: 4
+r_hash_collision[43]: 0
+r_hash_collision[44]: 1
+read iops: 122440.19,write iops: 87960.04, hit rt:100.00%
+d_cache_hit: 8388335, miss: 0, hit_by_collision: 8340048, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 64
+p95_rlat/us: 105
+p99_rlat/us: 148
+p99.9_rlat/us: 198
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 05:27:55 =====
+average read latency: 83 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8388858, mapping_rd: 2087432, mapping_wr: 32653
+nand_r: 10476290, nand_w: 32653, nand_e: 32768
+r_hash_collision[0]: 6819432
+r_hash_collision[1]: 1076188
+r_hash_collision[2]: 323188
+r_hash_collision[3]: 108096
+r_hash_collision[4]: 39678
+r_hash_collision[5]: 13920
+r_hash_collision[6]: 4889
+r_hash_collision[7]: 1870
+r_hash_collision[8]: 717
+r_hash_collision[9]: 224
+r_hash_collision[10]: 75
+r_hash_collision[11]: 41
+r_hash_collision[12]: 8
+r_hash_collision[13]: 8
+r_hash_collision[14]: 0
+r_hash_collision[15]: 1
+read iops: 97862.15,write iops: 47371.30, hit rt:75.16%
+d_cache_hit: 6304319, miss: 2084016, hit_by_collision: 2323340, miss_by_collision: 3416
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 243
+p95_rlat/us: 778
+p99_rlat/us: 1094
+p99.9_rlat/us: 1392
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 05:47:07 =====
+average read latency: 106 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8388858, mapping_rd: 5221213, mapping_wr: 32706
+nand_r: 13610071, nand_w: 32706, nand_e: 32768
+r_hash_collision[0]: 7602082
+r_hash_collision[1]: 652008
+r_hash_collision[2]: 110132
+r_hash_collision[3]: 19407
+r_hash_collision[4]: 3832
+r_hash_collision[5]: 719
+r_hash_collision[6]: 135
+r_hash_collision[7]: 12
+r_hash_collision[8]: 4
+r_hash_collision[9]: 2
+r_hash_collision[10]: 2
+read iops: 76212.36,write iops: 29262.56, hit rt:37.79%
+d_cache_hit: 3169904, miss: 5218431, hit_by_collision: 947598, miss_by_collision: 2782
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 325
+p95_rlat/us: 949
+p99_rlat/us: 1146
+p99.9_rlat/us: 1407
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 06:08:17 =====
+average read latency: 118 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8388858, mapping_rd: 6787381, mapping_wr: 32725
+nand_r: 15176239, nand_w: 32725, nand_e: 32768
+r_hash_collision[0]: 7996202
+r_hash_collision[1]: 356987
+r_hash_collision[2]: 31870
+r_hash_collision[3]: 2953
+r_hash_collision[4]: 287
+r_hash_collision[5]: 32
+r_hash_collision[6]: 4
+read iops: 68579.50,write iops: 24272.69, hit rt:19.10%
+d_cache_hit: 1602429, miss: 6785906, hit_by_collision: 429443, miss_by_collision: 1475
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 329
+p95_rlat/us: 973
+p99_rlat/us: 1151
+p99.9_rlat/us: 1401
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 06:22:27 =====
+average read latency: 124 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8388858, mapping_rd: 7572797, mapping_wr: 32755
+nand_r: 15961772, nand_w: 32872, nand_e: 32768
+r_hash_collision[0]: 8192128
+r_hash_collision[1]: 187320
+r_hash_collision[2]: 8482
+r_hash_collision[3]: 389
+r_hash_collision[4]: 15
+r_hash_collision[5]: 1
+read iops: 65206.68,write iops: 22690.63, hit rt:9.73%
+d_cache_hit: 816339, miss: 7571996, hit_by_collision: 204715, miss_by_collision: 801
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 326
+p95_rlat/us: 963
+p99_rlat/us: 1151
+p99.9_rlat/us: 1363
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 06:43:03 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194178, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194178, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2698670
+r_hash_collision[1]: 651514
+r_hash_collision[2]: 317053
+r_hash_collision[3]: 173356
+r_hash_collision[4]: 112266
+r_hash_collision[5]: 86104
+r_hash_collision[6]: 46326
+r_hash_collision[7]: 29470
+r_hash_collision[8]: 19872
+r_hash_collision[9]: 20382
+r_hash_collision[10]: 11656
+r_hash_collision[11]: 7643
+r_hash_collision[12]: 6624
+r_hash_collision[13]: 4257
+r_hash_collision[14]: 2603
+r_hash_collision[15]: 1438
+r_hash_collision[16]: 1053
+r_hash_collision[17]: 1135
+r_hash_collision[18]: 544
+r_hash_collision[19]: 502
+r_hash_collision[20]: 307
+r_hash_collision[21]: 269
+r_hash_collision[22]: 148
+r_hash_collision[23]: 490
+r_hash_collision[24]: 173
+r_hash_collision[25]: 86
+r_hash_collision[26]: 48
+r_hash_collision[27]: 16
+r_hash_collision[28]: 41
+r_hash_collision[29]: 21
+r_hash_collision[30]: 8
+r_hash_collision[31]: 12
+r_hash_collision[32]: 16
+r_hash_collision[33]: 3
+r_hash_collision[34]: 2
+r_hash_collision[35]: 1
+r_hash_collision[36]: 3
+r_hash_collision[37]: 0
+r_hash_collision[38]: 2
+r_hash_collision[39]: 0
+r_hash_collision[40]: 3
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+read iops: 122526.56,write iops: 85894.32, hit rt:100.00%
+d_cache_hit: 4194117, miss: 0, hit_by_collision: 3998563, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 58
+p95_rlat/us: 99
+p99_rlat/us: 144
+p99.9_rlat/us: 195
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 06:47:22 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 0, mapping_wr: 0
+nand_r: 8387613, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 5305926
+r_hash_collision[1]: 1343705
+r_hash_collision[2]: 640834
+r_hash_collision[3]: 429686
+r_hash_collision[4]: 215341
+r_hash_collision[5]: 175457
+r_hash_collision[6]: 80684
+r_hash_collision[7]: 50370
+r_hash_collision[8]: 42432
+r_hash_collision[9]: 25843
+r_hash_collision[10]: 24047
+r_hash_collision[11]: 17865
+r_hash_collision[12]: 10548
+r_hash_collision[13]: 6463
+r_hash_collision[14]: 5037
+r_hash_collision[15]: 3890
+r_hash_collision[16]: 2938
+r_hash_collision[17]: 1581
+r_hash_collision[18]: 1161
+r_hash_collision[19]: 836
+r_hash_collision[20]: 577
+r_hash_collision[21]: 319
+r_hash_collision[22]: 319
+r_hash_collision[23]: 214
+r_hash_collision[24]: 184
+r_hash_collision[25]: 123
+r_hash_collision[26]: 179
+r_hash_collision[27]: 49
+r_hash_collision[28]: 84
+r_hash_collision[29]: 46
+r_hash_collision[30]: 46
+r_hash_collision[31]: 20
+r_hash_collision[32]: 4
+r_hash_collision[33]: 5
+r_hash_collision[34]: 6
+r_hash_collision[35]: 3
+r_hash_collision[36]: 10
+r_hash_collision[37]: 2
+r_hash_collision[38]: 5
+r_hash_collision[39]: 4
+r_hash_collision[40]: 5
+r_hash_collision[41]: 4
+r_hash_collision[42]: 1
+r_hash_collision[43]: 0
+r_hash_collision[44]: 1
+read iops: 121775.04,write iops: 88061.68, hit rt:100.00%
+d_cache_hit: 8386854, miss: 0, hit_by_collision: 8000097, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 51
+p95_rlat/us: 53
+p99_rlat/us: 54
+p99.9_rlat/us: 57
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 06:50:19 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194178, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194178, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2698670
+r_hash_collision[1]: 651514
+r_hash_collision[2]: 317053
+r_hash_collision[3]: 173356
+r_hash_collision[4]: 112266
+r_hash_collision[5]: 86104
+r_hash_collision[6]: 46326
+r_hash_collision[7]: 29470
+r_hash_collision[8]: 19872
+r_hash_collision[9]: 20382
+r_hash_collision[10]: 11656
+r_hash_collision[11]: 7643
+r_hash_collision[12]: 6624
+r_hash_collision[13]: 4257
+r_hash_collision[14]: 2603
+r_hash_collision[15]: 1438
+r_hash_collision[16]: 1053
+r_hash_collision[17]: 1135
+r_hash_collision[18]: 544
+r_hash_collision[19]: 502
+r_hash_collision[20]: 307
+r_hash_collision[21]: 269
+r_hash_collision[22]: 148
+r_hash_collision[23]: 490
+r_hash_collision[24]: 173
+r_hash_collision[25]: 86
+r_hash_collision[26]: 48
+r_hash_collision[27]: 16
+r_hash_collision[28]: 41
+r_hash_collision[29]: 21
+r_hash_collision[30]: 8
+r_hash_collision[31]: 12
+r_hash_collision[32]: 16
+r_hash_collision[33]: 3
+r_hash_collision[34]: 2
+r_hash_collision[35]: 1
+r_hash_collision[36]: 3
+r_hash_collision[37]: 0
+r_hash_collision[38]: 2
+r_hash_collision[39]: 0
+r_hash_collision[40]: 3
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+read iops: 122525.79,write iops: 84773.23, hit rt:100.00%
+d_cache_hit: 4194117, miss: 0, hit_by_collision: 3998563, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 54
+p95_rlat/us: 95
+p99_rlat/us: 105
+p99.9_rlat/us: 153
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 06:54:13 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194178, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194178, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 3458642
+r_hash_collision[1]: 526125
+r_hash_collision[2]: 140128
+r_hash_collision[3]: 47169
+r_hash_collision[4]: 13796
+r_hash_collision[5]: 5205
+r_hash_collision[6]: 1928
+r_hash_collision[7]: 736
+r_hash_collision[8]: 289
+r_hash_collision[9]: 83
+r_hash_collision[10]: 12
+r_hash_collision[11]: 2
+r_hash_collision[12]: 2
+r_hash_collision[13]: 0
+read iops: 122698.69,write iops: 89272.29, hit rt:100.00%
+d_cache_hit: 4194117, miss: 0, hit_by_collision: 1049042, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 52
+p95_rlat/us: 53
+p99_rlat/us: 96
+p99.9_rlat/us: 103
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 07:02:13 =====
+average read latency: 77 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 1321473, mapping_wr: 32141
+nand_r: 9709086, nand_w: 32141, nand_e: 32768
+r_hash_collision[0]: 6839343
+r_hash_collision[1]: 1082938
+r_hash_collision[2]: 304151
+r_hash_collision[3]: 110267
+r_hash_collision[4]: 31928
+r_hash_collision[5]: 12341
+r_hash_collision[6]: 3678
+r_hash_collision[7]: 1381
+r_hash_collision[8]: 494
+r_hash_collision[9]: 207
+r_hash_collision[10]: 75
+r_hash_collision[11]: 43
+r_hash_collision[12]: 5
+r_hash_collision[13]: 3
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 104407.27,write iops: 47930.49, hit rt:84.27%
+d_cache_hit: 7067553, miss: 1319301, hit_by_collision: 2248158, miss_by_collision: 2172
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 188
+p95_rlat/us: 650
+p99_rlat/us: 1011
+p99.9_rlat/us: 1262
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 07:12:34 =====
+average read latency: 92 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 3426014, mapping_wr: 32639
+nand_r: 11813627, nand_w: 32639, nand_e: 32768
+r_hash_collision[0]: 7615282
+r_hash_collision[1]: 654165
+r_hash_collision[2]: 90186
+r_hash_collision[3]: 16766
+r_hash_collision[4]: 9902
+r_hash_collision[5]: 473
+r_hash_collision[6]: 72
+r_hash_collision[7]: 6
+r_hash_collision[8]: 1
+r_hash_collision[9]: 0
+r_hash_collision[10]: 1
+read iops: 87136.45,write iops: 28810.94, hit rt:59.17%
+d_cache_hit: 4962683, miss: 3424171, hit_by_collision: 925457, miss_by_collision: 1843
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 263
+p95_rlat/us: 653
+p99_rlat/us: 1049
+p99.9_rlat/us: 1254
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 07:22:06 =====
+average read latency: 101 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 4510940, mapping_wr: 32701
+nand_r: 12898553, nand_w: 32701, nand_e: 32768
+r_hash_collision[0]: 8011781
+r_hash_collision[1]: 340458
+r_hash_collision[2]: 25091
+r_hash_collision[3]: 8515
+r_hash_collision[4]: 1000
+r_hash_collision[5]: 8
+r_hash_collision[6]: 1
+read iops: 79870.26,write iops: 24492.37, hit rt:46.23%
+d_cache_hit: 3876903, miss: 4509951, hit_by_collision: 419242, miss_by_collision: 989
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 304
+p95_rlat/us: 838
+p99_rlat/us: 1107
+p99.9_rlat/us: 1361
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 07:32:11 =====
+average read latency: 104 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 5056626, mapping_wr: 32742
+nand_r: 13444356, nand_w: 32859, nand_e: 32768
+r_hash_collision[0]: 8195652
+r_hash_collision[1]: 183472
+r_hash_collision[2]: 7426
+r_hash_collision[3]: 296
+r_hash_collision[4]: 5
+r_hash_collision[5]: 3
+read iops: 76648.91,write iops: 22728.11, hit rt:39.71%
+d_cache_hit: 3330620, miss: 5056234, hit_by_collision: 198855, miss_by_collision: 392
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 300
+p95_rlat/us: 806
+p99_rlat/us: 1103
+p99.9_rlat/us: 1357
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 07:35:49 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194157, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194157, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2621527
+r_hash_collision[1]: 696119
+r_hash_collision[2]: 333682
+r_hash_collision[3]: 184231
+r_hash_collision[4]: 118086
+r_hash_collision[5]: 74131
+r_hash_collision[6]: 49584
+r_hash_collision[7]: 34190
+r_hash_collision[8]: 23765
+r_hash_collision[9]: 16475
+r_hash_collision[10]: 11656
+r_hash_collision[11]: 8538
+r_hash_collision[12]: 6124
+r_hash_collision[13]: 4431
+r_hash_collision[14]: 3203
+r_hash_collision[15]: 2273
+r_hash_collision[16]: 1597
+r_hash_collision[17]: 1158
+r_hash_collision[18]: 914
+r_hash_collision[19]: 633
+r_hash_collision[20]: 439
+r_hash_collision[21]: 340
+r_hash_collision[22]: 228
+r_hash_collision[23]: 194
+r_hash_collision[24]: 136
+r_hash_collision[25]: 103
+r_hash_collision[26]: 75
+r_hash_collision[27]: 58
+r_hash_collision[28]: 32
+r_hash_collision[29]: 31
+r_hash_collision[30]: 10
+r_hash_collision[31]: 23
+r_hash_collision[32]: 12
+r_hash_collision[33]: 4
+r_hash_collision[34]: 6
+r_hash_collision[35]: 7
+r_hash_collision[36]: 4
+r_hash_collision[37]: 0
+r_hash_collision[38]: 2
+r_hash_collision[39]: 0
+r_hash_collision[40]: 3
+r_hash_collision[41]: 0
+r_hash_collision[42]: 3
+r_hash_collision[43]: 1
+read iops: 123400.72,  write iops: 87013.61, hit rt:100.00%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 328
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 4194028, miss: 0, hit_by_collision: 4167662, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 64
+p95_rlat/us: 105
+p99_rlat/us: 149
+p99.9_rlat/us: 199
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 07:41:30 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8388858, mapping_rd: 0, mapping_wr: 0
+nand_r: 8388858, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 5245063
+r_hash_collision[1]: 1388033
+r_hash_collision[2]: 665132
+r_hash_collision[3]: 370902
+r_hash_collision[4]: 238147
+r_hash_collision[5]: 148377
+r_hash_collision[6]: 98873
+r_hash_collision[7]: 69659
+r_hash_collision[8]: 47123
+r_hash_collision[9]: 33184
+r_hash_collision[10]: 23642
+r_hash_collision[11]: 16624
+r_hash_collision[12]: 11986
+r_hash_collision[13]: 8772
+r_hash_collision[14]: 6243
+r_hash_collision[15]: 4519
+r_hash_collision[16]: 3273
+r_hash_collision[17]: 2399
+r_hash_collision[18]: 1626
+r_hash_collision[19]: 1303
+r_hash_collision[20]: 983
+r_hash_collision[21]: 659
+r_hash_collision[22]: 467
+r_hash_collision[23]: 346
+r_hash_collision[24]: 267
+r_hash_collision[25]: 206
+r_hash_collision[26]: 129
+r_hash_collision[27]: 91
+r_hash_collision[28]: 89
+r_hash_collision[29]: 52
+r_hash_collision[30]: 46
+r_hash_collision[31]: 35
+r_hash_collision[32]: 19
+r_hash_collision[33]: 14
+r_hash_collision[34]: 17
+r_hash_collision[35]: 6
+r_hash_collision[36]: 4
+r_hash_collision[37]: 2
+r_hash_collision[38]: 5
+r_hash_collision[39]: 3
+r_hash_collision[40]: 4
+r_hash_collision[41]: 6
+r_hash_collision[42]: 4
+r_hash_collision[43]: 0
+r_hash_collision[44]: 1
+read iops: 122658.98,  write iops: 88391.16, hit rt:100.00%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 328
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 8388335, miss: 0, hit_by_collision: 8340048, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 64
+p95_rlat/us: 104
+p99_rlat/us: 149
+p99.9_rlat/us: 198
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 07:47:39 =====
+average read latency: 84 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8388858, mapping_rd: 2132989, mapping_wr: 32345
+nand_r: 10521847, nand_w: 32345, nand_e: 32768
+r_hash_collision[0]: 6819436
+r_hash_collision[1]: 1076184
+r_hash_collision[2]: 323188
+r_hash_collision[3]: 108096
+r_hash_collision[4]: 39678
+r_hash_collision[5]: 13920
+r_hash_collision[6]: 4889
+r_hash_collision[7]: 1870
+r_hash_collision[8]: 717
+r_hash_collision[9]: 224
+r_hash_collision[10]: 75
+r_hash_collision[11]: 41
+r_hash_collision[12]: 8
+r_hash_collision[13]: 8
+r_hash_collision[14]: 0
+r_hash_collision[15]: 1
+read iops: 96520.38,  write iops: 46333.92, hit rt:74.61%
+hot valid entries: 167893, hot valid pages: 327, max hot pages: 328
+avg_grain_per_page: 0.14, avg_grain_hit: 2.03
+hot_hit: 65096, hot_rewrite_entries: 15137, up_page_cnt:1343199, up_grain_cnt:183030, equal_up_page:357 
+grain_heat_distribute[0]: 98.832092%
+grain_heat_distribute[1]: 1.141294%
+grain_heat_distribute[2]: 0.025905%
+grain_heat_distribute[3]: 0.000684%
+grain_heat_distribute[4]: 0.000024%
+grain_heat_distribute[5]: 0.000002%
+d_cache_hit: 6193699, miss: 2129540, hit_by_collision: 2323303, miss_by_collision: 3449
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 245
+p95_rlat/us: 796
+p99_rlat/us: 1100
+p99.9_rlat/us: 1383
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 07:55:23 =====
+average read latency: 106 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8388858, mapping_rd: 5245422, mapping_wr: 32384
+nand_r: 13634280, nand_w: 32384, nand_e: 32768
+r_hash_collision[0]: 7602083
+r_hash_collision[1]: 652005
+r_hash_collision[2]: 110134
+r_hash_collision[3]: 19407
+r_hash_collision[4]: 3832
+r_hash_collision[5]: 719
+r_hash_collision[6]: 135
+r_hash_collision[7]: 12
+r_hash_collision[8]: 4
+r_hash_collision[9]: 2
+r_hash_collision[10]: 2
+read iops: 75891.22,  write iops: 29464.63, hit rt:37.50%
+hot valid entries: 29607, hot valid pages: 57, max hot pages: 328
+avg_grain_per_page: 0.03, avg_grain_hit: 2.01
+hot_hit: 10815, hot_rewrite_entries: 0, up_page_cnt:1002872, up_grain_cnt:29607, equal_up_page:57 
+grain_heat_distribute[0]: 99.454692%
+grain_heat_distribute[1]: 0.539541%
+grain_heat_distribute[2]: 0.005720%
+grain_heat_distribute[3]: 0.000046%
+grain_heat_distribute[4]: 0.000001%
+d_cache_hit: 3134954, miss: 5242566, hit_by_collision: 947525, miss_by_collision: 2856
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 323
+p95_rlat/us: 954
+p99_rlat/us: 1149
+p99.9_rlat/us: 1423
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 08:05:12 =====
+average read latency: 118 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8388858, mapping_rd: 6800225, mapping_wr: 32402
+nand_r: 15189083, nand_w: 32402, nand_e: 32768
+r_hash_collision[0]: 7996203
+r_hash_collision[1]: 356987
+r_hash_collision[2]: 31869
+r_hash_collision[3]: 2953
+r_hash_collision[4]: 287
+r_hash_collision[5]: 32
+r_hash_collision[6]: 4
+read iops: 68306.00,  write iops: 24209.99, hit rt:18.95%
+hot valid entries: 10121, hot valid pages: 19, max hot pages: 328
+avg_grain_per_page: 0.03, avg_grain_hit: 2.00
+hot_hit: 3686, hot_rewrite_entries: 0, up_page_cnt:362380, up_grain_cnt:10121, equal_up_page:19 
+grain_heat_distribute[0]: 99.551810%
+grain_heat_distribute[1]: 0.442735%
+grain_heat_distribute[2]: 0.005434%
+grain_heat_distribute[3]: 0.000021%
+d_cache_hit: 1585917, miss: 6798732, hit_by_collision: 429423, miss_by_collision: 1493
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 329
+p95_rlat/us: 966
+p99_rlat/us: 1154
+p99.9_rlat/us: 1470
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 08:14:34 =====
+average read latency: 124 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8388858, mapping_rd: 7581289, mapping_wr: 32431
+nand_r: 15970268, nand_w: 32552, nand_e: 32768
+r_hash_collision[0]: 8192128
+r_hash_collision[1]: 187320
+r_hash_collision[2]: 8482
+r_hash_collision[3]: 389
+r_hash_collision[4]: 15
+r_hash_collision[5]: 1
+read iops: 65204.28,  write iops: 22728.12, hit rt:9.63%
+hot valid entries: 4243, hot valid pages: 8, max hot pages: 328
+avg_grain_per_page: 0.04, avg_grain_hit: 2.00
+hot_hit: 1551, hot_rewrite_entries: 0, up_page_cnt:109627, up_grain_cnt:4243, equal_up_page:8 
+grain_heat_distribute[0]: 99.587215%
+grain_heat_distribute[1]: 0.405225%
+grain_heat_distribute[2]: 0.007522%
+grain_heat_distribute[3]: 0.000037%
+d_cache_hit: 806282, miss: 7580502, hit_by_collision: 204729, miss_by_collision: 787
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 325
+p95_rlat/us: 978
+p99_rlat/us: 1152
+p99.9_rlat/us: 1362
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 08:18:40 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 4194178, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194178, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2698670
+r_hash_collision[1]: 651514
+r_hash_collision[2]: 317053
+r_hash_collision[3]: 173356
+r_hash_collision[4]: 112266
+r_hash_collision[5]: 86104
+r_hash_collision[6]: 46326
+r_hash_collision[7]: 29470
+r_hash_collision[8]: 19872
+r_hash_collision[9]: 20382
+r_hash_collision[10]: 11656
+r_hash_collision[11]: 7643
+r_hash_collision[12]: 6624
+r_hash_collision[13]: 4257
+r_hash_collision[14]: 2603
+r_hash_collision[15]: 1438
+r_hash_collision[16]: 1053
+r_hash_collision[17]: 1135
+r_hash_collision[18]: 544
+r_hash_collision[19]: 502
+r_hash_collision[20]: 307
+r_hash_collision[21]: 269
+r_hash_collision[22]: 148
+r_hash_collision[23]: 490
+r_hash_collision[24]: 173
+r_hash_collision[25]: 86
+r_hash_collision[26]: 48
+r_hash_collision[27]: 16
+r_hash_collision[28]: 41
+r_hash_collision[29]: 21
+r_hash_collision[30]: 8
+r_hash_collision[31]: 12
+r_hash_collision[32]: 16
+r_hash_collision[33]: 3
+r_hash_collision[34]: 2
+r_hash_collision[35]: 1
+r_hash_collision[36]: 3
+r_hash_collision[37]: 0
+r_hash_collision[38]: 2
+r_hash_collision[39]: 0
+r_hash_collision[40]: 3
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+read iops: 122330.50,  write iops: 87640.97, hit rt:100.00%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 328
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 4194117, miss: 0, hit_by_collision: 3998563, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 54
+p95_rlat/us: 61
+p99_rlat/us: 99
+p99.9_rlat/us: 138
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 08:24:04 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 0, mapping_wr: 0
+nand_r: 8387613, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 5305926
+r_hash_collision[1]: 1343705
+r_hash_collision[2]: 640834
+r_hash_collision[3]: 429686
+r_hash_collision[4]: 215341
+r_hash_collision[5]: 175457
+r_hash_collision[6]: 80684
+r_hash_collision[7]: 50370
+r_hash_collision[8]: 42432
+r_hash_collision[9]: 25843
+r_hash_collision[10]: 24047
+r_hash_collision[11]: 17865
+r_hash_collision[12]: 10548
+r_hash_collision[13]: 6463
+r_hash_collision[14]: 5037
+r_hash_collision[15]: 3890
+r_hash_collision[16]: 2938
+r_hash_collision[17]: 1581
+r_hash_collision[18]: 1161
+r_hash_collision[19]: 836
+r_hash_collision[20]: 577
+r_hash_collision[21]: 319
+r_hash_collision[22]: 319
+r_hash_collision[23]: 214
+r_hash_collision[24]: 184
+r_hash_collision[25]: 123
+r_hash_collision[26]: 179
+r_hash_collision[27]: 49
+r_hash_collision[28]: 84
+r_hash_collision[29]: 46
+r_hash_collision[30]: 46
+r_hash_collision[31]: 20
+r_hash_collision[32]: 4
+r_hash_collision[33]: 5
+r_hash_collision[34]: 6
+r_hash_collision[35]: 3
+r_hash_collision[36]: 10
+r_hash_collision[37]: 2
+r_hash_collision[38]: 5
+r_hash_collision[39]: 4
+r_hash_collision[40]: 5
+r_hash_collision[41]: 4
+r_hash_collision[42]: 1
+r_hash_collision[43]: 0
+r_hash_collision[44]: 1
+read iops: 121652.08,  write iops: 86220.72, hit rt:100.00%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 328
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 8386854, miss: 0, hit_by_collision: 8000097, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 52
+p95_rlat/us: 52
+p99_rlat/us: 98
+p99.9_rlat/us: 100
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 08:30:13 =====
+average read latency: 76 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 1176135, mapping_wr: 31770
+nand_r: 9563748, nand_w: 31770, nand_e: 32768
+r_hash_collision[0]: 6839344
+r_hash_collision[1]: 1082936
+r_hash_collision[2]: 304152
+r_hash_collision[3]: 110267
+r_hash_collision[4]: 31928
+r_hash_collision[5]: 12341
+r_hash_collision[6]: 3678
+r_hash_collision[7]: 1381
+r_hash_collision[8]: 494
+r_hash_collision[9]: 207
+r_hash_collision[10]: 75
+r_hash_collision[11]: 43
+r_hash_collision[12]: 5
+r_hash_collision[13]: 3
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 104910.34,  write iops: 47332.13, hit rt:86.00%
+hot valid entries: 167936, hot valid pages: 328, max hot pages: 328
+avg_grain_per_page: 0.49, avg_grain_hit: 3.54
+hot_hit: 1174559, hot_rewrite_entries: 188198, up_page_cnt:729265, up_grain_cnt:356134, equal_up_page:695 
+grain_heat_distribute[0]: 98.851383%
+grain_heat_distribute[1]: 1.053237%
+grain_heat_distribute[2]: 0.065674%
+grain_heat_distribute[3]: 0.013746%
+grain_heat_distribute[4]: 0.005402%
+grain_heat_distribute[5]: 0.002805%
+grain_heat_distribute[6]: 0.001659%
+grain_heat_distribute[7]: 0.001117%
+grain_heat_distribute[8]: 0.000778%
+grain_heat_distribute[9]: 0.000585%
+d_cache_hit: 6038362, miss: 1173933, hit_by_collision: 2248128, miss_by_collision: 2202
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 179
+p95_rlat/us: 630
+p99_rlat/us: 991
+p99.9_rlat/us: 1202
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 08:36:11 =====
+average read latency: 76 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 1188679, mapping_wr: 31526
+nand_r: 9576292, nand_w: 31526, nand_e: 32768
+r_hash_collision[0]: 6839343
+r_hash_collision[1]: 1082938
+r_hash_collision[2]: 304151
+r_hash_collision[3]: 110267
+r_hash_collision[4]: 31928
+r_hash_collision[5]: 12341
+r_hash_collision[6]: 3678
+r_hash_collision[7]: 1381
+r_hash_collision[8]: 494
+r_hash_collision[9]: 207
+r_hash_collision[10]: 75
+r_hash_collision[11]: 43
+r_hash_collision[12]: 5
+r_hash_collision[13]: 3
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 105152.22,  write iops: 46398.76, hit rt:85.85%
+hot valid entries: 328216, hot valid pages: 641, max hot pages: 656
+avg_grain_per_page: 0.46, avg_grain_hit: 3.50
+hot_hit: 1340209, hot_rewrite_entries: 6584, up_page_cnt:730000, up_grain_cnt:334800, equal_up_page:653 
+grain_heat_distribute[0]: 98.871776%
+grain_heat_distribute[1]: 1.038648%
+grain_heat_distribute[2]: 0.062391%
+grain_heat_distribute[3]: 0.012571%
+grain_heat_distribute[4]: 0.004955%
+grain_heat_distribute[5]: 0.002551%
+grain_heat_distribute[6]: 0.001526%
+grain_heat_distribute[7]: 0.001030%
+grain_heat_distribute[8]: 0.000684%
+grain_heat_distribute[9]: 0.000529%
+d_cache_hit: 5860217, miss: 1186428, hit_by_collision: 2248079, miss_by_collision: 2251
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 171
+p95_rlat/us: 607
+p99_rlat/us: 952
+p99.9_rlat/us: 1203
+--------------------------------------------------
+
+===== Test Time: 2026-01-16 08:44:14 =====
+average read latency: 89 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 3013012, mapping_wr: 31962
+nand_r: 11400625, nand_w: 31962, nand_e: 32768
+r_hash_collision[0]: 7615284
+r_hash_collision[1]: 654162
+r_hash_collision[2]: 90187
+r_hash_collision[3]: 16766
+r_hash_collision[4]: 9902
+r_hash_collision[5]: 473
+r_hash_collision[6]: 72
+r_hash_collision[7]: 6
+r_hash_collision[8]: 1
+r_hash_collision[9]: 0
+r_hash_collision[10]: 1
+read iops: 89856.17,  write iops: 29135.09, hit rt:64.10%
+hot valid entries: 125190, hot valid pages: 244, max hot pages: 656
+avg_grain_per_page: 0.21, avg_grain_hit: 3.78
+hot_hit: 1510028, hot_rewrite_entries: 0, up_page_cnt:600805, up_grain_cnt:125190, equal_up_page:244 
+grain_heat_distribute[0]: 99.456074%
+grain_heat_distribute[1]: 0.503228%
+grain_heat_distribute[2]: 0.028233%
+grain_heat_distribute[3]: 0.005760%
+grain_heat_distribute[4]: 0.002209%
+grain_heat_distribute[5]: 0.001163%
+grain_heat_distribute[6]: 0.000671%
+grain_heat_distribute[7]: 0.000472%
+grain_heat_distribute[8]: 0.000328%
+grain_heat_distribute[9]: 0.000257%
+d_cache_hit: 3865677, miss: 3011149, hit_by_collision: 925436, miss_by_collision: 1863
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 285
+p95_rlat/us: 788
+p99_rlat/us: 1103
+p99.9_rlat/us: 1369
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 03:39:18 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8388354, mapping_rd: 0, mapping_wr: 0
+nand_r: 8388354, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 5398283
+r_hash_collision[1]: 1301878
+r_hash_collision[2]: 633442
+r_hash_collision[3]: 346112
+r_hash_collision[4]: 225044
+r_hash_collision[5]: 172911
+r_hash_collision[6]: 92460
+r_hash_collision[7]: 59016
+r_hash_collision[8]: 39813
+r_hash_collision[9]: 40672
+r_hash_collision[10]: 23426
+r_hash_collision[11]: 15280
+r_hash_collision[12]: 13424
+r_hash_collision[13]: 8505
+r_hash_collision[14]: 5294
+r_hash_collision[15]: 2853
+r_hash_collision[16]: 2122
+r_hash_collision[17]: 2246
+r_hash_collision[18]: 1139
+r_hash_collision[19]: 1046
+r_hash_collision[20]: 645
+r_hash_collision[21]: 521
+r_hash_collision[22]: 276
+r_hash_collision[23]: 1001
+r_hash_collision[24]: 323
+r_hash_collision[25]: 159
+r_hash_collision[26]: 89
+r_hash_collision[27]: 42
+r_hash_collision[28]: 83
+r_hash_collision[29]: 34
+r_hash_collision[30]: 15
+r_hash_collision[31]: 30
+r_hash_collision[32]: 26
+r_hash_collision[33]: 5
+r_hash_collision[34]: 3
+r_hash_collision[35]: 3
+r_hash_collision[36]: 3
+r_hash_collision[37]: 0
+r_hash_collision[38]: 2
+r_hash_collision[39]: 0
+r_hash_collision[40]: 3
+r_hash_collision[41]: 0
+r_hash_collision[42]: 1
+r_hash_collision[43]: 1
+read iops: 122250.81,write iops: 87074.40, hit rt:100.00%
+d_cache_hit: 8388231, miss: 0, hit_by_collision: 8002061, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 61
+p95_rlat/us: 100
+p99_rlat/us: 147
+p99.9_rlat/us: 197
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 03:45:08 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 0, mapping_wr: 0
+nand_r: 8387613, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 5305926
+r_hash_collision[1]: 1343705
+r_hash_collision[2]: 640834
+r_hash_collision[3]: 429686
+r_hash_collision[4]: 215341
+r_hash_collision[5]: 175457
+r_hash_collision[6]: 80684
+r_hash_collision[7]: 50370
+r_hash_collision[8]: 42432
+r_hash_collision[9]: 25843
+r_hash_collision[10]: 24047
+r_hash_collision[11]: 17865
+r_hash_collision[12]: 10548
+r_hash_collision[13]: 6463
+r_hash_collision[14]: 5037
+r_hash_collision[15]: 3890
+r_hash_collision[16]: 2938
+r_hash_collision[17]: 1581
+r_hash_collision[18]: 1161
+r_hash_collision[19]: 836
+r_hash_collision[20]: 577
+r_hash_collision[21]: 319
+r_hash_collision[22]: 319
+r_hash_collision[23]: 214
+r_hash_collision[24]: 184
+r_hash_collision[25]: 123
+r_hash_collision[26]: 179
+r_hash_collision[27]: 49
+r_hash_collision[28]: 84
+r_hash_collision[29]: 46
+r_hash_collision[30]: 46
+r_hash_collision[31]: 20
+r_hash_collision[32]: 4
+r_hash_collision[33]: 5
+r_hash_collision[34]: 6
+r_hash_collision[35]: 3
+r_hash_collision[36]: 10
+r_hash_collision[37]: 2
+r_hash_collision[38]: 5
+r_hash_collision[39]: 4
+r_hash_collision[40]: 5
+r_hash_collision[41]: 4
+r_hash_collision[42]: 1
+r_hash_collision[43]: 0
+r_hash_collision[44]: 1
+read iops: 119611.41,write iops: 85149.99, hit rt:100.00%
+d_cache_hit: 8386854, miss: 0, hit_by_collision: 8000097, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 52
+p95_rlat/us: 55
+p99_rlat/us: 59
+p99.9_rlat/us: 71
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 03:52:51 =====
+average read latency: 77 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 1319833, mapping_wr: 32187
+nand_r: 9707446, nand_w: 32187, nand_e: 32768
+r_hash_collision[0]: 6839343
+r_hash_collision[1]: 1082937
+r_hash_collision[2]: 304152
+r_hash_collision[3]: 110267
+r_hash_collision[4]: 31928
+r_hash_collision[5]: 12341
+r_hash_collision[6]: 3678
+r_hash_collision[7]: 1381
+r_hash_collision[8]: 494
+r_hash_collision[9]: 207
+r_hash_collision[10]: 75
+r_hash_collision[11]: 43
+r_hash_collision[12]: 5
+r_hash_collision[13]: 3
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 104480.34,write iops: 47055.57, hit rt:84.29%
+d_cache_hit: 7069232, miss: 1317622, hit_by_collision: 2248120, miss_by_collision: 2211
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 180
+p95_rlat/us: 641
+p99_rlat/us: 991
+p99.9_rlat/us: 1238
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 04:06:46 =====
+average read latency: 76 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 1318393, mapping_wr: 32319
+nand_r: 9706006, nand_w: 32319, nand_e: 32768
+r_hash_collision[0]: 6839344
+r_hash_collision[1]: 1082936
+r_hash_collision[2]: 304152
+r_hash_collision[3]: 110267
+r_hash_collision[4]: 31928
+r_hash_collision[5]: 12341
+r_hash_collision[6]: 3678
+r_hash_collision[7]: 1381
+r_hash_collision[8]: 494
+r_hash_collision[9]: 207
+r_hash_collision[10]: 75
+r_hash_collision[11]: 43
+r_hash_collision[12]: 5
+r_hash_collision[13]: 3
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 104289.41,write iops: 47442.80, hit rt:84.31%
+d_cache_hit: 7070670, miss: 1316184, hit_by_collision: 2248121, miss_by_collision: 2209
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 76
+p95_rlat/us: 149
+p99_rlat/us: 222
+p99.9_rlat/us: 651
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 04:11:25 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 0, mapping_wr: 0
+nand_r: 8387613, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 5305926
+r_hash_collision[1]: 1343705
+r_hash_collision[2]: 640834
+r_hash_collision[3]: 429686
+r_hash_collision[4]: 215341
+r_hash_collision[5]: 175457
+r_hash_collision[6]: 80684
+r_hash_collision[7]: 50370
+r_hash_collision[8]: 42432
+r_hash_collision[9]: 25843
+r_hash_collision[10]: 24047
+r_hash_collision[11]: 17865
+r_hash_collision[12]: 10548
+r_hash_collision[13]: 6463
+r_hash_collision[14]: 5037
+r_hash_collision[15]: 3890
+r_hash_collision[16]: 2938
+r_hash_collision[17]: 1581
+r_hash_collision[18]: 1161
+r_hash_collision[19]: 836
+r_hash_collision[20]: 577
+r_hash_collision[21]: 319
+r_hash_collision[22]: 319
+r_hash_collision[23]: 214
+r_hash_collision[24]: 184
+r_hash_collision[25]: 123
+r_hash_collision[26]: 179
+r_hash_collision[27]: 49
+r_hash_collision[28]: 84
+r_hash_collision[29]: 46
+r_hash_collision[30]: 46
+r_hash_collision[31]: 20
+r_hash_collision[32]: 4
+r_hash_collision[33]: 5
+r_hash_collision[34]: 6
+r_hash_collision[35]: 3
+r_hash_collision[36]: 10
+r_hash_collision[37]: 2
+r_hash_collision[38]: 5
+r_hash_collision[39]: 4
+r_hash_collision[40]: 5
+r_hash_collision[41]: 4
+r_hash_collision[42]: 1
+r_hash_collision[43]: 0
+r_hash_collision[44]: 1
+read iops: 121603.34,write iops: 85130.84, hit rt:100.00%
+d_cache_hit: 8386854, miss: 0, hit_by_collision: 8000097, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 63
+p95_rlat/us: 103
+p99_rlat/us: 149
+p99.9_rlat/us: 198
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 04:19:41 =====
+average read latency: 92 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 3427621, mapping_wr: 32620
+nand_r: 11815234, nand_w: 32620, nand_e: 32768
+r_hash_collision[0]: 7615282
+r_hash_collision[1]: 654166
+r_hash_collision[2]: 90185
+r_hash_collision[3]: 16766
+r_hash_collision[4]: 9902
+r_hash_collision[5]: 473
+r_hash_collision[6]: 72
+r_hash_collision[7]: 6
+r_hash_collision[8]: 1
+r_hash_collision[9]: 0
+r_hash_collision[10]: 1
+read iops: 87010.43,write iops: 28843.46, hit rt:59.15%
+d_cache_hit: 4961077, miss: 3425777, hit_by_collision: 925455, miss_by_collision: 1844
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 92
+p95_rlat/us: 161
+p99_rlat/us: 243
+p99.9_rlat/us: 652
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 04:28:50 =====
+average read latency: 100 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 4507765, mapping_wr: 32702
+nand_r: 12895378, nand_w: 32702, nand_e: 32768
+r_hash_collision[0]: 8011781
+r_hash_collision[1]: 340458
+r_hash_collision[2]: 25091
+r_hash_collision[3]: 8515
+r_hash_collision[4]: 1000
+r_hash_collision[5]: 8
+r_hash_collision[6]: 1
+read iops: 80012.62,write iops: 24420.29, hit rt:46.26%
+d_cache_hit: 3880079, miss: 4506775, hit_by_collision: 419241, miss_by_collision: 990
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 100
+p95_rlat/us: 190
+p99_rlat/us: 246
+p99.9_rlat/us: 649
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 04:38:32 =====
+average read latency: 105 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 5057521, mapping_wr: 32736
+nand_r: 13445251, nand_w: 32853, nand_e: 32768
+r_hash_collision[0]: 8195652
+r_hash_collision[1]: 183472
+r_hash_collision[2]: 7426
+r_hash_collision[3]: 296
+r_hash_collision[4]: 5
+r_hash_collision[5]: 3
+read iops: 76701.66,write iops: 22604.46, hit rt:39.70%
+d_cache_hit: 3329724, miss: 5057130, hit_by_collision: 198856, miss_by_collision: 391
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 105
+p95_rlat/us: 193
+p99_rlat/us: 247
+p99.9_rlat/us: 713
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 04:43:28 =====
+average read latency: 63 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 0, mapping_wr: 0
+nand_r: 8387613, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 5305926
+r_hash_collision[1]: 1343705
+r_hash_collision[2]: 640834
+r_hash_collision[3]: 429686
+r_hash_collision[4]: 215341
+r_hash_collision[5]: 175457
+r_hash_collision[6]: 80684
+r_hash_collision[7]: 50370
+r_hash_collision[8]: 42432
+r_hash_collision[9]: 25843
+r_hash_collision[10]: 24047
+r_hash_collision[11]: 17865
+r_hash_collision[12]: 10548
+r_hash_collision[13]: 6463
+r_hash_collision[14]: 5037
+r_hash_collision[15]: 3890
+r_hash_collision[16]: 2938
+r_hash_collision[17]: 1581
+r_hash_collision[18]: 1161
+r_hash_collision[19]: 836
+r_hash_collision[20]: 577
+r_hash_collision[21]: 319
+r_hash_collision[22]: 319
+r_hash_collision[23]: 214
+r_hash_collision[24]: 184
+r_hash_collision[25]: 123
+r_hash_collision[26]: 179
+r_hash_collision[27]: 49
+r_hash_collision[28]: 84
+r_hash_collision[29]: 46
+r_hash_collision[30]: 46
+r_hash_collision[31]: 20
+r_hash_collision[32]: 4
+r_hash_collision[33]: 5
+r_hash_collision[34]: 6
+r_hash_collision[35]: 3
+r_hash_collision[36]: 10
+r_hash_collision[37]: 2
+r_hash_collision[38]: 5
+r_hash_collision[39]: 4
+r_hash_collision[40]: 5
+r_hash_collision[41]: 4
+r_hash_collision[42]: 1
+r_hash_collision[43]: 0
+r_hash_collision[44]: 1
+read iops: 121575.99,  write iops: 82292.15, hit rt:100.00%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 656
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 8386854, miss: 0, hit_by_collision: 8000097, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 63
+p95_rlat/us: 103
+p99_rlat/us: 148
+p99.9_rlat/us: 198
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 04:49:52 =====
+average read latency: 76 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 1189990, mapping_wr: 31439
+nand_r: 9577603, nand_w: 31439, nand_e: 32768
+r_hash_collision[0]: 6839346
+r_hash_collision[1]: 1082934
+r_hash_collision[2]: 304152
+r_hash_collision[3]: 110267
+r_hash_collision[4]: 31928
+r_hash_collision[5]: 12341
+r_hash_collision[6]: 3678
+r_hash_collision[7]: 1381
+r_hash_collision[8]: 494
+r_hash_collision[9]: 207
+r_hash_collision[10]: 75
+r_hash_collision[11]: 43
+r_hash_collision[12]: 5
+r_hash_collision[13]: 3
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 105034.61,  write iops: 45010.40, hit rt:85.84%
+hot valid entries: 327006, hot valid pages: 638, max hot pages: 656
+avg_grain_per_page: 0.46, avg_grain_hit: 3.50
+hot_hit: 1340579, hot_rewrite_entries: 5775, up_page_cnt:730398, up_grain_cnt:332781, equal_up_page:649 
+grain_heat_distribute[0]: 98.872535%
+grain_heat_distribute[1]: 1.038478%
+grain_heat_distribute[2]: 0.061949%
+grain_heat_distribute[3]: 0.012591%
+grain_heat_distribute[4]: 0.004907%
+grain_heat_distribute[5]: 0.002547%
+grain_heat_distribute[6]: 0.001562%
+grain_heat_distribute[7]: 0.000997%
+grain_heat_distribute[8]: 0.000723%
+grain_heat_distribute[9]: 0.000522%
+d_cache_hit: 5858554, miss: 1187721, hit_by_collision: 2248059, miss_by_collision: 2269
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 76
+p95_rlat/us: 149
+p99_rlat/us: 216
+p99.9_rlat/us: 658
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 04:58:56 =====
+average read latency: 90 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387613, mapping_rd: 3013790, mapping_wr: 31884
+nand_r: 11401403, nand_w: 31884, nand_e: 32768
+r_hash_collision[0]: 7615282
+r_hash_collision[1]: 654165
+r_hash_collision[2]: 90186
+r_hash_collision[3]: 16766
+r_hash_collision[4]: 9902
+r_hash_collision[5]: 473
+r_hash_collision[6]: 72
+r_hash_collision[7]: 6
+r_hash_collision[8]: 1
+r_hash_collision[9]: 0
+r_hash_collision[10]: 1
+read iops: 89837.64,  write iops: 28950.72, hit rt:64.09%
+hot valid entries: 124026, hot valid pages: 242, max hot pages: 656
+avg_grain_per_page: 0.21, avg_grain_hit: 3.63
+hot_hit: 1509028, hot_rewrite_entries: 2, up_page_cnt:601172, up_grain_cnt:124028, equal_up_page:242 
+grain_heat_distribute[0]: 99.456942%
+grain_heat_distribute[1]: 0.502763%
+grain_heat_distribute[2]: 0.028060%
+grain_heat_distribute[3]: 0.005659%
+grain_heat_distribute[4]: 0.002206%
+grain_heat_distribute[5]: 0.001149%
+grain_heat_distribute[6]: 0.000667%
+grain_heat_distribute[7]: 0.000456%
+grain_heat_distribute[8]: 0.000319%
+grain_heat_distribute[9]: 0.000246%
+d_cache_hit: 3865936, miss: 3011890, hit_by_collision: 925400, miss_by_collision: 1900
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 90
+p95_rlat/us: 159
+p99_rlat/us: 241
+p99.9_rlat/us: 712
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 05:07:23 =====
+average read latency: 94 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387917, mapping_rd: 3557947, mapping_wr: 32001
+nand_r: 11945864, nand_w: 32001, nand_e: 32768
+r_hash_collision[0]: 7612648
+r_hash_collision[1]: 651902
+r_hash_collision[2]: 96260
+r_hash_collision[3]: 17870
+r_hash_collision[4]: 7994
+r_hash_collision[5]: 518
+r_hash_collision[6]: 65
+r_hash_collision[7]: 6
+r_hash_collision[8]: 1
+r_hash_collision[9]: 0
+r_hash_collision[10]: 1
+read iops: 85756.33,  write iops: 28820.51, hit rt:57.60%
+hot valid entries: 120884, hot valid pages: 236, max hot pages: 656
+avg_grain_per_page: 0.17, avg_grain_hit: 3.51
+hot_hit: 1407705, hot_rewrite_entries: 6, up_page_cnt:704043, up_grain_cnt:120890, equal_up_page:236 
+grain_heat_distribute[0]: 99.455982%
+grain_heat_distribute[1]: 0.510481%
+grain_heat_distribute[2]: 0.024367%
+grain_heat_distribute[3]: 0.004355%
+grain_heat_distribute[4]: 0.001624%
+grain_heat_distribute[5]: 0.000831%
+grain_heat_distribute[6]: 0.000515%
+grain_heat_distribute[7]: 0.000318%
+grain_heat_distribute[8]: 0.000226%
+grain_heat_distribute[9]: 0.000168%
+d_cache_hit: 3423776, miss: 3555784, hit_by_collision: 930885, miss_by_collision: 2163
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 94
+p95_rlat/us: 167
+p99_rlat/us: 242
+p99.9_rlat/us: 653
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 05:25:52 =====
+average read latency: 93 us, average write latency: 0 us
+finished_r: 8388608, finished_w: 0, wrong_value_cnt: 0
+data_rd: 8387917, mapping_rd: 3532937, mapping_wr: 32333
+nand_r: 11920854, nand_w: 32333, nand_e: 32768
+r_hash_collision[0]: 7612649
+r_hash_collision[1]: 651901
+r_hash_collision[2]: 96260
+r_hash_collision[3]: 17870
+r_hash_collision[4]: 7994
+r_hash_collision[5]: 518
+r_hash_collision[6]: 65
+r_hash_collision[7]: 6
+r_hash_collision[8]: 1
+r_hash_collision[9]: 0
+r_hash_collision[10]: 1
+read iops: 86232.04,  write iops: 29072.70, hit rt:57.90%
+hot valid entries: 121555, hot valid pages: 237, max hot pages: 328
+avg_grain_per_page: 0.17, avg_grain_hit: 3.51
+hot_hit: 1390371, hot_rewrite_entries: 858, up_page_cnt:708646, up_grain_cnt:122413, equal_up_page:239 
+grain_heat_distribute[0]: 99.453437%
+grain_heat_distribute[1]: 0.512824%
+grain_heat_distribute[2]: 0.024436%
+grain_heat_distribute[3]: 0.004446%
+grain_heat_distribute[4]: 0.001658%
+grain_heat_distribute[5]: 0.000836%
+grain_heat_distribute[6]: 0.000484%
+grain_heat_distribute[7]: 0.000327%
+grain_heat_distribute[8]: 0.000217%
+grain_heat_distribute[9]: 0.000174%
+d_cache_hit: 3466119, miss: 3530775, hit_by_collision: 930885, miss_by_collision: 2162
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 93
+p95_rlat/us: 163
+p99_rlat/us: 243
+p99.9_rlat/us: 651
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 05:37:49 =====
+average read latency: 92 us, average write latency: 0 us
+finished_r: 16777216, finished_w: 0, wrong_value_cnt: 0
+data_rd: 16775884, mapping_rd: 6855523, mapping_wr: 32320
+nand_r: 23631407, nand_w: 32320, nand_e: 32768
+r_hash_collision[0]: 15224771
+r_hash_collision[1]: 1303772
+r_hash_collision[2]: 192982
+r_hash_collision[3]: 35686
+r_hash_collision[4]: 16080
+r_hash_collision[5]: 1052
+r_hash_collision[6]: 152
+r_hash_collision[7]: 10
+r_hash_collision[8]: 1
+r_hash_collision[9]: 1
+r_hash_collision[10]: 1
+read iops: 86622.39,  write iops: 29054.36, hit rt:59.16%
+hot valid entries: 167918, hot valid pages: 327, max hot pages: 328
+avg_grain_per_page: 0.16, avg_grain_hit: 3.47
+hot_hit: 3251060, hot_rewrite_entries: 54501, up_page_cnt:1376778, up_grain_cnt:222419, equal_up_page:434 
+grain_heat_distribute[0]: 99.452297%
+grain_heat_distribute[1]: 0.516150%
+grain_heat_distribute[2]: 0.022901%
+grain_heat_distribute[3]: 0.004038%
+grain_heat_distribute[4]: 0.001521%
+grain_heat_distribute[5]: 0.000783%
+grain_heat_distribute[6]: 0.000487%
+grain_heat_distribute[7]: 0.000329%
+grain_heat_distribute[8]: 0.000216%
+grain_heat_distribute[9]: 0.000177%
+d_cache_hit: 6672224, miss: 6851224, hit_by_collision: 1863084, miss_by_collision: 4299
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 92
+p95_rlat/us: 161
+p99_rlat/us: 215
+p99.9_rlat/us: 611
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 06:45:49 =====
+average read latency: 0 us, average write latency: 0 us
+finished_r: 0, finished_w: 0, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 0, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+r_hash_collision[34]: 0
+r_hash_collision[35]: 0
+r_hash_collision[36]: 0
+r_hash_collision[37]: 0
+r_hash_collision[38]: 0
+r_hash_collision[39]: 0
+r_hash_collision[40]: 0
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 0.00,write iops: 74561.95, hit rt:-nan%
+d_cache_hit: 0, miss: 0, hit_by_collision: 0, miss_by_collision: 0
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 06:49:14 =====
+average read latency: 0 us, average write latency: 0 us
+finished_r: 0, finished_w: 0, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 0, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+r_hash_collision[34]: 0
+r_hash_collision[35]: 0
+r_hash_collision[36]: 0
+r_hash_collision[37]: 0
+r_hash_collision[38]: 0
+r_hash_collision[39]: 0
+r_hash_collision[40]: 0
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 0.00,write iops: 128268.02, hit rt:-nan%
+d_cache_hit: 0, miss: 0, hit_by_collision: 0, miss_by_collision: 0
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 06:52:09 =====
+average read latency: 0 us, average write latency: 0 us
+finished_r: 0, finished_w: 0, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 0, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+r_hash_collision[34]: 0
+r_hash_collision[35]: 0
+r_hash_collision[36]: 0
+r_hash_collision[37]: 0
+r_hash_collision[38]: 0
+r_hash_collision[39]: 0
+r_hash_collision[40]: 0
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 0.00,write iops: 120956.79, hit rt:-nan%
+d_cache_hit: 0, miss: 0, hit_by_collision: 0, miss_by_collision: 0
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 06:54:57 =====
+average read latency: 0 us, average write latency: 0 us
+finished_r: 0, finished_w: 0, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 0, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+r_hash_collision[34]: 0
+r_hash_collision[35]: 0
+r_hash_collision[36]: 0
+r_hash_collision[37]: 0
+r_hash_collision[38]: 0
+r_hash_collision[39]: 0
+r_hash_collision[40]: 0
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 0.00,  write iops: 148693.42, hit rt:-nan%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 328
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 0, miss: 0, hit_by_collision: 0, miss_by_collision: 0
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 07:17:15 =====
+average read latency: 0 us, average write latency: 0 us
+finished_r: 0, finished_w: 0, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 0, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+r_hash_collision[34]: 0
+r_hash_collision[35]: 0
+r_hash_collision[36]: 0
+r_hash_collision[37]: 0
+r_hash_collision[38]: 0
+r_hash_collision[39]: 0
+r_hash_collision[40]: 0
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 0.00,write iops: 128268.35, hit rt:-nan%
+d_cache_hit: 0, miss: 0, hit_by_collision: 0, miss_by_collision: 0
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 07:19:33 =====
+average read latency: 0 us, average write latency: 0 us
+finished_r: 0, finished_w: 0, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 0, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+r_hash_collision[34]: 0
+r_hash_collision[35]: 0
+r_hash_collision[36]: 0
+r_hash_collision[37]: 0
+r_hash_collision[38]: 0
+r_hash_collision[39]: 0
+r_hash_collision[40]: 0
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 0.00,  write iops: 128433.80, hit rt:-nan%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 328
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 0, miss: 0, hit_by_collision: 0, miss_by_collision: 0
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 07:24:00 =====
+average read latency: 0 us, average write latency: 0 us
+finished_r: 0, finished_w: 0, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 0, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 0.00,write iops: 55940.73, hit rt:-nan%
+d_cache_hit: 0, miss: 0, hit_by_collision: 0, miss_by_collision: 0
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 07:28:59 =====
+average read latency: 0 us, average write latency: 0 us
+finished_r: 0, finished_w: 0, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 0, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 0.00,  write iops: 45026.76, hit rt:-nan%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 328
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 0, miss: 0, hit_by_collision: 0, miss_by_collision: 0
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 07:40:51 =====
+average read latency: 0 us, average write latency: 0 us
+finished_r: 0, finished_w: 0, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 0, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+r_hash_collision[34]: 0
+r_hash_collision[35]: 0
+r_hash_collision[36]: 0
+r_hash_collision[37]: 0
+r_hash_collision[38]: 0
+r_hash_collision[39]: 0
+r_hash_collision[40]: 0
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 0.00,  write iops: 128433.66, hit rt:-nan%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 328
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 0, miss: 0, hit_by_collision: 0, miss_by_collision: 0
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 07:52:24 =====
+average read latency: 0 us, average write latency: 0 us
+finished_r: 0, finished_w: 0, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 0, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+r_hash_collision[34]: 0
+r_hash_collision[35]: 0
+r_hash_collision[36]: 0
+r_hash_collision[37]: 0
+r_hash_collision[38]: 0
+r_hash_collision[39]: 0
+r_hash_collision[40]: 0
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 0.00,  write iops: 128438.10, hit rt:-nan%
+hot valid entries: 0, hot valid pages: 0, max hot pages: 328
+avg_grain_per_page: -nan, avg_grain_hit: -nan
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:0, up_grain_cnt:0, equal_up_page:0 
+d_cache_hit: 0, miss: 0, hit_by_collision: 0, miss_by_collision: 0
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 08:05:44 =====
+average read latency: 0 us, average write latency: 1253 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 467168, mapping_rd: 2590628, mapping_wr: 2595026
+nand_r: 2590628, nand_w: 5547730, nand_e: 786432
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 0.00,  write iops: 45088.46, hit rt:77.73%
+hot valid entries: 167936, hot valid pages: 328, max hot pages: 328
+avg_grain_per_page: 0.14, avg_grain_hit: 3.41
+hot_hit: 0, hot_rewrite_entries: 49002, up_page_cnt:1581523, up_grain_cnt:216938, equal_up_page:423 
+grain_heat_distribute[0]: 98.874022%
+grain_heat_distribute[1]: 1.099187%
+grain_heat_distribute[2]: 0.018923%
+grain_heat_distribute[3]: 0.003149%
+grain_heat_distribute[4]: 0.001421%
+grain_heat_distribute[5]: 0.000812%
+grain_heat_distribute[6]: 0.000525%
+grain_heat_distribute[7]: 0.000362%
+grain_heat_distribute[8]: 0.000265%
+grain_heat_distribute[9]: 0.000194%
+d_cache_hit: 9181656, miss: 2630696, hit_by_collision: 2495556, miss_by_collision: 3622
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 08:11:02 =====
+average read latency: 0 us, average write latency: 1013 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 467004, mapping_rd: 2590925, mapping_wr: 2595212
+nand_r: 2590925, nand_w: 5547916, nand_e: 786432
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 0.00,  write iops: 49450.58, hit rt:77.73%
+hot valid entries: 167936, hot valid pages: 328, max hot pages: 328
+avg_grain_per_page: 0.14, avg_grain_hit: 3.41
+hot_hit: 0, hot_rewrite_entries: 48963, up_page_cnt:1581559, up_grain_cnt:216899, equal_up_page:423 
+grain_heat_distribute[0]: 98.874090%
+grain_heat_distribute[1]: 1.099124%
+grain_heat_distribute[2]: 0.018919%
+grain_heat_distribute[3]: 0.003148%
+grain_heat_distribute[4]: 0.001421%
+grain_heat_distribute[5]: 0.000812%
+grain_heat_distribute[6]: 0.000525%
+grain_heat_distribute[7]: 0.000362%
+grain_heat_distribute[8]: 0.000265%
+grain_heat_distribute[9]: 0.000194%
+d_cache_hit: 9181359, miss: 2630993, hit_by_collision: 2495557, miss_by_collision: 3622
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 08:16:07 =====
+average read latency: 0 us, average write latency: 1028 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 479987, mapping_rd: 2667598, mapping_wr: 2671994
+nand_r: 2667598, nand_w: 5624698, nand_e: 851968
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 0.00,  write iops: 49301.60, hit rt:77.08%
+hot valid entries: 213582, hot valid pages: 417, max hot pages: 656
+avg_grain_per_page: 0.13, avg_grain_hit: 3.44
+hot_hit: 0, hot_rewrite_entries: 2, up_page_cnt:1603429, up_grain_cnt:213584, equal_up_page:417 
+grain_heat_distribute[0]: 98.898728%
+grain_heat_distribute[1]: 1.075255%
+grain_heat_distribute[2]: 0.018265%
+grain_heat_distribute[3]: 0.003087%
+grain_heat_distribute[4]: 0.001400%
+grain_heat_distribute[5]: 0.000797%
+grain_heat_distribute[6]: 0.000523%
+grain_heat_distribute[7]: 0.000360%
+grain_heat_distribute[8]: 0.000265%
+grain_heat_distribute[9]: 0.000195%
+d_cache_hit: 9104807, miss: 2707545, hit_by_collision: 2495435, miss_by_collision: 3743
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 08:20:44 =====
+average read latency: 0 us, average write latency: 1018 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 477708, mapping_rd: 2629350, mapping_wr: 2633664
+nand_r: 2629350, nand_w: 5586368, nand_e: 819200
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 0.00,  write iops: 48897.27, hit rt:77.40%
+hot valid entries: 215161, hot valid pages: 420, max hot pages: 492
+avg_grain_per_page: 0.14, avg_grain_hit: 3.42
+hot_hit: 0, hot_rewrite_entries: 16, up_page_cnt:1592703, up_grain_cnt:215177, equal_up_page:420 
+grain_heat_distribute[0]: 98.886613%
+grain_heat_distribute[1]: 1.087000%
+grain_heat_distribute[2]: 0.018571%
+grain_heat_distribute[3]: 0.003123%
+grain_heat_distribute[4]: 0.001415%
+grain_heat_distribute[5]: 0.000804%
+grain_heat_distribute[6]: 0.000522%
+grain_heat_distribute[7]: 0.000362%
+grain_heat_distribute[8]: 0.000267%
+grain_heat_distribute[9]: 0.000192%
+d_cache_hit: 9143002, miss: 2669350, hit_by_collision: 2495488, miss_by_collision: 3690
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 08:30:15 =====
+average read latency: 0 us, average write latency: 1000 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 150337, mapping_rd: 2521887, mapping_wr: 2526103
+nand_r: 2521887, nand_w: 5478807, nand_e: 720896
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 0.00,  write iops: 50366.55, hit rt:78.31%
+hot valid entries: 16896, hot valid pages: 33, max hot pages: 33
+avg_grain_per_page: 0.14, avg_grain_hit: 3.37
+hot_hit: 0, hot_rewrite_entries: 203251, up_page_cnt:1560766, up_grain_cnt:220147, equal_up_page:429 
+grain_heat_distribute[0]: 98.850592%
+grain_heat_distribute[1]: 1.121859%
+grain_heat_distribute[2]: 0.019569%
+grain_heat_distribute[3]: 0.003208%
+grain_heat_distribute[4]: 0.001437%
+grain_heat_distribute[5]: 0.000826%
+grain_heat_distribute[6]: 0.000532%
+grain_heat_distribute[7]: 0.000364%
+grain_heat_distribute[8]: 0.000269%
+grain_heat_distribute[9]: 0.000194%
+d_cache_hit: 9250305, miss: 2562047, hit_by_collision: 2495648, miss_by_collision: 3530
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 08:39:15 =====
+average read latency: 0 us, average write latency: 889 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 467153, mapping_rd: 2593502, mapping_wr: 2596924
+nand_r: 2593502, nand_w: 5550012, nand_e: 786432
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 0.00,  write iops: 55052.01, hit rt:77.71%
+hot valid entries: 167936, hot valid pages: 328, max hot pages: 328
+avg_grain_per_page: 0.14, avg_grain_hit: 3.41
+hot_hit: 0, hot_rewrite_entries: 48865, up_page_cnt:1581855, up_grain_cnt:216801, equal_up_page:423 
+grain_heat_distribute[0]: 98.874628%
+grain_heat_distribute[1]: 1.098604%
+grain_heat_distribute[2]: 0.018906%
+grain_heat_distribute[3]: 0.003146%
+grain_heat_distribute[4]: 0.001421%
+grain_heat_distribute[5]: 0.000812%
+grain_heat_distribute[6]: 0.000525%
+grain_heat_distribute[7]: 0.000362%
+grain_heat_distribute[8]: 0.000264%
+grain_heat_distribute[9]: 0.000193%
+d_cache_hit: 9178790, miss: 2633562, hit_by_collision: 2495548, miss_by_collision: 3630
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 08:46:33 =====
+average read latency: 0 us, average write latency: 1607 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 3424278, mapping_rd: 6293895, mapping_wr: 6338497
+nand_r: 9718173, nand_w: 9291585, nand_e: 4521984
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+read iops: 0.00,write iops: 32257.61, hit rt:46.00%
+d_cache_hit: 5434045, miss: 6378307, hit_by_collision: 1019626, miss_by_collision: 2969
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 08:51:33 =====
+average read latency: 0 us, average write latency: 942 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 3424278, mapping_rd: 2517109, mapping_wr: 2520444
+nand_r: 5941387, nand_w: 5473532, nand_e: 688128
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 0.00,write iops: 55870.75, hit rt:78.35%
+d_cache_hit: 9255079, miss: 2557273, hit_by_collision: 2495652, miss_by_collision: 3526
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 08:56:09 =====
+average read latency: 0 us, average write latency: 885 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 467187, mapping_rd: 2593509, mapping_wr: 2596933
+nand_r: 2593509, nand_w: 5550021, nand_e: 786432
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 0.00,  write iops: 55010.64, hit rt:77.70%
+hot valid entries: 167936, hot valid pages: 328, max hot pages: 328
+avg_grain_per_page: 0.14, avg_grain_hit: 3.41
+hot_hit: 0, hot_rewrite_entries: 48862, up_page_cnt:1581835, up_grain_cnt:216798, equal_up_page:423 
+grain_heat_distribute[0]: 98.874615%
+grain_heat_distribute[1]: 1.098616%
+grain_heat_distribute[2]: 0.018906%
+grain_heat_distribute[3]: 0.003146%
+grain_heat_distribute[4]: 0.001421%
+grain_heat_distribute[5]: 0.000812%
+grain_heat_distribute[6]: 0.000525%
+grain_heat_distribute[7]: 0.000362%
+grain_heat_distribute[8]: 0.000264%
+grain_heat_distribute[9]: 0.000193%
+d_cache_hit: 9178783, miss: 2633569, hit_by_collision: 2495548, miss_by_collision: 3630
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 09:02:39 =====
+average read latency: 0 us, average write latency: 1570 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 502251, mapping_rd: 6334121, mapping_wr: 6378989
+nand_r: 6334121, nand_w: 9332077, nand_e: 4554752
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+read iops: 0.00,  write iops: 32104.37, hit rt:45.66%
+hot valid entries: 114345, hot valid pages: 223, max hot pages: 328
+avg_grain_per_page: 0.10, avg_grain_hit: 4.75
+hot_hit: 0, hot_rewrite_entries: 94, up_page_cnt:1199504, up_grain_cnt:114439, equal_up_page:223 
+grain_heat_distribute[0]: 99.464748%
+grain_heat_distribute[1]: 0.516618%
+grain_heat_distribute[2]: 0.010043%
+grain_heat_distribute[3]: 0.003098%
+grain_heat_distribute[4]: 0.001538%
+grain_heat_distribute[5]: 0.000907%
+grain_heat_distribute[6]: 0.000604%
+grain_heat_distribute[7]: 0.000420%
+grain_heat_distribute[8]: 0.000314%
+grain_heat_distribute[9]: 0.000238%
+d_cache_hit: 5393834, miss: 6418518, hit_by_collision: 1019611, miss_by_collision: 2984
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-22 09:10:20 =====
+average read latency: 0 us, average write latency: 1910 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 470217, mapping_rd: 8157342, mapping_wr: 8293014
+nand_r: 8157414, nand_w: 11246174, nand_e: 6488064
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+read iops: 0.00,  write iops: 26605.79, hit rt:29.48%
+hot valid entries: 90533, hot valid pages: 176, max hot pages: 328
+avg_grain_per_page: 0.19, avg_grain_hit: 5.32
+hot_hit: 0, hot_rewrite_entries: 21, up_page_cnt:483634, up_grain_cnt:90554, equal_up_page:176 
+grain_heat_distribute[0]: 99.574927%
+grain_heat_distribute[1]: 0.388504%
+grain_heat_distribute[2]: 0.017557%
+grain_heat_distribute[3]: 0.006521%
+grain_heat_distribute[4]: 0.003388%
+grain_heat_distribute[5]: 0.002047%
+grain_heat_distribute[6]: 0.001365%
+grain_heat_distribute[7]: 0.000945%
+grain_heat_distribute[8]: 0.000711%
+grain_heat_distribute[9]: 0.000557%
+d_cache_hit: 3481871, miss: 8330481, hit_by_collision: 463899, miss_by_collision: 1623
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 04:03:12 =====
+average read latency: 0 us, average write latency: 2085 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 455880, mapping_rd: 8938906, mapping_wr: 9252219
+nand_r: 8977134, nand_w: 12243535, nand_e: 7471104
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+read iops: 0.00,  write iops: 24482.66, hit rt:21.37%
+hot valid entries: 80524, hot valid pages: 157, max hot pages: 328
+avg_grain_per_page: 0.40, avg_grain_hit: 5.67
+hot_hit: 0, hot_rewrite_entries: 0, up_page_cnt:200201, up_grain_cnt:80524, equal_up_page:157 
+grain_heat_distribute[0]: 99.647460%
+grain_heat_distribute[1]: 0.273982%
+grain_heat_distribute[2]: 0.035377%
+grain_heat_distribute[3]: 0.014334%
+grain_heat_distribute[4]: 0.007664%
+grain_heat_distribute[5]: 0.004720%
+grain_heat_distribute[6]: 0.003172%
+grain_heat_distribute[7]: 0.002234%
+grain_heat_distribute[8]: 0.001571%
+grain_heat_distribute[9]: 0.001279%
+d_cache_hit: 2524726, miss: 9287626, hit_by_collision: 224460, miss_by_collision: 805
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 04:14:41 =====
+average read latency: 0 us, average write latency: 2128 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 3424278, mapping_rd: 8926791, mapping_wr: 9239783
+nand_r: 12389319, nand_w: 12231121, nand_e: 7471104
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+read iops: 0.00,write iops: 24513.28, hit rt:21.48%
+d_cache_hit: 2536841, miss: 9275511, hit_by_collision: 224460, miss_by_collision: 805
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 04:23:02 =====
+average read latency: 0 us, average write latency: 1958 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 3424278, mapping_rd: 8135488, mapping_wr: 8270850
+nand_r: 11559835, nand_w: 11224007, nand_e: 6455296
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+read iops: 0.00,write iops: 26653.65, hit rt:29.66%
+d_cache_hit: 3503718, miss: 8308634, hit_by_collision: 463906, miss_by_collision: 1616
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 04:31:40 =====
+average read latency: 0 us, average write latency: 947 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 3424278, mapping_rd: 2517108, mapping_wr: 2520441
+nand_r: 5941386, nand_w: 5473529, nand_e: 688128
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 0.00,write iops: 55943.45, hit rt:78.35%
+d_cache_hit: 9255079, miss: 2557273, hit_by_collision: 2495653, miss_by_collision: 3525
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 04:41:15 =====
+average read latency: 0 us, average write latency: 935 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 3424278, mapping_rd: 2517114, mapping_wr: 2520447
+nand_r: 5941392, nand_w: 5473535, nand_e: 688128
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 0.00,write iops: 55931.97, hit rt:78.35%
+d_cache_hit: 9255074, miss: 2557278, hit_by_collision: 2495652, miss_by_collision: 3526
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 04:44:09 =====
+average read latency: 0 us, average write latency: 524 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 3424278, mapping_rd: 0, mapping_wr: 0
+nand_r: 3424278, nand_w: 2953088, nand_e: 0
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+r_hash_collision[34]: 0
+r_hash_collision[35]: 0
+r_hash_collision[36]: 0
+r_hash_collision[37]: 0
+r_hash_collision[38]: 0
+r_hash_collision[39]: 0
+r_hash_collision[40]: 0
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 0.00,write iops: 128268.04, hit rt:99.82%
+d_cache_hit: 11790507, miss: 21845, hit_by_collision: 8838900, miss_by_collision: 0
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 04:47:19 =====
+average read latency: 0 us, average write latency: 524 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 3424278, mapping_rd: 0, mapping_wr: 0
+nand_r: 3424278, nand_w: 2953088, nand_e: 0
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+r_hash_collision[34]: 0
+r_hash_collision[35]: 0
+r_hash_collision[36]: 0
+r_hash_collision[37]: 0
+r_hash_collision[38]: 0
+r_hash_collision[39]: 0
+r_hash_collision[40]: 0
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 0.00,write iops: 128268.67, hit rt:99.82%
+d_cache_hit: 11790507, miss: 21845, hit_by_collision: 8838900, miss_by_collision: 0
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 04:54:00 =====
+average read latency: 0 us, average write latency: 1614 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 3424278, mapping_rd: 6293907, mapping_wr: 6338508
+nand_r: 9718185, nand_w: 9291596, nand_e: 4521984
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+read iops: 0.00,write iops: 32268.51, hit rt:46.00%
+d_cache_hit: 5434033, miss: 6378319, hit_by_collision: 1019626, miss_by_collision: 2969
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 05:07:16 =====
+average read latency: 0 us, average write latency: 1609 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 6293925, mapping_wr: 6338526
+nand_r: 9718203, nand_w: 9291614, nand_e: 4521984
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+read iops: 0.00,write iops: 32260.13, hit rt:46.00%
+d_cache_hit: 5434014, miss: 6378338, hit_by_collision: 1019627, miss_by_collision: 2968
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 05:15:56 =====
+average read latency: 0 us, average write latency: 1622 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 6293865, mapping_wr: 6338465
+nand_r: 9718143, nand_w: 9291553, nand_e: 4521984
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+read iops: 0.00,write iops: 32262.66, hit rt:46.00%
+d_cache_hit: 5434075, miss: 6378277, hit_by_collision: 1019626, miss_by_collision: 2969
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 05:22:50 =====
+average read latency: 0 us, average write latency: 1613 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 3423779, mapping_rd: 6293921, mapping_wr: 6338522
+nand_r: 9718199, nand_w: 9291610, nand_e: 4521984
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+read iops: 0.00,write iops: 32263.15, hit rt:46.00%
+d_cache_hit: 5434019, miss: 6378333, hit_by_collision: 1019626, miss_by_collision: 2969
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 05:35:54 =====
+average read latency: 0 us, average write latency: 1625 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 2921602, mapping_rd: 6334151, mapping_wr: 6379020
+nand_r: 9256252, nand_w: 9332108, nand_e: 4554752
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+read iops: 0.00,  write iops: 32108.44, hit rt:45.66%
+hot valid entries: 114349, hot valid pages: 223, max hot pages: 328
+avg_grain_per_page: 0.10, avg_grain_hit: 4.75
+hot_hit: 0, hot_rewrite_entries: 94, up_page_cnt:1199510, up_grain_cnt:114443, equal_up_page:223 
+grain_heat_distribute[0]: 99.464749%
+grain_heat_distribute[1]: 0.516616%
+grain_heat_distribute[2]: 0.010044%
+grain_heat_distribute[3]: 0.003097%
+grain_heat_distribute[4]: 0.001538%
+grain_heat_distribute[5]: 0.000907%
+grain_heat_distribute[6]: 0.000604%
+grain_heat_distribute[7]: 0.000420%
+grain_heat_distribute[8]: 0.000314%
+grain_heat_distribute[9]: 0.000238%
+d_cache_hit: 5393803, miss: 6418549, hit_by_collision: 1019612, miss_by_collision: 2983
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 05:40:43 =====
+average read latency: 0 us, average write latency: 465 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 0, nand_w: 2953088, nand_e: 0
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+r_hash_collision[34]: 0
+r_hash_collision[35]: 0
+r_hash_collision[36]: 0
+r_hash_collision[37]: 0
+r_hash_collision[38]: 0
+r_hash_collision[39]: 0
+r_hash_collision[40]: 0
+r_hash_collision[41]: 0
+r_hash_collision[42]: 0
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 0.00,write iops: 128272.34, hit rt:99.82%
+d_cache_hit: 11790507, miss: 21845, hit_by_collision: 8836279, miss_by_collision: 0
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 05:46:10 =====
+average read latency: 0 us, average write latency: 874 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 2517103, mapping_wr: 2520435
+nand_r: 2517103, nand_w: 5473523, nand_e: 688128
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+read iops: 0.00,write iops: 55940.45, hit rt:78.35%
+d_cache_hit: 9255085, miss: 2557267, hit_by_collision: 2494696, miss_by_collision: 3526
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 05:52:33 =====
+average read latency: 0 us, average write latency: 1565 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 6293892, mapping_wr: 6338495
+nand_r: 6293892, nand_w: 9291583, nand_e: 4521984
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+read iops: 0.00,write iops: 32256.95, hit rt:46.00%
+d_cache_hit: 5434043, miss: 6378309, hit_by_collision: 1018903, miss_by_collision: 2964
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 06:01:41 =====
+average read latency: 0 us, average write latency: 1895 us
+finished_r: 0, finished_w: 12582912, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 8135515, mapping_wr: 8270878
+nand_r: 8135584, nand_w: 11224035, nand_e: 6455296
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+read iops: 0.00,write iops: 26656.09, hit rt:29.66%
+d_cache_hit: 3503690, miss: 8308662, hit_by_collision: 463288, miss_by_collision: 1615
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 06:27:44 =====
+average read latency: 0 us, average write latency: 2506 us
+finished_r: 0, finished_w: 11534336, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 9080468, mapping_wr: 8977517
+nand_r: 10732336, nand_w: 13139697, nand_e: 10977280
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+read iops: 0.00,write iops: 23850.04, hit rt:16.12%
+d_cache_hit: 1734029, miss: 9020019, hit_by_collision: 10122240, miss_by_collision: 82294
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 06:56:31 =====
+average read latency: 0 us, average write latency: 2497 us
+finished_r: 0, finished_w: 11534336, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 9080580, mapping_wr: 8977598
+nand_r: 10732419, nand_w: 13139749, nand_e: 10977280
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+read iops: 0.00,write iops: 23847.85, hit rt:16.12%
+d_cache_hit: 1733928, miss: 9020120, hit_by_collision: 10122235, miss_by_collision: 82305
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 07:25:30 =====
+average read latency: 0 us, average write latency: 2598 us
+finished_r: 0, finished_w: 11534336, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 9080638, mapping_wr: 8977667
+nand_r: 10732412, nand_w: 13139726, nand_e: 10977280
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+read iops: 0.00,write iops: 22943.62, hit rt:16.12%
+d_cache_hit: 1733866, miss: 9020182, hit_by_collision: 10122235, miss_by_collision: 82301
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 07:34:56 =====
+average read latency: 0 us, average write latency: 2645 us
+finished_r: 0, finished_w: 11534336, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 9080637, mapping_wr: 8977490
+nand_r: 10997406, nand_w: 13360083, nand_e: 11206656
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+read iops: 0.00,write iops: 22941.78, hit rt:16.12%
+d_cache_hit: 1733857, miss: 9020191, hit_by_collision: 10122266, miss_by_collision: 82291
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 07:45:46 =====
+average read latency: 0 us, average write latency: 3038 us
+finished_r: 0, finished_w: 11534336, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 9080718, mapping_wr: 8978287
+nand_r: 13112840, nand_w: 15384424, nand_e: 13303808
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+r_hash_collision[23]: 0
+r_hash_collision[24]: 0
+r_hash_collision[25]: 0
+r_hash_collision[26]: 0
+r_hash_collision[27]: 0
+r_hash_collision[28]: 0
+r_hash_collision[29]: 0
+r_hash_collision[30]: 0
+r_hash_collision[31]: 0
+r_hash_collision[32]: 0
+r_hash_collision[33]: 0
+read iops: 0.00,write iops: 22865.41, hit rt:16.12%
+d_cache_hit: 1733788, miss: 9020260, hit_by_collision: 10122240, miss_by_collision: 82303
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 08:01:07 =====
+average read latency: 0 us, average write latency: 2541 us
+finished_r: 0, finished_w: 10485760, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 8062020, mapping_wr: 8005655
+nand_r: 9522676, nand_w: 11666500, nand_e: 9764864
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+r_hash_collision[18]: 0
+r_hash_collision[19]: 0
+r_hash_collision[20]: 0
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+read iops: 0.00,write iops: 22968.12, hit rt:16.99%
+d_cache_hit: 1647118, miss: 8047090, hit_by_collision: 6010953, miss_by_collision: 36775
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 08:09:05 =====
+average read latency: 0 us, average write latency: 2737 us
+finished_r: 0, finished_w: 9437184, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 7066625, mapping_wr: 7034346
+nand_r: 9584089, nand_w: 11386939, nand_e: 9764864
+r_hash_collision[0]: 0
+r_hash_collision[1]: 0
+r_hash_collision[2]: 0
+r_hash_collision[3]: 0
+r_hash_collision[4]: 0
+r_hash_collision[5]: 0
+r_hash_collision[6]: 0
+r_hash_collision[7]: 0
+r_hash_collision[8]: 0
+r_hash_collision[9]: 0
+r_hash_collision[10]: 0
+r_hash_collision[11]: 0
+r_hash_collision[12]: 0
+r_hash_collision[13]: 0
+r_hash_collision[14]: 0
+r_hash_collision[15]: 0
+r_hash_collision[16]: 0
+r_hash_collision[17]: 0
+read iops: 0.00,write iops: 22778.11, hit rt:18.08%
+d_cache_hit: 1560461, miss: 7071859, hit_by_collision: 3112897, miss_by_collision: 16611
+No read latency samples collected
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 08:44:53 =====
+average read latency: 4527 us, average write latency: 449 us
+finished_r: 4194304, finished_w: 4194304, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 4194287, nand_w: 856000, nand_e: 0
+r_hash_collision[0]: 2643308
+r_hash_collision[1]: 680483
+r_hash_collision[2]: 324817
+r_hash_collision[3]: 203087
+r_hash_collision[4]: 111129
+r_hash_collision[5]: 84137
+r_hash_collision[6]: 42484
+r_hash_collision[7]: 28101
+r_hash_collision[8]: 22274
+r_hash_collision[9]: 14021
+r_hash_collision[10]: 12387
+r_hash_collision[11]: 8654
+r_hash_collision[12]: 5429
+r_hash_collision[13]: 3583
+r_hash_collision[14]: 2745
+r_hash_collision[15]: 2143
+r_hash_collision[16]: 2072
+r_hash_collision[17]: 932
+r_hash_collision[18]: 664
+r_hash_collision[19]: 473
+r_hash_collision[20]: 312
+r_hash_collision[21]: 174
+r_hash_collision[22]: 160
+r_hash_collision[23]: 132
+r_hash_collision[24]: 87
+r_hash_collision[25]: 77
+r_hash_collision[26]: 68
+r_hash_collision[27]: 35
+r_hash_collision[28]: 46
+r_hash_collision[29]: 24
+r_hash_collision[30]: 19
+r_hash_collision[31]: 13
+r_hash_collision[32]: 7
+r_hash_collision[33]: 5
+r_hash_collision[34]: 3
+r_hash_collision[35]: 2
+r_hash_collision[36]: 8
+r_hash_collision[37]: 1
+r_hash_collision[38]: 2
+r_hash_collision[39]: 0
+r_hash_collision[40]: 3
+r_hash_collision[41]: 1
+r_hash_collision[42]: 1
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 281594.19,write iops: 132640.91, hit rt:100.00%
+d_cache_hit: 7618287, miss: 0, hit_by_collision: 4564808, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 4529
+p95_rlat/us: 21760
+p99_rlat/us: 106804
+p99.9_rlat/us: 129122
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 08:55:32 =====
+average read latency: 1001 us, average write latency: 0 us
+finished_r: 3145728, finished_w: 0, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 3145641, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2274788
+r_hash_collision[1]: 481828
+r_hash_collision[2]: 197483
+r_hash_collision[3]: 85250
+r_hash_collision[4]: 44995
+r_hash_collision[5]: 21720
+r_hash_collision[6]: 26085
+r_hash_collision[7]: 6366
+r_hash_collision[8]: 3021
+r_hash_collision[9]: 2167
+r_hash_collision[10]: 883
+r_hash_collision[11]: 336
+r_hash_collision[12]: 252
+r_hash_collision[13]: 151
+r_hash_collision[14]: 81
+r_hash_collision[15]: 79
+r_hash_collision[16]: 24
+r_hash_collision[17]: 13
+r_hash_collision[18]: 1
+r_hash_collision[19]: 14
+r_hash_collision[20]: 2
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+read iops: inf,write iops: 128361.60, hit rt:100.00%
+d_cache_hit: 3145641, miss: 0, hit_by_collision: 1688872, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 1001
+p95_rlat/us: 5497
+p99_rlat/us: 16481
+p99.9_rlat/us: 17248
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 08:55:32 =====
+average read latency: 1001 us, average write latency: 0 us
+finished_r: 3145728, finished_w: 0, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 3145641, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2274788
+r_hash_collision[1]: 481828
+r_hash_collision[2]: 197483
+r_hash_collision[3]: 85250
+r_hash_collision[4]: 44995
+r_hash_collision[5]: 21720
+r_hash_collision[6]: 26085
+r_hash_collision[7]: 6366
+r_hash_collision[8]: 3021
+r_hash_collision[9]: 2167
+r_hash_collision[10]: 883
+r_hash_collision[11]: 336
+r_hash_collision[12]: 252
+r_hash_collision[13]: 151
+r_hash_collision[14]: 81
+r_hash_collision[15]: 79
+r_hash_collision[16]: 24
+r_hash_collision[17]: 13
+r_hash_collision[18]: 1
+r_hash_collision[19]: 14
+r_hash_collision[20]: 2
+r_hash_collision[21]: 0
+r_hash_collision[22]: 0
+read iops: inf,write iops: 128361.60, hit rt:100.00%
+d_cache_hit: 3145641, miss: 0, hit_by_collision: 1688872, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 1001
+p95_rlat/us: 5497
+p99_rlat/us: 16481
+p99.9_rlat/us: 17248
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 09:11:11 =====
+average read latency: 1342 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 4193639, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2643275
+r_hash_collision[1]: 680484
+r_hash_collision[2]: 324808
+r_hash_collision[3]: 203081
+r_hash_collision[4]: 111125
+r_hash_collision[5]: 84125
+r_hash_collision[6]: 42480
+r_hash_collision[7]: 28098
+r_hash_collision[8]: 22273
+r_hash_collision[9]: 14020
+r_hash_collision[10]: 12387
+r_hash_collision[11]: 8651
+r_hash_collision[12]: 5429
+r_hash_collision[13]: 3583
+r_hash_collision[14]: 2745
+r_hash_collision[15]: 2142
+r_hash_collision[16]: 1506
+r_hash_collision[17]: 932
+r_hash_collision[18]: 661
+r_hash_collision[19]: 473
+r_hash_collision[20]: 312
+r_hash_collision[21]: 174
+r_hash_collision[22]: 160
+r_hash_collision[23]: 132
+r_hash_collision[24]: 87
+r_hash_collision[25]: 77
+r_hash_collision[26]: 68
+r_hash_collision[27]: 35
+r_hash_collision[28]: 46
+r_hash_collision[29]: 24
+r_hash_collision[30]: 19
+r_hash_collision[31]: 13
+r_hash_collision[32]: 7
+r_hash_collision[33]: 5
+r_hash_collision[34]: 3
+r_hash_collision[35]: 2
+r_hash_collision[36]: 8
+r_hash_collision[37]: 1
+r_hash_collision[38]: 2
+r_hash_collision[39]: 0
+r_hash_collision[40]: 3
+r_hash_collision[41]: 1
+r_hash_collision[42]: 1
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 255772.60,write iops: 128272.10, hit rt:100.00%
+d_cache_hit: 4193639, miss: 0, hit_by_collision: 4057803, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 1343
+p95_rlat/us: 13124
+p99_rlat/us: 20045
+p99.9_rlat/us: 21684
+--------------------------------------------------
+
+===== Test Time: 2026-01-23 09:11:12 =====
+average read latency: 1342 us, average write latency: 0 us
+finished_r: 4194304, finished_w: 0, wrong_value_cnt: 0
+data_rd: 0, mapping_rd: 0, mapping_wr: 0
+nand_r: 4193639, nand_w: 0, nand_e: 0
+r_hash_collision[0]: 2643275
+r_hash_collision[1]: 680484
+r_hash_collision[2]: 324808
+r_hash_collision[3]: 203081
+r_hash_collision[4]: 111125
+r_hash_collision[5]: 84125
+r_hash_collision[6]: 42480
+r_hash_collision[7]: 28098
+r_hash_collision[8]: 22273
+r_hash_collision[9]: 14020
+r_hash_collision[10]: 12387
+r_hash_collision[11]: 8651
+r_hash_collision[12]: 5429
+r_hash_collision[13]: 3583
+r_hash_collision[14]: 2745
+r_hash_collision[15]: 2142
+r_hash_collision[16]: 1506
+r_hash_collision[17]: 932
+r_hash_collision[18]: 661
+r_hash_collision[19]: 473
+r_hash_collision[20]: 312
+r_hash_collision[21]: 174
+r_hash_collision[22]: 160
+r_hash_collision[23]: 132
+r_hash_collision[24]: 87
+r_hash_collision[25]: 77
+r_hash_collision[26]: 68
+r_hash_collision[27]: 35
+r_hash_collision[28]: 46
+r_hash_collision[29]: 24
+r_hash_collision[30]: 19
+r_hash_collision[31]: 13
+r_hash_collision[32]: 7
+r_hash_collision[33]: 5
+r_hash_collision[34]: 3
+r_hash_collision[35]: 2
+r_hash_collision[36]: 8
+r_hash_collision[37]: 1
+r_hash_collision[38]: 2
+r_hash_collision[39]: 0
+r_hash_collision[40]: 3
+r_hash_collision[41]: 1
+r_hash_collision[42]: 1
+r_hash_collision[43]: 0
+r_hash_collision[44]: 0
+read iops: 255772.60,write iops: 128272.10, hit rt:100.00%
+d_cache_hit: 4193639, miss: 0, hit_by_collision: 4057803, miss_by_collision: 0
+========== Tail Latency Stats (iodepth=1) ==========
+avg_rlat/us: 1343
+p95_rlat/us: 13124
+p99_rlat/us: 20045
+p99.9_rlat/us: 21684
+--------------------------------------------------
+

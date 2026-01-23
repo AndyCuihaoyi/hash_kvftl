@@ -198,7 +198,7 @@ bm_superblock_t *dftl_get_active_sblk(block_mgr_t *self, int pt_num, bool isrese
         }
         if (pt->active_sblk == -1)
         {
-            self->show_sblk_state(self, DATA_S);
+            //self->show_sblk_state(self, DATA_S);
         }
         return &env->sblk[pt->active_sblk];
     }
@@ -258,7 +258,7 @@ bm_superblock_t *dftl_get_active_sblk(block_mgr_t *self, int pt_num, bool isrese
 #ifdef DATA_SEGREGATION
         if (pt->active_sblk == -1)
         {
-            self->show_sblk_state(self, pt_num);
+            //self->show_sblk_state(self, pt_num);
         }
 #endif
     }
